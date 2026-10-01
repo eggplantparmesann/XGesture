@@ -603,8 +603,8 @@
     <string name="free_window_mode_standard_desc">Mode 5，适用于 HyperOS 等系统</string>
     <string name="free_window_mode_coloros">自由窗口 2（ColorOS）</string>
     <string name="free_window_mode_coloros_desc">Mode 100，适用于 ColorOS 系统</string>
-    <string name="free_window_mode_magicos">自由窗口 3（MagicOS）</string>
-    <string name="free_window_mode_magicos_desc">Mode 102，适用于 MagicOS 系统</string>
+    <string name="free_window_mode_magicos">自由窗口 3（HarmonyOS / MagicOS）</string>
+    <string name="free_window_mode_magicos_desc">Mode 102，适用于华为鸿蒙及荣耀 MagicOS 系统</string>
     <string name="free_window_mode_originos">自由窗口 4（OriginOS）</string>
     <string name="free_window_mode_originos_desc">Mode 106，适用于 OriginOS / vivo 小窗</string>
     <string name="free_window_mode_flyme">自由窗口 5（FlymeOS）</string>
@@ -3737,4 +3737,8 @@ adb 模式应返回 uid=2000。
     <string name="inspire_image_edit_text_title">输入文字</string>
     <string name="inspire_image_edit_title">图片编辑</string>
     <string name="inspire_image_edit_undo">撤销</string>
+    <string name="gesture_action_smart_screenshot">智能截图</string>
+    <string name="gesture_action_smart_screenshot_desc">选区/全屏裁剪与编辑，支持贴图钉在桌面上 (11+)</string>
+    <string name="smart_screenshot_saved">截图已保存到相册</string>
+    <string name="smart_screenshot_copied">截图已复制到剪贴板</string>
 </resources>

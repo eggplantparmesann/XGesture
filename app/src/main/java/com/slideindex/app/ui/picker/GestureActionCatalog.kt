@@ -148,6 +148,7 @@ object GestureActionCatalog {
         GestureActionType.LAUNCH_ASSISTANT,
         GestureActionType.VOICE_SEARCH,
         GestureActionType.VOICE_ASSISTANT,
+        GestureActionType.SMART_SCREENSHOT,
         -> GestureActionCategory.Intelligence
 
         // 4. 面板与启动 (Panels & Launchers)
@@ -289,6 +290,7 @@ object GestureActionCatalog {
         GestureAction.LaunchAssistant,
         GestureAction.VoiceSearch,
         GestureAction.VoiceAssistant,
+        GestureAction.SmartScreenshot,
 
         // 4. 面板与启动器 (Panels & Launchers)
         GestureAction.AppCarouselSwitcher,

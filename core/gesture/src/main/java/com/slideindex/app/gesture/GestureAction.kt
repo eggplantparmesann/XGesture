@@ -92,6 +92,8 @@ enum class GestureActionType(val id: Int) {
     TIMED_DND(87),
     /** 在当前界面查找关键字并高亮，支持自动滚动。 */
     SCREEN_SEARCH(88),
+    /** 智能截图 (全屏/选区编辑裁剪与贴图) */
+    SMART_SCREENSHOT(90),
     ;
 
     companion object {
@@ -478,6 +480,12 @@ sealed class GestureAction {
         override val payload = ""
     }
 
+
+    data object SmartScreenshot : GestureAction() {
+        override val type = GestureActionType.SMART_SCREENSHOT
+        override val payload = ""
+    }
+
     data object ScreenRecord : GestureAction() {
         override val type = GestureActionType.SCREEN_RECORD
         override val payload = ""
@@ -769,6 +777,7 @@ sealed class GestureAction {
                 GestureActionType.TOGGLE_DND -> ToggleDnd
                 GestureActionType.TIMED_DND -> TimedDnd
                 GestureActionType.SCREEN_SEARCH -> ScreenSearch
+                GestureActionType.SMART_SCREENSHOT -> SmartScreenshot
                 GestureActionType.SCREEN_RECORD -> ScreenRecord
                 GestureActionType.TOGGLE_WIFI -> ToggleWifi
                 GestureActionType.TOGGLE_MOBILE_DATA -> ToggleMobileData

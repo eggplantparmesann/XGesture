@@ -418,6 +418,9 @@ class ActionExecutor(
                 OverlaySnoozeController.snooze(context)
                 true
             }
+            GestureAction.SmartScreenshot -> {
+                SlideIndexAccessibilityService.performSmartScreenshot()
+            }
         }
     }
 

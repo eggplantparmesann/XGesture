@@ -58,7 +58,7 @@ object GlobalOverlayDismissHelper {
         runCatching { DanmakuOverlayWindow.detach() }
         runCatching { UniversalCopyOverlay.dismiss() }
         runCatching { ScreenTranslationController.dismissIfActive() }
-        runCatching { com.slideindex.app.service.ClipboardFloatService.hideWindowFromStatic() }
+        runCatching { com.slideindex.app.overlay.screenshot.SmartScreenshotOverlay.dismiss() }
         runCatching { com.slideindex.app.clipboardoverlay.ClipboardOverlayWindow.dismiss() }
         runCatching { com.slideindex.app.clipboardoverlay.ClipboardLinkPickerOverlay.dismissImmediate() }
     }

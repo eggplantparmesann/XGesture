@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Choreographer
 import android.view.accessibility.AccessibilityEvent
 import com.slideindex.app.di.AppDependencies
 import com.slideindex.app.diagnostic.EdgeDiag
@@ -29,14 +30,18 @@ import com.slideindex.app.gesture.PointerSwipeConfig
 import com.slideindex.app.message.MessageReminderOrchestrator
 import com.slideindex.app.overlay.EdgeOverlayHost
 import com.slideindex.app.overlay.FloatBallOcrRegions
+import com.slideindex.app.overlay.FloatBallOverlay
 import com.slideindex.app.overlay.FloatBallPickResultPanel
 import com.slideindex.app.overlay.FloatBallTextPickCoordinator
 import com.slideindex.app.overlay.FloatBallPickResult
 import com.slideindex.app.overlay.PickResultTextSource
 import com.slideindex.app.overlay.FloatingPointerOverlayWindow
+import com.slideindex.app.overlay.GlobalOverlayDismissHelper
 import com.slideindex.app.overlay.LayoutPreviewContent
 import com.slideindex.app.overlay.LayoutPreviewFocus
 import com.slideindex.app.overlay.PanelSide
+import com.slideindex.app.overlay.animation.GestureAnimationOverlayRegistry
+import com.slideindex.app.overlay.backpanel.BackPanelOverlayRegistry
 import com.slideindex.app.overlay.corner.CornerAnchor
 import com.slideindex.app.overlay.corner.CornerGestureHost
 import com.slideindex.app.xposed.bridge.ModuleHookBridgeContract
@@ -342,6 +347,66 @@ class SlideIndexAccessibilityService : AccessibilityService() {
                 run()
             } else {
                 mainHandler.post(run)
+            }
+            return true
+        }
+
+        fun performSmartScreenshot(): Boolean {
+            val service = instance ?: return false
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
+                return false
+            }
+            mainHandler.post {
+                GlobalOverlayDismissHelper.dismissAllPanels()
+                PanelSide.entries.forEach { side ->
+                    GestureAnimationOverlayRegistry.controller(side).hide()
+                    BackPanelOverlayRegistry.controller(side).hide()
+                }
+                FloatingPointerOverlayWindow.suppressForScreenshotCapture()
+                FloatBallOverlay.suppressForScreenshotCapture()
+                FloatBallPickResultPanel.suppressForScreenshotCapture()
+
+                Choreographer.getInstance().postFrameCallback {
+                    mainHandler.postDelayed({
+                        service.takeScreenshot(
+                            android.view.Display.DEFAULT_DISPLAY,
+                            service.mainExecutor,
+                            object : AccessibilityService.TakeScreenshotCallback {
+                                override fun onSuccess(screenshotResult: AccessibilityService.ScreenshotResult) {
+                                    try {
+                                        val wrapped = android.graphics.Bitmap.wrapHardwareBuffer(
+                                            screenshotResult.hardwareBuffer,
+                                            screenshotResult.colorSpace
+                                        )
+                                        val software = wrapped?.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
+                                        wrapped?.recycle()
+                                        if (software != null) {
+                                            mainHandler.post {
+                                                com.slideindex.app.overlay.screenshot.SmartScreenshotOverlay.show(service, software)
+                                            }
+                                        }
+                                    } finally {
+                                        screenshotResult.hardwareBuffer.close()
+                                        mainHandler.post {
+                                            FloatingPointerOverlayWindow.restoreAfterScreenshotCapture()
+                                            FloatBallOverlay.restoreAfterScreenshotCapture()
+                                            FloatBallPickResultPanel.restoreAfterScreenshotCapture()
+                                        }
+                                    }
+                                }
+
+                                override fun onFailure(errorCode: Int) {
+                                    Log.w(TAG, "performSmartScreenshot takeScreenshot failed: $errorCode")
+                                    mainHandler.post {
+                                        FloatingPointerOverlayWindow.restoreAfterScreenshotCapture()
+                                        FloatBallOverlay.restoreAfterScreenshotCapture()
+                                        FloatBallPickResultPanel.restoreAfterScreenshotCapture()
+                                    }
+                                }
+                            }
+                        )
+                    }, 120L)
+                }
             }
             return true
         }
