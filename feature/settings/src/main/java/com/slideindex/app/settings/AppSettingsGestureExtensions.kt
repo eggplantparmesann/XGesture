@@ -415,6 +415,10 @@ fun AppSettings.resolvedTriggerMode(
     if (action.requiresContinuousTriggerOnly() && !trigger.isPressOrTap) {
         return GestureTriggerMode.CONTINUOUS
     }
+    // 单击/双击固定松手触发：不读槽位存储的模式，也不跟随侧边「默认触发模式」。否则用户把侧边默认
+    // 设成「即时触发」时，双击会被 onTouchUp 的 IMMEDIATE 分支提前 return，单击的「点击穿透」也会被
+    // dispatchMoveTimeGesture 静默丢弃。详见 GestureTriggerType.isTapFixedOnRelease。
+    if (trigger.isTapFixedOnRelease) return GestureTriggerMode.ON_RELEASE
     val customMode = slotTriggerMode(side, trigger, handleId)
     if (customMode != GestureTriggerMode.DEFAULT) return customMode
     val ruleMode = effectiveRule(side, trigger, handleId)?.triggerMode

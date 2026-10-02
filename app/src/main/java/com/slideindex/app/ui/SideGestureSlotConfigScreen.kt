@@ -502,41 +502,46 @@ fun SideGestureSlotConfigScreen(
 
 
 
-        settingsLazySmallTitle(
+        // 单击/双击固定松手触发（见 GestureTriggerType.isTapFixedOnRelease），不提供触发模式选择。
+        if (!selectedTrigger.isTapFixedOnRelease) {
 
-            key = "slot-trigger-mode-section",
+            settingsLazySmallTitle(
 
-            title = triggerModeSectionTitle,
+                key = "slot-trigger-mode-section",
 
-        )
+                title = triggerModeSectionTitle,
 
-        groupedCardItems(
+            )
 
-            keyPrefix = "side-gesture-trigger-mode",
+            groupedCardItems(
 
-            items = buildList {
+                keyPrefix = "side-gesture-trigger-mode",
 
-                add(
+                items = buildList {
 
-                    settingsCardScopeItem("slot-trigger-mode") {
+                    add(
 
-                        MiuixNavigationRow(
+                        settingsCardScopeItem("slot-trigger-mode") {
 
-                            title = slotTriggerModeTitle(selectedMode, sideDefaultMode),
+                            MiuixNavigationRow(
 
-                            summary = slotTriggerModeSubtitle(selectedMode, sideDefaultMode),
+                                title = slotTriggerModeTitle(selectedMode, sideDefaultMode),
 
-                            onClick = { onOpenModePick(selectedTrigger) },
+                                summary = slotTriggerModeSubtitle(selectedMode, sideDefaultMode),
 
-                        )
+                                onClick = { onOpenModePick(selectedTrigger) },
 
-                    },
+                            )
 
-                )
+                        },
 
-            },
+                    )
 
-        )
+                },
+
+            )
+
+        }
 
     }
 

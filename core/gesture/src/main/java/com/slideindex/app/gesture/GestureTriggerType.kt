@@ -67,6 +67,19 @@ enum class GestureTriggerType(val id: Int, val isLongDistance: Boolean) {
     val isDoubleTap: Boolean
         get() = this == SHORT_DOUBLE_TAP
 
+    /**
+     * 是否固定按「松手触发」解析，不跟随槽位存储的模式与侧边「默认触发模式」。
+     *
+     * 单击与双击固定松手触发，因为这两条路径在 IMMEDIATE 下是坏的：
+     * - `GestureSession.onTouchUp` 在 IMMEDIATE 分支提前 return，早于双击判定，双击永远不可达；
+     * - IMMEDIATE 走 `dispatchMoveTimeGesture`，它对 `ClickPassthrough` 直接 return，
+     *   于是默认的「点击穿透」单击被静默丢弃（不派发、不震动，还把这一击吃掉）。
+     *
+     * 长按类不在此列：IMMEDIATE 下长按在阈值处就地触发，行为可用。
+     */
+    val isTapFixedOnRelease: Boolean
+        get() = this == SHORT_SINGLE_TAP || this == SHORT_DOUBLE_TAP
+
     val isPressOrTap: Boolean
         get() = this == SHORT_LONG_PRESS || this == SHORT_SINGLE_TAP ||
             this == LONG_LONG_PRESS || this == LONG_SINGLE_TAP

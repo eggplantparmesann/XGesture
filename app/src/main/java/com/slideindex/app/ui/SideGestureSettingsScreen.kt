@@ -473,7 +473,12 @@ private fun sideGestureSlotCardItems(
                     trigger = trigger,
                     label = label,
                     action = settings.slotAction(slotSide, trigger, handleId),
-                    modeLabel = triggerModeLabel(settings.slotTriggerMode(slotSide, trigger, handleId)),
+                    // 单击/双击固定松手触发、不可选，行里就不再挂触发模式标签，避免显示"默认"误导。
+                    modeLabel = if (trigger.isTapFixedOnRelease) {
+                        null
+                    } else {
+                        triggerModeLabel(settings.slotTriggerMode(slotSide, trigger, handleId))
+                    },
                     onClick = { onOpenSlotConfig(trigger) },
                     insideMargin = rowInsideMargin,
                 )
