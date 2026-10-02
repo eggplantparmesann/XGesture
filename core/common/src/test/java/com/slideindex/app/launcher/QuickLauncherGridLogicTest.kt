@@ -2,6 +2,7 @@ package com.slideindex.app.launcher
 
 import com.slideindex.app.launcher.QuickLauncherGridLogic.moveIndex
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class QuickLauncherGridLogicTest {
@@ -53,5 +54,20 @@ class QuickLauncherGridLogicTest {
             mergeTargetGlobal = 0,
         )
         assertEquals(listOf(0, 1, 2, null), mapping)
+    }
+
+    /**
+     * 守卫测试：合成文件夹的悬停驻留时长被有意定为 900ms。
+     *
+     * 350ms 会把"把图标对准某一格"这个正常动作也判成建文件夹（见 QuickLauncherDragTiming 的说明）。
+     * 想改这个值就必须让本测试失败并重新评估，别悄悄改回去。
+     */
+    @Test
+    fun folderMergeDwellIsDeliberatelyLong() {
+        assertTrue(
+            "合成文件夹的悬停驻留时长不应低于系统长按阈值（500ms）",
+            QuickLauncherDragTiming.FOLDER_MERGE_DWELL_MS >= 500L,
+        )
+        assertEquals(900L, QuickLauncherDragTiming.FOLDER_MERGE_DWELL_MS)
     }
 }

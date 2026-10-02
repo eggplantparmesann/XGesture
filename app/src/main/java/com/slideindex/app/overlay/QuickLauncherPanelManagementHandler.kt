@@ -2,6 +2,7 @@ package com.slideindex.app.overlay
 
 import android.graphics.RectF
 import android.view.MotionEvent
+import com.slideindex.app.launcher.QuickLauncherDragTiming
 import com.slideindex.app.launcher.QuickLauncherGridLogic
 import com.slideindex.app.launcher.QuickLauncherItem
 import com.slideindex.app.launcher.QuickLauncherItemType
@@ -275,7 +276,7 @@ internal class QuickLauncherPanelManagementHandler(
                 }
             }
             hoverDwellRunnable = runnable
-            host.postDelayed(runnable, 350L)
+            host.postDelayed(runnable, QuickLauncherDragTiming.FOLDER_MERGE_DWELL_MS)
         }
     }
 

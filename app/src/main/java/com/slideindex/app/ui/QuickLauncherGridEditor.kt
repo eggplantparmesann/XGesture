@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.zIndex
 import com.slideindex.app.R
 import com.slideindex.app.data.AppInfo
+import com.slideindex.app.launcher.QuickLauncherDragTiming
 import com.slideindex.app.launcher.QuickLauncherGridLogic
 import com.slideindex.app.launcher.dissolveFolder
 import com.slideindex.app.launcher.renameFolder
@@ -80,7 +81,6 @@ private const val PAGE_EDGE_RESISTANCE = 0.35f
 private const val PAGE_COMMIT_FRACTION = 0.22f
 private const val PAGE_EDGE_AUTO_PAGE_CELL_FRACTION = 0.12f
 private const val PAGE_AUTO_TURN_COOLDOWN_MS = 400L
-private const val HOVER_DWELL_MS = 350L
 private const val HOVER_DEADZONE_DP = 14f
 
 /** 图标并发解析数：串行在 OEM 主题图标设备上要等一分钟，太多又会把 CPU 占满影响交互。 */
@@ -238,7 +238,7 @@ fun QuickLauncherGridEditor(
             mergeTargetGlobal = -1
             return@LaunchedEffect
         }
-        delay(HOVER_DWELL_MS)
+        delay(QuickLauncherDragTiming.FOLDER_MERGE_DWELL_MS)
         mergeTargetGlobal = hoverSlotGlobal
         haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
     }
