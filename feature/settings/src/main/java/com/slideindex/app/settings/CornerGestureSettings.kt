@@ -28,6 +28,8 @@ data class CornerGestureSettings(
     val slotHapticEnabled: Boolean = true,
     /** 高亮槽位时在屏幕上部显示图标与名称（类似蜂窝启动）。 */
     val showSelectedName: Boolean = true,
+    /** 是否在轮盘外侧显示快捷编辑小铅笔按钮。 */
+    val showEditButton: Boolean = true,
     val selectedHintIconSizeDp: Int = SelectedHintMetrics.DEFAULT_ICON_SIZE_DP,
     /**
      * 轮盘背景：

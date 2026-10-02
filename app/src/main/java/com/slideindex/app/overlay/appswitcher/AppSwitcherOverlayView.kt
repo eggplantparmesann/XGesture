@@ -295,7 +295,7 @@ internal class AppSwitcherOverlayView(
 
     private fun updateInteraction(localX: Float, localY: Float, eventTime: Long) {
         val layout = panelLayout ?: return
-        val toolbarActive = panelPinned || externalTracking
+        val toolbarActive = fvSettings.showToolbar && (panelPinned || externalTracking)
         highlightedToolbarButton = if (toolbarActive) {
             FvCircleLayoutEngine.toolbarButtonAt(layout, localX, localY)
         } else {
@@ -364,7 +364,11 @@ internal class AppSwitcherOverlayView(
     private fun handleRelease(localX: Float, localY: Float, eventTime: Long, fromPinned: Boolean): Boolean {
         val layout = panelLayout ?: return false
         updateInteraction(localX, localY, eventTime)
-        val toolbarButton = FvCircleLayoutEngine.toolbarButtonAt(layout, localX, localY)
+        val toolbarButton = if (fvSettings.showToolbar) {
+            FvCircleLayoutEngine.toolbarButtonAt(layout, localX, localY)
+        } else {
+            null
+        }
         val slot = FvCircleLayoutEngine.slotIndexAt(layout, localX, localY)
         val outside = FvCircleLayoutEngine.isOutsidePanel(layout, localX, localY, layout.itemSizePx * 0.35f) &&
             toolbarButton == null
@@ -421,7 +425,7 @@ internal class AppSwitcherOverlayView(
             }
             !fromPinned -> {
                 val wasEdit = sessionMode == SessionMode.EDIT
-                if (FvCircleLayoutEngine.isNearToolbar(layout, localX, localY)) {
+                if (fvSettings.showToolbar && FvCircleLayoutEngine.isNearToolbar(layout, localX, localY)) {
                     prepareForToolbarAction()
                     pinPanel()
                     if (wasEdit) enterEditMode()
@@ -714,7 +718,7 @@ internal class AppSwitcherOverlayView(
             editMode = sessionMode == SessionMode.EDIT,
             highlightedSlot = highlightedSlot,
             highlightedToolbarButton = highlightedToolbarButton,
-            showToolbar = panelPinned || externalTracking,
+            showToolbar = fvSettings.showToolbar && (panelPinned || externalTracking),
             density = density,
             revealProgress = revealProgress,
             appsByPackage = appsByPackage,
@@ -742,7 +746,7 @@ internal class AppSwitcherOverlayView(
 }
 
 @Composable
-private fun AppSwitcherAppearanceDialogContent(
+internal fun AppSwitcherAppearanceDialogContent(
     currentSettings: FvAppSwitcherSettings,
     activeAxis: FvAppSwitcherAxis,
     linkAppearanceAxes: Boolean,
@@ -978,6 +982,15 @@ private fun AppSwitcherAppearanceDialogContent(
                         steps = ((FvAppSwitcherSettings.MAX_END_MARGIN_DEG - FvAppSwitcherSettings.MIN_END_MARGIN_DEG) / 2f).toInt() - 1,
                         onValueChange = { update { s -> s.copy(endMarginDeg = (it / 2f).roundToInt() * 2f) } },
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    FvAppSwitcherLinkSwitchRow(
+                        title = stringResource(R.string.fv_app_switcher_show_toolbar_title),
+                        description = stringResource(R.string.fv_app_switcher_show_toolbar_desc),
+                        checked = settingsState.showToolbar,
+                        onCheckedChange = { checked -> update { it.copy(showToolbar = checked) } },
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -1118,7 +1131,7 @@ private fun FvAppSwitcherLinkSwitchRow(
     description: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    onRequestEnable: () -> Unit,
+    onRequestEnable: () -> Unit = { onCheckedChange(true) },
     modifier: Modifier = Modifier,
     compact: Boolean = false,
 ) {

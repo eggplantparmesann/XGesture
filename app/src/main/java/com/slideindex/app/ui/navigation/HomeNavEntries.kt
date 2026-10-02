@@ -438,6 +438,7 @@ fun NavEntryBuilder.homeNavEntries(ctx: MainNavContext) {
             onProgressiveLayersChange = viewModel::setCornerGestureProgressiveLayers,
             onSlotHapticChange = viewModel::setCornerGestureSlotHaptic,
             onShowSelectedNameChange = viewModel::setCornerGestureShowSelectedName,
+            onShowEditButtonChange = viewModel::setCornerGestureShowEditButton,
             onSelectedHintIconSizeChange = viewModel::setCornerGestureSelectedHintIconSizeDp,
             onBackgroundStyleChange = viewModel::setCornerGestureBackgroundStyle,
             onBlurDpChange = viewModel::setCornerGestureBlurDp,

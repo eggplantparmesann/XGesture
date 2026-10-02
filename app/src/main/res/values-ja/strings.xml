@@ -433,6 +433,8 @@
     <string name="corner_gesture_slot_haptic_desc">指が新しいスロットに移動したときに振動（ホームの「触覚フィードバック」マスタースイッチに従う）</string>
     <string name="corner_gesture_show_selected_name">ヒットラベルを表示</string>
     <string name="corner_gesture_show_selected_name_desc">スロットがハイライトされたとき、画面上部付近にアイコンと名前を表示（Honeycomb 風）</string>
+    <string name="corner_gesture_show_edit_button">クイック編集ボタンを表示</string>
+    <string name="corner_gesture_show_edit_button_desc">ホイール外側に編集モードに入るボタンを表示。無効時はこの設定からスロットを設定できます</string>
     <string name="corner_gesture_background_style">ホイール背景</string>
     <string name="corner_gesture_background_none">なし</string>
     <string name="action_category_navigation">ナビゲーションとシステム</string>
@@ -1231,6 +1233,8 @@
     <string name="honeycomb_launcher_add">アプリを追加</string>
     <string name="honeycomb_launcher_editor_desc">ハニカムランチャー用のアプリとショートカットを選択します。連続トリガーモード：長押ししてスライドで選択、離して起動。</string>
     <string name="honeycomb_launcher_entry_desc">ハニカムランチャー用のアプリを設定</string>
+    <string name="fv_app_switcher_entry_title">リングランチャー</string>
+    <string name="fv_app_switcher_entry_desc">同心円リングランチャー：リング層数、寸法、ツールバー</string>
     <string name="fv_app_switcher_appearance_title">円形ランチャーの外観とレイアウト</string>
     <string name="fv_app_switcher_circle_count_title">リング層数</string>
     <string name="fv_app_switcher_circle_count_desc">同心円リングの数を選択</string>
@@ -1255,8 +1259,13 @@
     <string name="fv_app_switcher_link_merge_slot_kind">スロット同期</string>
     <string name="fv_app_switcher_link_merge_use_other">他の軸を使用</string>
     <string name="fv_app_switcher_link_merge_use_current">現在の軸で他を上書き</string>
+    <string name="fv_app_switcher_show_toolbar_title">ツールバーを表示</string>
+    <string name="fv_app_switcher_show_toolbar_desc">リングの横に折りたたみ、移動、編集、設定、IME ボタンを表示</string>
     <string name="fv_app_switcher_reset_defaults">デフォルトにリセット</string>
     <string name="fv_app_switcher_done">完了</string>
+    <string name="fv_app_switcher_open_overlay">リングランチャーを起動</string>
+    <string name="fv_app_switcher_open_overlay_desc">画面上にリングを起動し、編集ボタンから直接スロットやショートカットを設定します</string>
+    <string name="fv_app_switcher_accessibility_required">リングランチャーを起動するにはアクセシビリティサービスが必要です</string>
     <string name="honeycomb_display_settings_title">ハニカム表示とモーション</string>
     <string name="honeycomb_display_settings_entry">表示とモーション</string>
     <string name="honeycomb_display_settings_entry_desc">モード、位置、レイアウト、背景、アニメーション</string>

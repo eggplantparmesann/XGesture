@@ -516,6 +516,8 @@
     <string name="corner_gesture_slot_haptic_desc">Vibrate when the finger moves to a new slot (still respects the home “Haptic feedback” master switch)</string>
     <string name="corner_gesture_show_selected_name">Show hit label</string>
     <string name="corner_gesture_show_selected_name_desc">Show icon and name near the upper screen when a slot is highlighted (like Honeycomb)</string>
+    <string name="corner_gesture_show_edit_button">Show quick edit button</string>
+    <string name="corner_gesture_show_edit_button_desc">Display edit button outside the wheel to enter edit mode; when disabled, slots can be configured in these settings</string>
     <string name="corner_gesture_background_style">Wheel background</string>
     <string name="corner_gesture_background_none">None</string>
     <string name="action_category_navigation">Navigation &amp; System</string>
@@ -2312,6 +2314,8 @@
     <string name="honeycomb_launcher_add">Add app</string>
     <string name="honeycomb_launcher_editor_desc">Choose apps and shortcuts for the honeycomb launcher. Use Continuous trigger mode: hold and slide to select, release to launch.</string>
     <string name="honeycomb_launcher_entry_desc">Configure apps for the honeycomb launcher</string>
+    <string name="fv_app_switcher_entry_title">Ring launcher</string>
+    <string name="fv_app_switcher_entry_desc">Concentric ring launcher: ring layers, dimensions, and toolbar</string>
     <string name="fv_app_switcher_appearance_title">Circular Launcher Appearance &amp; Layout</string>
     <string name="fv_app_switcher_circle_count_title">Ring Layers</string>
     <string name="fv_app_switcher_circle_count_desc">Select the number of concentric rings</string>
@@ -2336,8 +2340,13 @@
     <string name="fv_app_switcher_link_merge_slot_kind">slot sync</string>
     <string name="fv_app_switcher_link_merge_use_other">Use other axis</string>
     <string name="fv_app_switcher_link_merge_use_current">Overwrite other with current axis</string>
+    <string name="fv_app_switcher_show_toolbar_title">Show toolbar</string>
+    <string name="fv_app_switcher_show_toolbar_desc">Display collapse, move, edit, settings, and IME buttons next to the rings</string>
     <string name="fv_app_switcher_reset_defaults">Reset to Defaults</string>
     <string name="fv_app_switcher_done">Done</string>
+    <string name="fv_app_switcher_open_overlay">Launch Ring Launcher</string>
+    <string name="fv_app_switcher_open_overlay_desc">Show the ring overlay on screen now to interactively configure slots and shortcuts</string>
+    <string name="fv_app_switcher_accessibility_required">Accessibility service is required to launch the ring overlay</string>
     <string name="honeycomb_display_settings_title">Honeycomb display &amp; motion</string>
     <string name="honeycomb_display_settings_entry">Display &amp; motion</string>
     <string name="honeycomb_display_settings_entry_desc">Mode, position, layout, background and animation</string>

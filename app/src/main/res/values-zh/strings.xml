@@ -433,6 +433,8 @@
     <string name="corner_gesture_slot_haptic_desc">手指移到新槽位时震动（仍受首页「触感反馈」总开关约束）</string>
     <string name="corner_gesture_show_selected_name">显示命中名称</string>
     <string name="corner_gesture_show_selected_name_desc">高亮槽位时在屏幕上部显示图标与名称（类似蜂窝启动）</string>
+    <string name="corner_gesture_show_edit_button">显示快捷编辑按钮</string>
+    <string name="corner_gesture_show_edit_button_desc">在轮盘外侧显示进入编辑模式的按钮，关闭后可在本设置中配置槽位</string>
     <string name="corner_gesture_background_style">轮盘背景</string>
     <string name="corner_gesture_background_none">无</string>
     <string name="action_category_navigation">导航与系统</string>
@@ -1246,6 +1248,8 @@
     <string name="honeycomb_launcher_add">添加应用</string>
     <string name="honeycomb_launcher_editor_desc">配置蜂窝启动器显示的应用与快捷方式。建议将手势触发模式设为「持续触发」，按住滑动选择，松手启动。</string>
     <string name="honeycomb_launcher_entry_desc">为蜂窝启动器配置应用列表</string>
+    <string name="fv_app_switcher_entry_title">圆环启动器</string>
+    <string name="fv_app_switcher_entry_desc">半圆同心圆环启动器：同心圈数、尺寸半径与工具栏</string>
     <string name="fv_app_switcher_appearance_title">圆环外观与布局</string>
     <string name="fv_app_switcher_circle_count_title">显示圈数</string>
     <string name="fv_app_switcher_circle_count_desc">选择圆环启动器的同心圆层数</string>
@@ -1270,8 +1274,13 @@
     <string name="fv_app_switcher_link_merge_slot_kind">槽位同步</string>
     <string name="fv_app_switcher_link_merge_use_other">采用另一轴</string>
     <string name="fv_app_switcher_link_merge_use_current">当前轴覆盖另一轴</string>
+    <string name="fv_app_switcher_show_toolbar_title">显示操作工具栏</string>
+    <string name="fv_app_switcher_show_toolbar_desc">在圆环旁显示收起、移动、编辑、设置与输入法切换工具按钮</string>
     <string name="fv_app_switcher_reset_defaults">恢复默认外观</string>
     <string name="fv_app_switcher_done">完成</string>
+    <string name="fv_app_switcher_open_overlay">调起圆环悬浮窗</string>
+    <string name="fv_app_switcher_open_overlay_desc">立即在屏幕调起圆环，点击圆环上的编辑按钮即可直接编辑和添加图标</string>
+    <string name="fv_app_switcher_accessibility_required">需要开启无障碍服务才能调起圆环悬浮窗</string>
     <string name="honeycomb_display_settings_title">蜂窝显示与动效</string>
     <string name="honeycomb_display_settings_entry">显示与动效</string>
     <string name="honeycomb_display_settings_entry_desc">操作方式、位置、布局、背景与动画</string>

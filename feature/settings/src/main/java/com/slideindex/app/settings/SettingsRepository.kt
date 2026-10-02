@@ -961,6 +961,8 @@ class SettingsRepository @Inject constructor(
         overlay.setCornerGestureSlotHaptic(enabled)
     suspend fun setCornerGestureShowSelectedName(enabled: Boolean) =
         overlay.setCornerGestureShowSelectedName(enabled)
+    suspend fun setCornerGestureShowEditButton(enabled: Boolean) =
+        overlay.setCornerGestureShowEditButton(enabled)
 
     suspend fun setCornerGestureSelectedHintIconSizeDp(value: Int) =
         overlay.setCornerGestureSelectedHintIconSizeDp(value)

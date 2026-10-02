@@ -870,6 +870,7 @@ internal object SettingsSnapshotReader {
             progressiveLayers = prefs[SettingsPreferenceKeys.CORNER_GESTURE_PROGRESSIVE_LAYERS] ?: true,
             slotHapticEnabled = prefs[SettingsPreferenceKeys.CORNER_GESTURE_SLOT_HAPTIC] ?: true,
             showSelectedName = prefs[SettingsPreferenceKeys.CORNER_GESTURE_SHOW_SELECTED_NAME] ?: true,
+            showEditButton = prefs[SettingsPreferenceKeys.CORNER_GESTURE_SHOW_EDIT_BUTTON] ?: true,
             selectedHintIconSizeDp = SelectedHintMetrics.clampIconSizeDp(
                 prefs[SettingsPreferenceKeys.CORNER_GESTURE_SELECTED_HINT_ICON_SIZE_DP]
                     ?: prefs[SettingsPreferenceKeys.SELECTED_HINT_ICON_SIZE_DP]

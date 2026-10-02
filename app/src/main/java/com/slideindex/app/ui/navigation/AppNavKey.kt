@@ -368,6 +368,7 @@ sealed interface AppNavKey : NavKey {
         val initialLabel: String = "",
     ) : AppNavKey
     @Serializable data object HoneycombDisplaySettings : AppNavKey
+    @Serializable data object AppSwitcherSettings : AppNavKey
     @Serializable data object HolographicLauncherSettings : AppNavKey
     @Serializable data object HolographicLauncherHiddenApps : AppNavKey
     @Serializable data object ShellCommands : AppNavKey

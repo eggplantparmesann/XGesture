@@ -52,6 +52,7 @@ fun CornerGestureInteractionScreen(
     onProgressiveLayersChange: (Boolean) -> Unit,
     onSlotHapticChange: (Boolean) -> Unit = {},
     onShowSelectedNameChange: (Boolean) -> Unit,
+    onShowEditButtonChange: (Boolean) -> Unit = {},
     onSelectedHintIconSizeChange: (Int) -> Unit,
     onBackgroundStyleChange: (Int) -> Unit,
     onBlurDpChange: (Int) -> Unit,
@@ -352,6 +353,17 @@ fun CornerGestureInteractionScreen(
                                     onValueChange = { onSelectedHintIconSizeChange(it.roundToInt()) }
                                 )
                             }
+                        )
+                    }
+                )
+                add(
+                    settingsCardScopeItem("show-edit-button") {
+                        SettingSwitchRow(
+                            title = stringResource(R.string.corner_gesture_show_edit_button),
+                            subtitle = stringResource(R.string.corner_gesture_show_edit_button_desc),
+                            checked = corner.showEditButton,
+                            enabled = serviceEnabled && corner.enabled,
+                            onCheckedChange = onShowEditButtonChange,
                         )
                     }
                 )

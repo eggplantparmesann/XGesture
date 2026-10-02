@@ -156,19 +156,21 @@ internal object CornerRadialMenuRenderer {
             }
         }
 
-        drawEditButton(
-            canvas = canvas,
-            anchor = anchor,
-            anchorX = anchorX,
-            anchorY = anchorY,
-            settings = settings,
-            highlighted = highlightedEditButton,
-            density = density,
-            progress = progress,
-            shadowPaint = shadowPaint,
-            fillPaint = fillPaint,
-            strokePaint = strokePaint,
-        )
+        if (settings.showEditButton) {
+            drawEditButton(
+                canvas = canvas,
+                anchor = anchor,
+                anchorX = anchorX,
+                anchorY = anchorY,
+                settings = settings,
+                highlighted = highlightedEditButton,
+                density = density,
+                progress = progress,
+                shadowPaint = shadowPaint,
+                fillPaint = fillPaint,
+                strokePaint = strokePaint,
+            )
+        }
 
         if (settings.showSelectedName && !editMode && highlightedSlot >= 0 &&
             shortcutSubMenuLayout == null

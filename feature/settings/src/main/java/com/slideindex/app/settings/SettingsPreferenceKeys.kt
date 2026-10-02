@@ -168,6 +168,9 @@ internal object SettingsPreferenceKeys {
     val FV_APP_SWITCHER_HORIZONTAL_SLOTS = stringSetPreferencesKey("fv_app_switcher_horizontal_slots")
     val FV_APP_SWITCHER_HORIZONTAL_SLOT_ICON_OVERRIDES =
         stringSetPreferencesKey("fv_app_switcher_horizontal_slot_icon_overrides")
+    val FV_APP_SWITCHER_SHOW_TOOLBAR = booleanPreferencesKey("fv_app_switcher_show_toolbar")
+    val FV_APP_SWITCHER_HORIZONTAL_SHOW_TOOLBAR =
+        booleanPreferencesKey("fv_app_switcher_horizontal_show_toolbar")
     val HOLOGRAPHIC_TIMEOUT_SECONDS = intPreferencesKey("holographic_timeout_seconds")
     val HOLOGRAPHIC_ROTATION_SENSITIVITY = floatPreferencesKey("holographic_rotation_sensitivity")
     val HOLOGRAPHIC_HAPTIC_LEVEL = intPreferencesKey("holographic_haptic_level")
@@ -620,6 +623,7 @@ internal object SettingsPreferenceKeys {
     val CORNER_GESTURE_PROGRESSIVE_LAYERS = booleanPreferencesKey("corner_gesture_progressive_layers")
     val CORNER_GESTURE_SLOT_HAPTIC = booleanPreferencesKey("corner_gesture_slot_haptic")
     val CORNER_GESTURE_SHOW_SELECTED_NAME = booleanPreferencesKey("corner_gesture_show_selected_name")
+    val CORNER_GESTURE_SHOW_EDIT_BUTTON = booleanPreferencesKey("corner_gesture_show_edit_button")
     val CORNER_GESTURE_SELECTED_HINT_ICON_SIZE_DP = intPreferencesKey("corner_gesture_selected_hint_icon_size_dp")
     val CORNER_GESTURE_WALLPAPER_BLUR_ENABLED =
         booleanPreferencesKey("corner_gesture_wallpaper_blur_enabled")

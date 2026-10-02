@@ -72,6 +72,7 @@ data class FvAppSwitcherSettings(
     val baseRadiusDp: Float = DEFAULT_BASE_RADIUS_DP,
     val layerGapDp: Float = DEFAULT_LAYER_GAP_DP,
     val endMarginDeg: Float = DEFAULT_END_MARGIN_DEG,
+    val showToolbar: Boolean = true,
     val slots: Map<Int, QuickLauncherItem> = emptyMap(),
     val slotIconOverrides: Map<Int, FvAppSwitcherSlotIconOverride> = emptyMap(),
 ) {
@@ -90,6 +91,7 @@ data class FvAppSwitcherSettings(
         baseRadiusDp = source.baseRadiusDp,
         layerGapDp = source.layerGapDp,
         endMarginDeg = source.endMarginDeg,
+        showToolbar = source.showToolbar,
     )
 
     fun withSlotsFrom(source: FvAppSwitcherSettings): FvAppSwitcherSettings =
@@ -194,6 +196,7 @@ data class FvAppSwitcherSettings(
                 settings.layerGapDp.coerceIn(MIN_LAYER_GAP_DP, MAX_LAYER_GAP_DP)
             prefs[keys.endMarginDeg] =
                 settings.endMarginDeg.coerceIn(MIN_END_MARGIN_DEG, MAX_END_MARGIN_DEG)
+            prefs[keys.showToolbar] = settings.showToolbar
             prefs[keys.slots] = FvAppSwitcherSlotCodec.encodeAll(settings.slots)
             prefs[keys.slotIconOverrides] = FvAppSwitcherSlotIconOverrideCodec.encodeAll(settings.slotIconOverrides)
         }
@@ -206,6 +209,7 @@ data class FvAppSwitcherSettings(
             val baseRadiusDp = prefs[keys.baseRadiusDp] ?: DEFAULT_BASE_RADIUS_DP
             val layerGapDp = prefs[keys.layerGapDp] ?: DEFAULT_LAYER_GAP_DP
             val endMarginDeg = prefs[keys.endMarginDeg] ?: DEFAULT_END_MARGIN_DEG
+            val showToolbar = prefs[keys.showToolbar] ?: true
             val slots = FvAppSwitcherSlotCodec.decodeAll(prefs[keys.slots] ?: emptySet())
             val slotIconOverrides =
                 FvAppSwitcherSlotIconOverrideCodec.decodeAll(prefs[keys.slotIconOverrides] ?: emptySet())
@@ -216,6 +220,7 @@ data class FvAppSwitcherSettings(
                 baseRadiusDp = baseRadiusDp.coerceIn(MIN_BASE_RADIUS_DP, MAX_BASE_RADIUS_DP),
                 layerGapDp = layerGapDp.coerceIn(MIN_LAYER_GAP_DP, MAX_LAYER_GAP_DP),
                 endMarginDeg = endMarginDeg.coerceIn(MIN_END_MARGIN_DEG, MAX_END_MARGIN_DEG),
+                showToolbar = showToolbar,
                 slots = slots,
                 slotIconOverrides = slotIconOverrides,
             )
@@ -228,6 +233,7 @@ data class FvAppSwitcherSettings(
             if (prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_BASE_RADIUS_DP] != null) return true
             if (prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_LAYER_GAP_DP] != null) return true
             if (prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_END_MARGIN_DEG] != null) return true
+            if (prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_SHOW_TOOLBAR] != null) return true
             return prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_SLOTS]?.isNotEmpty() == true ||
                 prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_SLOT_ICON_OVERRIDES]?.isNotEmpty() == true
         }
@@ -239,6 +245,7 @@ data class FvAppSwitcherSettings(
             val baseRadiusDp: Preferences.Key<Float>,
             val layerGapDp: Preferences.Key<Float>,
             val endMarginDeg: Preferences.Key<Float>,
+            val showToolbar: Preferences.Key<Boolean>,
             val slots: Preferences.Key<Set<String>>,
             val slotIconOverrides: Preferences.Key<Set<String>>,
         )
@@ -251,6 +258,7 @@ data class FvAppSwitcherSettings(
                 baseRadiusDp = SettingsPreferenceKeys.FV_APP_SWITCHER_BASE_RADIUS_DP,
                 layerGapDp = SettingsPreferenceKeys.FV_APP_SWITCHER_LAYER_GAP_DP,
                 endMarginDeg = SettingsPreferenceKeys.FV_APP_SWITCHER_END_MARGIN_DEG,
+                showToolbar = SettingsPreferenceKeys.FV_APP_SWITCHER_SHOW_TOOLBAR,
                 slots = SettingsPreferenceKeys.FV_APP_SWITCHER_SLOTS,
                 slotIconOverrides = SettingsPreferenceKeys.FV_APP_SWITCHER_SLOT_ICON_OVERRIDES,
             )
@@ -261,6 +269,7 @@ data class FvAppSwitcherSettings(
                 baseRadiusDp = SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_BASE_RADIUS_DP,
                 layerGapDp = SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_LAYER_GAP_DP,
                 endMarginDeg = SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_END_MARGIN_DEG,
+                showToolbar = SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_SHOW_TOOLBAR,
                 slots = SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_SLOTS,
                 slotIconOverrides = SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_SLOT_ICON_OVERRIDES,
             )

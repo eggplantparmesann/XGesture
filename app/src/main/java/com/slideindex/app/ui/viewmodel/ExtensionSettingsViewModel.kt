@@ -677,4 +677,27 @@ class ExtensionSettingsViewModel @Inject constructor(
     fun setFloatBallRegionalCancelSlopDp(value: Float) = launchSettingsWrite {
         settingsRepository.setFloatBallRegionalCancelSlopDp(value)
     }
+
+    fun setFvAppSwitcherSettings(
+        axis: com.slideindex.app.settings.FvAppSwitcherAxis,
+        settings: com.slideindex.app.settings.FvAppSwitcherSettings,
+    ) = launchSettingsWrite {
+        settingsRepository.setFvAppSwitcherSettings(axis, settings)
+    }
+
+    fun setFvAppSwitcherLinkAppearanceAxes(
+        enabled: Boolean,
+        activeAxis: com.slideindex.app.settings.FvAppSwitcherAxis = com.slideindex.app.settings.FvAppSwitcherAxis.VERTICAL,
+        mergeDirection: com.slideindex.app.settings.FvAppSwitcherAxisMergeDirection? = null,
+    ) = launchSettingsWrite {
+        settingsRepository.setFvAppSwitcherLinkAppearanceAxes(enabled, activeAxis, mergeDirection)
+    }
+
+    fun setFvAppSwitcherLinkSlotAxes(
+        enabled: Boolean,
+        activeAxis: com.slideindex.app.settings.FvAppSwitcherAxis = com.slideindex.app.settings.FvAppSwitcherAxis.VERTICAL,
+        mergeDirection: com.slideindex.app.settings.FvAppSwitcherAxisMergeDirection? = null,
+    ) = launchSettingsWrite {
+        settingsRepository.setFvAppSwitcherLinkSlotAxes(enabled, activeAxis, mergeDirection)
+    }
 }

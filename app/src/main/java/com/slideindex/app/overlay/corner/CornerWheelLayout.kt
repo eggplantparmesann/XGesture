@@ -64,6 +64,7 @@ internal object CornerWheelLayout {
         fingerY: Float,
         density: Float,
     ): Boolean {
+        if (!settings.showEditButton) return false
         val center = editButtonCenter(anchor, anchorX, anchorY, settings, density)
         val radius = editButtonRadius(density)
         return hypot(fingerX - center.x, fingerY - center.y) <= radius * 1.55f

@@ -1601,6 +1601,10 @@ class OverlaySettingsMutator @Inject constructor(
         it[SettingsPreferenceKeys.CORNER_GESTURE_SHOW_SELECTED_NAME] = enabled
     }
 
+    suspend fun setCornerGestureShowEditButton(enabled: Boolean) = editor.edit {
+        it[SettingsPreferenceKeys.CORNER_GESTURE_SHOW_EDIT_BUTTON] = enabled
+    }
+
     suspend fun setCornerGestureSelectedHintIconSizeDp(value: Int) = editor.edit {
         it[SettingsPreferenceKeys.CORNER_GESTURE_SELECTED_HINT_ICON_SIZE_DP] =
             SelectedHintMetrics.clampIconSizeDp(value)
