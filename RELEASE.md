@@ -39,6 +39,14 @@ git diff ${last_tag}..HEAD --name-only --diff-filter=A
 - 凡在两次 Release 之间**新增了 ViewModel/Enum/配置类/组件**，代表引入了全新的功能或模式，**100% 必须作为 `Added` 新功能列出**，绝不可仅作为 Bug 修复简写。
 - 汇总审计所有 Commit 与新增文件后，归纳整理出当版完整的 `Added` / `Changed` / `Fixed` 清单，写入 `CHANGELOG.md` 的 `## [{版本号}] - YYYY-MM-DD` 章节中。
 
+**文风（硬要求）：** 日志是给用户看的差异清单，不是调试记录，也不是 Commit message 的压缩版。
+
+- 每条一行，动词开头，只写「现在的行为」；禁止「此前…现…」「表现为…」「顺带」这类对比叙事与口语化解释。
+- 禁止出现类名、常量名、方法名、native 参数、分支名（如 `IMMEDIATE`、`FOLDER_MERGE_DWELL_MS`、stackId）；机制细节写进 Commit message，不要写进日志。
+- `Fixed` 只写症状 + 结论，例：「修复侧边默认设为「即时触发」时双击手势无效」。
+- **当仓库历史条目的文风与本规则冲突时，以本规则为准，不要对齐历史。**
+- **定稿前必须先把该版段落贴给维护者确认，确认后才提交与打 Tag。** `update.json` 的 `notes` 与 GitHub Release 正文都由本段落派生（见 `scripts/update-release-manifest.py`），同样受本规则约束，需一并同步。
+
 ---
 
 ### 2. 升版本号
