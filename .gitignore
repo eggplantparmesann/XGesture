@@ -56,6 +56,9 @@ build_java_*.txt
 /check2_tmp.py
 /*_tmp.py
 
+# --- 本地逆向分析草稿（不入库） ---
+docs/floatwidget-search-panel-reverse.md
+
 # --- Lint 临时报告 ---
 .lint-report-extract/
 .lint-report-tmp/
