@@ -168,4 +168,12 @@
         <item quantity="one">%1$d app added</item>
         <item quantity="other">%1$d apps added</item>
     </plurals>
+    <plurals name="search_panel_shortcut_index_count">
+        <item quantity="one">%d shortcut indexed</item>
+        <item quantity="other">%d shortcuts indexed</item>
+    </plurals>
+    <plurals name="search_panel_clipboard_index_count">
+        <item quantity="one">%d clipboard entry</item>
+        <item quantity="other">%d clipboard entries</item>
+    </plurals>
 </resources>

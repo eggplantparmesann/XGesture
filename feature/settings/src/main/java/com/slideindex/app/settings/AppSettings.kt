@@ -374,13 +374,14 @@ data class AppSettings(
     val searchPanelFileSearchEnabled get() = searchPanel.searchPanelFileSearchEnabled
     val searchPanelAppSearchEnabled get() = searchPanel.searchPanelAppSearchEnabled
     val searchPanelSettingsSearchEnabled get() = searchPanel.searchPanelSettingsSearchEnabled
+    val searchPanelShortcutSearchEnabled get() = searchPanel.searchPanelShortcutSearchEnabled
+    val searchPanelClipboardSearchEnabled get() = searchPanel.searchPanelClipboardSearchEnabled
     val searchPanelFileTypesEnabled get() = searchPanel.searchPanelFileTypesEnabled
     val searchPanelFileShowFolders get() = searchPanel.searchPanelFileShowFolders
     val searchPanelFileShowSystemFiles get() = searchPanel.searchPanelFileShowSystemFiles
     val searchPanelFilePreviewsEnabled get() = searchPanel.searchPanelFilePreviewsEnabled
     val searchPanelFileFolderWhitelist get() = searchPanel.searchPanelFileFolderWhitelist
     val searchPanelFileFolderBlacklist get() = searchPanel.searchPanelFileFolderBlacklist
-    val searchPanelPresentationMode get() = searchPanel.searchPanelPresentationMode
     val searchPanelBarPosition get() = searchPanel.searchPanelBarPosition
     val searchPanelListOrder get() = searchPanel.searchPanelListOrder
     val searchPanelAppDisplayStyle get() = searchPanel.searchPanelAppDisplayStyle

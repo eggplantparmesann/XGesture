@@ -267,7 +267,7 @@ data class FloatBallSettings(
     /** Pick panel: last search grid expanded state for REMEMBER_LAST mode. */
     val floatBallPickSearchGridLastExpanded: Boolean = false,
     /** Pick panel: 文本区「点词」进入面板时的默认状态（REMEMBER_LAST / ALWAYS_ON / ALWAYS_OFF）。 */
-    val floatBallPickTextModeDefault: PickResultTextModeDefault = PickResultTextModeDefault.ALWAYS_ON,
+    val floatBallPickTextModeDefault: PickResultTextModeDefault = PickResultTextModeDefault.REMEMBER_LAST,
     /**
      * Pick panel: 上次退出面板时「点词」的状态，仅 REMEMBER_LAST 生效。
      *
@@ -406,6 +406,10 @@ data class SearchPanelSettings(
     val searchPanelFileSearchEnabled: Boolean = true,
     val searchPanelAppSearchEnabled: Boolean = true,
     val searchPanelSettingsSearchEnabled: Boolean = true,
+    /** 应用快捷方式（清单 android.app.shortcuts）搜索。 */
+    val searchPanelShortcutSearchEnabled: Boolean = true,
+    /** 剪贴板历史内容搜索。 */
+    val searchPanelClipboardSearchEnabled: Boolean = true,
     /** Enum names of enabled file types; empty means all. */
     val searchPanelFileTypesEnabled: Set<String> = emptySet(),
     val searchPanelFileShowFolders: Boolean = false,
@@ -413,7 +417,6 @@ data class SearchPanelSettings(
     val searchPanelFilePreviewsEnabled: Boolean = true,
     val searchPanelFileFolderWhitelist: Set<String> = emptySet(),
     val searchPanelFileFolderBlacklist: Set<String> = emptySet(),
-    val searchPanelPresentationMode: SearchPanelPresentationMode = SearchPanelPresentationMode.BOTTOM_SHEET,
     val searchPanelBarPosition: SearchPanelBarPosition = SearchPanelBarPosition.TOP,
     val searchPanelListOrder: SearchPanelListOrder = SearchPanelListOrder.TOP_DOWN,
     val searchPanelAppDisplayStyle: SearchPanelAppDisplayStyle = SearchPanelAppDisplayStyle.ICONS,

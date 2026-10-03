@@ -17,7 +17,6 @@ import com.slideindex.app.settings.SearchPanelBarPosition
 import com.slideindex.app.settings.SearchPanelEnterAction
 import com.slideindex.app.settings.SearchPanelInputBehavior
 import com.slideindex.app.settings.SearchPanelListOrder
-import com.slideindex.app.settings.SearchPanelPresentationMode
 import com.slideindex.app.ui.miuix.groupedCardItems
 import com.slideindex.app.ui.settings.components.SettingDropdownRow
 import com.slideindex.app.ui.settings.components.SettingsScreenScaffold
@@ -30,7 +29,6 @@ import kotlin.math.roundToInt
 fun SearchPanelPresentationLayoutSettingsScreen(
     settings: AppSettings,
     onBack: () -> Unit,
-    onSetSearchPanelPresentationMode: (SearchPanelPresentationMode) -> Unit,
     onSetSearchPanelBarPosition: (SearchPanelBarPosition) -> Unit,
     onSetSearchPanelListOrder: (SearchPanelListOrder) -> Unit,
     onSetSearchPanelAppDisplayStyle: (SearchPanelAppDisplayStyle) -> Unit,
@@ -41,7 +39,6 @@ fun SearchPanelPresentationLayoutSettingsScreen(
     onSetSearchPanelEnterAction: (SearchPanelEnterAction) -> Unit,
 ) {
     val context = LocalContext.current
-    val presentationModes = SearchPanelPresentationMode.entries
     val barPositions = SearchPanelBarPosition.entries
     val listOrders = SearchPanelListOrder.entries
     val appDisplayStyles = SearchPanelAppDisplayStyle.entries
@@ -78,16 +75,6 @@ fun SearchPanelPresentationLayoutSettingsScreen(
         groupedCardItems(
             keyPrefix = "search_panel_layout",
             items = buildList {
-                add(
-                    settingsCardScopeItem("presentation") {
-                        SettingDropdownRow(
-                            title = stringResource(R.string.search_panel_presentation_title),
-                            items = presentationModes.map { searchPanelPresentationLabel(it) },
-                            selectedIndex = presentationModes.indexOf(settings.searchPanelPresentationMode).coerceAtLeast(0),
-                            onSelectedIndexChange = { onSetSearchPanelPresentationMode(presentationModes[it]) },
-                        )
-                    },
-                )
                 add(
                     settingsCardScopeItem("bar-position") {
                         SettingDropdownRow(

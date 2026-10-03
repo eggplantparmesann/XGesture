@@ -397,6 +397,8 @@ sealed interface AppNavKey : NavKey {
     @Serializable data object SearchPanelPresentationLayout : AppNavKey
     @Serializable data object SearchPanelFileSearch : AppNavKey
     @Serializable data object SearchPanelAppSearch : AppNavKey
+    @Serializable data object SearchPanelShortcutSearch : AppNavKey
+    @Serializable data object SearchPanelClipboardSearch : AppNavKey
     @Serializable data object SearchPanelContactSearch : AppNavKey
     @Serializable data object SearchPanelSystemSettingsSearch : AppNavKey
     @Serializable data object FloatBall : AppNavKey

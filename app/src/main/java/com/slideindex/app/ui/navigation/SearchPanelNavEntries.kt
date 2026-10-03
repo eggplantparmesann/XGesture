@@ -6,10 +6,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import top.yukonga.miuix.kmp.nav.core.NavEntryBuilder
 import com.slideindex.app.settings.toMinimalAppSettings
 import com.slideindex.app.ui.SearchPanelAppSearchSettingsScreen
+import com.slideindex.app.ui.SearchPanelClipboardSearchSettingsScreen
 import com.slideindex.app.ui.SearchPanelContactSearchSettingsScreen
 import com.slideindex.app.ui.SearchPanelFileSearchSettingsScreen
 import com.slideindex.app.ui.SearchPanelPresentationLayoutSettingsScreen
 import com.slideindex.app.ui.SearchPanelSettingsScreen
+import com.slideindex.app.ui.SearchPanelShortcutSearchSettingsScreen
 import com.slideindex.app.ui.SearchPanelSystemSettingsSearchSettingsScreen
 import com.slideindex.app.ui.viewmodel.SearchEngineSettingsViewModel
 
@@ -19,6 +21,7 @@ fun NavEntryBuilder.searchPanelNavEntries(ctx: MainNavContext) {
         val overlaySettings by viewModel.overlaySettings.collectAsStateWithLifecycle()
         val settings = overlaySettings.toMinimalAppSettings()
         val searchHistoryEntryCount by viewModel.searchHistoryEntryCount.collectAsStateWithLifecycle()
+        val clipboardEntryCount by viewModel.clipboardHistoryEntryCount.collectAsStateWithLifecycle()
         SearchPanelSettingsScreen(
             settings = settings,
             searchHistoryEntryCount = searchHistoryEntryCount,
@@ -27,8 +30,12 @@ fun NavEntryBuilder.searchPanelNavEntries(ctx: MainNavContext) {
             onSetSearchPanelFileSearchEnabled = viewModel::setSearchPanelFileSearchEnabled,
             onSetSearchPanelAppSearchEnabled = viewModel::setSearchPanelAppSearchEnabled,
             onSetSearchPanelSettingsSearchEnabled = viewModel::setSearchPanelSettingsSearchEnabled,
+            onSetSearchPanelShortcutSearchEnabled = viewModel::setSearchPanelShortcutSearchEnabled,
+            onSetSearchPanelClipboardSearchEnabled = viewModel::setSearchPanelClipboardSearchEnabled,
             onSetSearchPanelSectionAliases = viewModel::setSearchPanelSectionAliases,
             onOpenAppSearchSettings = { ctx.navigate(AppNavKey.SearchPanelAppSearch) },
+            onOpenShortcutSearchSettings = { ctx.navigate(AppNavKey.SearchPanelShortcutSearch) },
+            onOpenClipboardSearchSettings = { ctx.navigate(AppNavKey.SearchPanelClipboardSearch) },
             onOpenContactSearchSettings = { ctx.navigate(AppNavKey.SearchPanelContactSearch) },
             onOpenFileSearchSettings = { ctx.navigate(AppNavKey.SearchPanelFileSearch) },
             onOpenSystemSettingsSearchSettings = { ctx.navigate(AppNavKey.SearchPanelSystemSettingsSearch) },
@@ -50,7 +57,6 @@ fun NavEntryBuilder.searchPanelNavEntries(ctx: MainNavContext) {
         SearchPanelPresentationLayoutSettingsScreen(
             settings = overlaySettings.toMinimalAppSettings(),
             onBack = { ctx.navigateBackTo(AppNavKey.SearchPanel) },
-            onSetSearchPanelPresentationMode = viewModel::setSearchPanelPresentationMode,
             onSetSearchPanelBarPosition = viewModel::setSearchPanelBarPosition,
             onSetSearchPanelListOrder = viewModel::setSearchPanelListOrder,
             onSetSearchPanelAppDisplayStyle = viewModel::setSearchPanelAppDisplayStyle,
@@ -64,6 +70,22 @@ fun NavEntryBuilder.searchPanelNavEntries(ctx: MainNavContext) {
 
     hiltEntry<AppNavKey.SearchPanelAppSearch> {
         SearchPanelAppSearchSettingsScreen(
+            onBack = { ctx.navigateBackTo(AppNavKey.SearchPanel) },
+        )
+    }
+
+    hiltEntry<AppNavKey.SearchPanelShortcutSearch> {
+        SearchPanelShortcutSearchSettingsScreen(
+            onBack = { ctx.navigateBackTo(AppNavKey.SearchPanel) },
+        )
+    }
+
+    hiltEntry<AppNavKey.SearchPanelClipboardSearch> {
+        val viewModel: SearchEngineSettingsViewModel = hiltViewModel()
+        val clipboardEntryCount by viewModel.clipboardHistoryEntryCount.collectAsStateWithLifecycle()
+        SearchPanelClipboardSearchSettingsScreen(
+            clipboardEntryCount = clipboardEntryCount,
+            onClearClipboardHistory = viewModel::clearClipboardHistory,
             onBack = { ctx.navigateBackTo(AppNavKey.SearchPanel) },
         )
     }

@@ -828,6 +828,12 @@ class SettingsRepository @Inject constructor(
     suspend fun setSearchPanelSettingsSearchEnabled(enabled: Boolean) =
         overlay.setSearchPanelSettingsSearchEnabled(enabled)
 
+    suspend fun setSearchPanelShortcutSearchEnabled(enabled: Boolean) =
+        overlay.setSearchPanelShortcutSearchEnabled(enabled)
+
+    suspend fun setSearchPanelClipboardSearchEnabled(enabled: Boolean) =
+        overlay.setSearchPanelClipboardSearchEnabled(enabled)
+
     suspend fun setSearchPanelFileTypesEnabled(types: Set<String>) =
         overlay.setSearchPanelFileTypesEnabled(types)
 
@@ -845,9 +851,6 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setSearchPanelFileFolderBlacklist(patterns: Set<String>) =
         overlay.setSearchPanelFileFolderBlacklist(patterns)
-
-    suspend fun setSearchPanelPresentationMode(mode: SearchPanelPresentationMode) =
-        overlay.setSearchPanelPresentationMode(mode)
 
     suspend fun setSearchPanelBarPosition(position: SearchPanelBarPosition) =
         overlay.setSearchPanelBarPosition(position)

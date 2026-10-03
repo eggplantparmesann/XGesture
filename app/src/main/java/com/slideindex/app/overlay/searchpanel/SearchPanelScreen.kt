@@ -50,7 +50,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Person
@@ -122,9 +124,6 @@ import com.slideindex.app.overlay.OverlaySelectionToolbarPopup
 import com.slideindex.app.overlay.SystemWallpaperBlurHelper
 import com.slideindex.app.overlay.cutTextFieldValue
 import com.slideindex.app.overlay.fieldModifier
-import com.slideindex.app.overlay.overlayBottomPanelHeightCap
-import com.slideindex.app.overlay.overlayBottomPanelMaxHeight
-import com.slideindex.app.overlay.overlayBottomPanelWidth
 import com.slideindex.app.overlay.overlayIsLandscape
 import com.slideindex.app.overlay.pasteIntoTextFieldValue
 import com.slideindex.app.overlay.pickresult.PickResultTextSearchGrid
@@ -136,6 +135,7 @@ import com.slideindex.app.search.SearchEngineLauncher
 import com.slideindex.app.search.SearchHistoryAccess
 import com.slideindex.app.search.SearchHistoryRecorder
 import com.slideindex.app.search.calculator.CalculatorUtils
+import com.slideindex.app.search.clipboard.ClipboardSearchIndex
 import com.slideindex.app.search.contacts.ContactSearchEntry
 import com.slideindex.app.search.contacts.ContactSearchIndex
 import com.slideindex.app.search.contacts.ContactSearchLauncher
@@ -145,6 +145,8 @@ import com.slideindex.app.search.files.FileSearchIndex
 import com.slideindex.app.search.files.FileSearchLauncher
 import com.slideindex.app.search.files.FileType
 import com.slideindex.app.search.files.FileTypeUtils
+import com.slideindex.app.search.shortcuts.ShortcutSearchEntry
+import com.slideindex.app.search.shortcuts.ShortcutSearchIndex
 import com.slideindex.app.search.settings.SystemSettingsSearchEntry
 import com.slideindex.app.search.settings.SystemSettingsSearchIndex
 import com.slideindex.app.search.settings.SystemSettingsSearchLauncher
@@ -159,9 +161,15 @@ import com.slideindex.app.settings.SearchPanelBarPosition
 import com.slideindex.app.settings.SearchPanelEnterAction
 import com.slideindex.app.settings.SearchPanelInputBehavior
 import com.slideindex.app.settings.SearchPanelListOrder
-import com.slideindex.app.settings.SearchPanelPresentationMode
 import com.slideindex.app.settings.launchPolicyLongPressEligible
 import com.slideindex.app.settings.shouldLaunchFullscreen
+import com.slideindex.app.clipboard.ClipboardEntry
+import com.slideindex.app.clipboard.ClipboardWriter
+import com.slideindex.app.clipboardfloat.ClipboardPasteCoordinator
+import com.slideindex.app.clipboardfloat.PasteResult
+import com.slideindex.app.util.AppShortcutLoader
+import com.slideindex.app.overlay.TaskSwitcherMenuItem
+import com.slideindex.app.overlay.TaskSwitcherMenuItemType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -179,6 +187,10 @@ enum class SearchMode { TEXT, IMAGE }
 private const val APP_CANDIDATE_LIMIT = 10
 private const val SETTINGS_CANDIDATE_LIMIT = 6
 private const val FILE_CANDIDATE_LIMIT = 8
+private const val SHORTCUT_CANDIDATE_LIMIT = 6
+private const val CLIPBOARD_CANDIDATE_LIMIT = 6
+/** 粘贴前先收起面板并等待焦点回到目标窗口，否则会粘回自己的搜索框。 */
+private const val CLIPBOARD_PASTE_AFTER_DISMISS_MS = 260L
 private const val SEARCH_DEBOUNCE_MS = 200L
 /** 呼出时抢输入框焦点的重试次数：窗口焦点可能早于输入框进入组合。 */
 private const val SEARCH_PANEL_IME_FOCUS_ATTEMPTS = 3
@@ -222,7 +234,7 @@ fun SearchPanelScreen(
         OverlayDependencyAccess.overlayDependencies(context)?.appRepository
     }
 
-    val isFullscreen = settings.searchPanelPresentationMode == SearchPanelPresentationMode.FULLSCREEN
+    // 呈现方式固定为全屏（原「呈现方式」设置项已移除）。
     val barAtBottom = settings.searchPanelBarPosition == SearchPanelBarPosition.BOTTOM
     val bottomUpListOrder = settings.searchPanelListOrder == SearchPanelListOrder.BOTTOM_UP
     val backgroundStyle = settings.searchPanelBackgroundStyle
@@ -255,11 +267,15 @@ fun SearchPanelScreen(
     var contactCandidates by remember { mutableStateOf<List<ContactSearchEntry>>(emptyList()) }
     var fileCandidates by remember { mutableStateOf<List<DeviceFileEntry>>(emptyList()) }
     var appCandidates by remember { mutableStateOf<List<AppInfo>>(emptyList()) }
+    var shortcutCandidates by remember { mutableStateOf<List<ShortcutSearchEntry>>(emptyList()) }
+    var clipboardCandidates by remember { mutableStateOf<List<ClipboardEntry>>(emptyList()) }
     var webSuggestions by remember { mutableStateOf<List<String>>(emptyList()) }
     var contactsExpanded by remember { mutableStateOf(false) }
     var filesExpanded by remember { mutableStateOf(false) }
     var appsExpanded by remember { mutableStateOf(false) }
+    var shortcutsExpanded by remember { mutableStateOf(false) }
     var settingsExpanded by remember { mutableStateOf(false) }
+    var clipboardExpanded by remember { mutableStateOf(false) }
     var historyExpanded by remember { mutableStateOf(false) }
     var manuallySwitchedToNumberKeyboard by remember { mutableStateOf(false) }
     var backgroundBitmap by remember { mutableStateOf<Bitmap?>(null) }
@@ -303,9 +319,11 @@ fun SearchPanelScreen(
         if (lockedSection != SearchPanelResultSection.ALL) return false
         return when (section) {
             SearchPanelResultSection.APPS -> settings.searchPanelAppSearchEnabled
+            SearchPanelResultSection.SHORTCUTS -> settings.searchPanelShortcutSearchEnabled
             SearchPanelResultSection.CONTACTS -> settings.searchPanelContactSearchEnabled
             SearchPanelResultSection.FILES -> settings.searchPanelFileSearchEnabled
             SearchPanelResultSection.SETTINGS -> settings.searchPanelSettingsSearchEnabled
+            SearchPanelResultSection.CLIPBOARD -> settings.searchPanelClipboardSearchEnabled
             SearchPanelResultSection.ALL -> false
         }
     }
@@ -378,6 +396,10 @@ fun SearchPanelScreen(
         if (!visibilityState.targetState) return@LaunchedEffect
         repository.loadAppsForSearch(force = true)
         SearchPanelCandidateCache.clear()
+        // 快捷方式目录解析较慢（要读各 App 清单），在面板刚呼出、用户还没输入时先预热。
+        withContext(Dispatchers.IO) {
+            ShortcutSearchIndex.ensureLoaded(context, repository.getCachedAppsForSearch())
+        }
     }
 
     LaunchedEffect(backgroundStyle, blurRadiusDp, visibilityState.targetState) {
@@ -439,7 +461,9 @@ fun SearchPanelScreen(
         contactsExpanded = false
         filesExpanded = false
         appsExpanded = false
+        shortcutsExpanded = false
         settingsExpanded = false
+        clipboardExpanded = false
         historyExpanded = false
     }
 
@@ -478,6 +502,8 @@ fun SearchPanelScreen(
         settings.searchPanelFileSearchEnabled,
         settings.searchPanelAppSearchEnabled,
         settings.searchPanelSettingsSearchEnabled,
+        settings.searchPanelShortcutSearchEnabled,
+        settings.searchPanelClipboardSearchEnabled,
         settings.searchPanelFileTypesEnabled,
         settings.searchPanelFileShowFolders,
         settings.searchPanelFileShowSystemFiles,
@@ -490,6 +516,8 @@ fun SearchPanelScreen(
             contactCandidates = emptyList()
             fileCandidates = emptyList()
             appCandidates = emptyList()
+            shortcutCandidates = emptyList()
+            clipboardCandidates = emptyList()
             return@LaunchedEffect
         }
         val query = debouncedQuery
@@ -506,6 +534,10 @@ fun SearchPanelScreen(
             append('|')
             append(settings.searchPanelSettingsSearchEnabled)
             append('|')
+            append(settings.searchPanelShortcutSearchEnabled)
+            append('|')
+            append(settings.searchPanelClipboardSearchEnabled)
+            append('|')
             append(settings.searchPanelFileTypesEnabled.joinToString(","))
             append('|')
             append(settings.searchPanelFileShowFolders)
@@ -520,6 +552,8 @@ fun SearchPanelScreen(
             contactCandidates = cached.contacts
             fileCandidates = cached.files
             appCandidates = cached.apps
+            shortcutCandidates = cached.shortcuts
+            clipboardCandidates = cached.clipboard
             return@LaunchedEffect
         }
         hasContactPermission = withContext(Dispatchers.IO) { ContactSearchIndex.hasPermission(context) }
@@ -528,6 +562,8 @@ fun SearchPanelScreen(
         val fetchSettings = shouldFetchCandidateSection(SearchPanelResultSection.SETTINGS)
         val fetchContacts = shouldFetchCandidateSection(SearchPanelResultSection.CONTACTS) && hasContactPermission
         val fetchFiles = shouldFetchCandidateSection(SearchPanelResultSection.FILES) && hasFilePermission
+        val fetchShortcuts = shouldFetchCandidateSection(SearchPanelResultSection.SHORTCUTS)
+        val fetchClipboard = shouldFetchCandidateSection(SearchPanelResultSection.CLIPBOARD)
         coroutineScope {
             val settingsDeferred = async(Dispatchers.IO) {
                 if (fetchSettings) {
@@ -569,16 +605,41 @@ fun SearchPanelScreen(
                     repository.searchApps(appsForSearch, query, APP_CANDIDATE_LIMIT)
                 }
             }
+            val shortcutsDeferred = async(Dispatchers.IO) {
+                if (fetchShortcuts) {
+                    ShortcutSearchIndex.search(
+                        context = context,
+                        apps = appsForSearch,
+                        query = query,
+                        limit = SHORTCUT_CANDIDATE_LIMIT,
+                    )
+                } else {
+                    emptyList()
+                }
+            }
+            val clipboardDeferred = async(Dispatchers.IO) {
+                if (fetchClipboard) {
+                    ClipboardSearchIndex.search(query, CLIPBOARD_CANDIDATE_LIMIT)
+                } else {
+                    emptyList()
+                }
+            }
             if (!currentCoroutineContext().isActive || debouncedQuery != query) return@coroutineScope
             val settingsResults = settingsDeferred.await()
             val contactsResults = contactsDeferred.await()
             val filesResults = filesDeferred.await()
             val appsResults = appsDeferred.await()
             if (!currentCoroutineContext().isActive || debouncedQuery != query) return@coroutineScope
+            // 先落地「快」的分区，别让快捷方式/剪贴板这两路拖住首屏候选。
             settingsCandidates = settingsResults
             contactCandidates = contactsResults
             fileCandidates = filesResults
             appCandidates = appsResults
+            val shortcutsResults = shortcutsDeferred.await()
+            val clipboardResults = clipboardDeferred.await()
+            if (!currentCoroutineContext().isActive || debouncedQuery != query) return@coroutineScope
+            shortcutCandidates = shortcutsResults
+            clipboardCandidates = clipboardResults
             SearchPanelCandidateCache.put(
                 cacheKey,
                 SearchPanelCandidateCacheEntry(
@@ -586,6 +647,8 @@ fun SearchPanelScreen(
                     contacts = contactsResults,
                     files = filesResults,
                     apps = appsResults,
+                    shortcuts = shortcutsResults,
+                    clipboard = clipboardResults,
                 ),
             )
         }
@@ -656,9 +719,11 @@ fun SearchPanelScreen(
         linkUrls.isNotEmpty() ||
         webSuggestions.isNotEmpty() ||
         appCandidates.isNotEmpty() ||
+        shortcutCandidates.isNotEmpty() ||
         settingsCandidates.isNotEmpty() ||
         contactCandidates.isNotEmpty() ||
         fileCandidates.isNotEmpty() ||
+        clipboardCandidates.isNotEmpty() ||
         showContactPermissionPrompt ||
         showFilePermissionPrompt
 
@@ -854,6 +919,59 @@ fun SearchPanelScreen(
         }
     }
 
+    fun launchShortcutCandidate(entry: ShortcutSearchEntry, @Suppress("UNUSED_PARAMETER") longPressTriggered: Boolean) {
+        val item = TaskSwitcherMenuItem(
+            label = entry.label,
+            type = TaskSwitcherMenuItemType.SHORTCUT,
+            shortcutId = entry.shortcutId,
+            intentUris = entry.intentUris.takeIf { it.isNotEmpty() },
+            kind = entry.kind,
+        )
+        hideSearchKeyboard()
+        AppShortcutLoader.launchShortcut(context, entry.packageName, item)
+        dismissPanel()
+    }
+
+    /** 剪贴板候选：点按 = 复制回剪贴板。 */
+    fun copyClipboardCandidate(entry: ClipboardEntry) {
+        hideSearchKeyboard()
+        ClipboardWriter.write(context, entry)
+        dismissPanel()
+    }
+
+    /** 剪贴板候选：长按 = 复制并粘贴到目标输入框（面板收起后再粘，避免粘回搜索框）。 */
+    fun pasteClipboardCandidate(entry: ClipboardEntry) {
+        val service = OverlayDependencyAccess.overlayHostContext() as? AccessibilityService
+        if (service == null) {
+            copyClipboardCandidate(entry)
+            return
+        }
+        hideSearchKeyboard()
+        dismissPanel()
+        coroutineScope.launch {
+            delay(CLIPBOARD_PASTE_AFTER_DISMISS_MS)
+            ClipboardPasteCoordinator.pasteEntry(
+                service = service,
+                context = context,
+                entry = entry,
+                writeToClipboardFirst = true,
+                fvStyle = false,
+            ) { result ->
+                if (result is PasteResult.Failure) {
+                    ClipboardPasteCoordinator.toastPasteFailure(context, result.reason)
+                }
+            }
+        }
+    }
+
+    fun handleClipboardCandidate(entry: ClipboardEntry, longPressTriggered: Boolean) {
+        if (longPressTriggered) {
+            pasteClipboardCandidate(entry)
+        } else {
+            copyClipboardCandidate(entry)
+        }
+    }
+
     fun launchContactCandidate(contact: ContactSearchEntry, @Suppress("UNUSED_PARAMETER") longPressTriggered: Boolean) {
         hideSearchKeyboard()
         if (ContactSearchLauncher.openContact(context, contact)) {
@@ -908,6 +1026,10 @@ fun SearchPanelScreen(
                 launchAppCandidate(appCandidates.first(), longPressTriggered = false)
                 return
             }
+            if (shortcutCandidates.isNotEmpty() && allowsResultSection(SearchPanelResultSection.SHORTCUTS)) {
+                launchShortcutCandidate(shortcutCandidates.first(), longPressTriggered = false)
+                return
+            }
             if (linkUrls.isNotEmpty()) {
                 openUrl(linkUrls.first(), longPressTriggered = false)
                 return
@@ -924,6 +1046,10 @@ fun SearchPanelScreen(
                 launchSettingsCandidate(settingsCandidates.first(), longPressTriggered = false)
                 return
             }
+            if (clipboardCandidates.isNotEmpty() && allowsResultSection(SearchPanelResultSection.CLIPBOARD)) {
+                copyClipboardCandidate(clipboardCandidates.first())
+                return
+            }
         }
         val engineToUse = resolveTextSearchEngine()
         if (engineToUse != null) {
@@ -933,7 +1059,6 @@ fun SearchPanelScreen(
 
     val dismissInteraction = remember { MutableInteractionSource() }
     val isLandscape = overlayIsLandscape()
-    val maxPanelHeight = overlayBottomPanelMaxHeight()
     val landscapeImagePreviewMaxHeight = 160.dp
     val dimAlpha = (dimPercent.coerceIn(
         AppSettings.SEARCH_PANEL_DIM_MIN_PERCENT,
@@ -947,20 +1072,12 @@ fun SearchPanelScreen(
     val showDimMask = dimAlpha > 0f
     val panelAnimSpec = tween<Float>(SEARCH_PANEL_ANIM_MS, easing = FastOutSlowInEasing)
     val panelSlideSpec = tween<IntOffset>(SEARCH_PANEL_ANIM_MS, easing = FastOutSlowInEasing)
-    val enterTransition = if (isFullscreen) {
-        fadeIn(panelAnimSpec) + slideInVertically(panelSlideSpec) { it / 8 }
+    val enterTransition = fadeIn(panelAnimSpec) + slideInVertically(panelSlideSpec) { it / 8 }
+    val exitTransition = fadeOut(panelAnimSpec) + slideOutVertically(panelSlideSpec) { it / 8 }
+    val rootAlignment = if (barAtBottom) {
+        Alignment.BottomCenter
     } else {
-        fadeIn(panelAnimSpec) + slideInVertically(panelSlideSpec) { it }
-    }
-    val exitTransition = if (isFullscreen) {
-        fadeOut(panelAnimSpec) + slideOutVertically(panelSlideSpec) { it / 8 }
-    } else {
-        fadeOut(panelAnimSpec) + slideOutVertically(panelSlideSpec) { it }
-    }
-    val rootAlignment = when {
-        isFullscreen && barAtBottom -> Alignment.BottomCenter
-        isFullscreen -> Alignment.TopCenter
-        else -> Alignment.BottomCenter
+        Alignment.TopCenter
     }
 
     Box(
@@ -1006,37 +1123,18 @@ fun SearchPanelScreen(
             modifier = Modifier.fillMaxWidth(),
         ) {
             // imePadding first so BoxWithConstraints.maxHeight excludes keyboard — engines stay above IME.
-            val panelModifier = if (isFullscreen) {
-                Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-                    .imePadding()
-            } else {
-                Modifier
-                    .overlayBottomPanelWidth()
-                    .navigationBarsPadding()
-                    .imePadding()
-                    .overlayBottomPanelHeightCap()
-            }
+            val panelModifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .imePadding()
             BoxWithConstraints(modifier = panelModifier) {
-                val panelMaxHeight = maxHeight
                 val hasQueryCandidates = mode == SearchMode.TEXT && textQuery.isNotBlank()
                 val hasCandidatePanel = hasQueryCandidates || showHistoryPanel
-                val forceTallPanel = isFullscreen || mode == SearchMode.IMAGE
 
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .then(
-                            if (isFullscreen) {
-                                Modifier.fillMaxSize()
-                            } else if (forceTallPanel) {
-                                Modifier.height(panelMaxHeight)
-                            } else {
-                                Modifier
-                            },
-                        )
+                        .fillMaxSize()
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
@@ -1045,14 +1143,7 @@ fun SearchPanelScreen(
                 ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .then(
-                                if (isFullscreen) {
-                                    Modifier.fillMaxSize()
-                                } else {
-                                    Modifier.height(panelMaxHeight)
-                                },
-                            )
+                            .fillMaxSize()
                             .padding(
                                 horizontal = SearchPanelCardHorizontalPadding,
                                 vertical = 12.dp,
@@ -1320,11 +1411,13 @@ fun SearchPanelScreen(
                                         showCalculator,
                                         showHistoryPanel,
                                         appCandidates.isNotEmpty(),
+                                        shortcutCandidates.isNotEmpty(),
                                         showFilePermissionPrompt,
                                         fileCandidates.isNotEmpty(),
                                         showContactPermissionPrompt,
                                         contactCandidates.isNotEmpty(),
                                         settingsCandidates.isNotEmpty(),
+                                        clipboardCandidates.isNotEmpty(),
                                         webSuggestions.isNotEmpty(),
                                         lockedSection,
                                         bottomUpListOrder,
@@ -1334,11 +1427,13 @@ fun SearchPanelScreen(
                                         if (showCalculator && lockedSection == SearchPanelResultSection.ALL) list.add("calculator")
                                         if (showHistoryPanel && lockedSection == SearchPanelResultSection.ALL) list.add("history")
                                         if (appCandidates.isNotEmpty() && allowsResultSection(SearchPanelResultSection.APPS)) list.add("apps")
+                                        if (shortcutCandidates.isNotEmpty() && allowsResultSection(SearchPanelResultSection.SHORTCUTS)) list.add("shortcuts")
                                         if (showFilePermissionPrompt && allowsResultSection(SearchPanelResultSection.FILES)) list.add("file_permission")
                                         if (fileCandidates.isNotEmpty() && allowsResultSection(SearchPanelResultSection.FILES)) list.add("files")
                                         if (showContactPermissionPrompt && allowsResultSection(SearchPanelResultSection.CONTACTS)) list.add("contact_permission")
                                         if (contactCandidates.isNotEmpty() && allowsResultSection(SearchPanelResultSection.CONTACTS)) list.add("contacts")
                                         if (settingsCandidates.isNotEmpty() && allowsResultSection(SearchPanelResultSection.SETTINGS)) list.add("settings")
+                                        if (clipboardCandidates.isNotEmpty() && allowsResultSection(SearchPanelResultSection.CLIPBOARD)) list.add("clipboard")
                                         if (webSuggestions.isNotEmpty() && lockedSection == SearchPanelResultSection.ALL) list.add("web_suggestions")
                                         if (bottomUpListOrder) list.asReversed() else list
                                     }
@@ -1445,6 +1540,18 @@ fun SearchPanelScreen(
                                                         longPressEnabled = longPressEnabled,
                                                     )
                                                 }
+                                                "shortcuts" -> {
+                                                    SearchPanelShortcutResultCards(
+                                                        shortcuts = shortcutCandidates,
+                                                        expanded = shortcutsExpanded,
+                                                        onExpandedChange = { expanded ->
+                                                            if (expanded) hideSearchKeyboard()
+                                                            shortcutsExpanded = expanded
+                                                        },
+                                                        onLaunchShortcut = ::launchShortcutCandidate,
+                                                        longPressEnabled = longPressEnabled,
+                                                    )
+                                                }
                                                 "file_permission" -> {
                                                     SearchPanelPermissionResultCard(
                                                         label = stringResource(
@@ -1512,6 +1619,18 @@ fun SearchPanelScreen(
                                                             settingsExpanded = expanded
                                                         },
                                                         onLaunchEntry = ::launchSettingsCandidate,
+                                                        longPressEnabled = longPressEnabled,
+                                                    )
+                                                }
+                                                "clipboard" -> {
+                                                    SearchPanelClipboardResultCards(
+                                                        entries = clipboardCandidates,
+                                                        expanded = clipboardExpanded,
+                                                        onExpandedChange = { expanded ->
+                                                            if (expanded) hideSearchKeyboard()
+                                                            clipboardExpanded = expanded
+                                                        },
+                                                        onClipboardEntryAction = ::handleClipboardCandidate,
                                                         longPressEnabled = longPressEnabled,
                                                     )
                                                 }
@@ -1706,15 +1825,19 @@ private suspend fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap? = wit
 private fun SearchPanelResultSection.icon(): ImageVector = when (this) {
     SearchPanelResultSection.ALL -> Icons.Default.Search
     SearchPanelResultSection.APPS -> Icons.Default.Apps
+    SearchPanelResultSection.SHORTCUTS -> Icons.Default.Bolt
     SearchPanelResultSection.CONTACTS -> Icons.Default.Person
     SearchPanelResultSection.FILES -> Icons.Default.Folder
     SearchPanelResultSection.SETTINGS -> Icons.Default.Settings
+    SearchPanelResultSection.CLIPBOARD -> Icons.Default.ContentPaste
 }
 
 private fun SearchPanelResultSection.labelResId(): Int = when (this) {
     SearchPanelResultSection.ALL -> R.string.search_panel_section_all
     SearchPanelResultSection.APPS -> R.string.search_panel_section_apps
+    SearchPanelResultSection.SHORTCUTS -> R.string.search_panel_section_shortcuts
     SearchPanelResultSection.CONTACTS -> R.string.search_panel_section_contacts
     SearchPanelResultSection.FILES -> R.string.search_panel_section_files
     SearchPanelResultSection.SETTINGS -> R.string.search_panel_section_settings
+    SearchPanelResultSection.CLIPBOARD -> R.string.search_panel_section_clipboard
 }

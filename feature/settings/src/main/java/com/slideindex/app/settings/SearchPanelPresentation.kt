@@ -19,22 +19,7 @@ object SearchPanelBackgroundStyle {
     }
 }
 
-/** How the search panel is presented over other apps. */
-enum class SearchPanelPresentationMode {
-    /** Current bottom sheet style. */
-    BOTTOM_SHEET,
-
-    /** Near-fullscreen overlay; search bar can pin to screen top/bottom. */
-    FULLSCREEN,
-    ;
-
-    companion object {
-        fun fromId(id: String?): SearchPanelPresentationMode =
-            entries.firstOrNull { it.name == id } ?: BOTTOM_SHEET
-    }
-}
-
-/** Search field placement within the chosen presentation. */
+/** Search field placement within the search panel. */
 enum class SearchPanelBarPosition {
     TOP,
     BOTTOM,

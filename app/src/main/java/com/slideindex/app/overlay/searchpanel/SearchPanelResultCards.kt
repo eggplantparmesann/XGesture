@@ -83,7 +83,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import android.content.ClipData
+import android.icu.text.SimpleDateFormat
+import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.ui.platform.LocalConfiguration
 import com.slideindex.app.R
+import com.slideindex.app.clipboard.ClipboardEntry
+import com.slideindex.app.clipboard.ClipboardHtmlParser
+import com.slideindex.app.clipboard.hasImageContent
 import com.slideindex.app.data.AppInfo
 import com.slideindex.app.freezer.FreezerOperations
 import com.slideindex.app.overlay.pickresult.PickResultUrl
@@ -92,10 +98,13 @@ import com.slideindex.app.search.files.DeviceFileEntry
 import com.slideindex.app.search.files.FileThumbnailCache
 import com.slideindex.app.search.files.FileType
 import com.slideindex.app.search.files.FileTypeUtils
+import com.slideindex.app.search.shortcuts.ShortcutSearchEntry
 import com.slideindex.app.search.settings.SystemSettingsSearchEntry
 import com.slideindex.app.settings.AppSettings
 import com.slideindex.app.settings.SearchPanelAppDisplayStyle
 import com.slideindex.app.util.PickerAppIconBitmap
+import java.util.Calendar
+import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -1066,3 +1075,154 @@ private fun contactInitials(displayName: String): String {
         else -> (parts.first().take(1) + parts.last().take(1)).uppercase()
     }
 }
+
+@Composable
+fun SearchPanelShortcutResultCards(
+    shortcuts: List<ShortcutSearchEntry>,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    onLaunchShortcut: (ShortcutSearchEntry, longPressTriggered: Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    longPressEnabled: Boolean = false,
+) {
+    if (shortcuts.isEmpty()) return
+    val displayShortcuts = if (expanded) shortcuts else shortcuts.take(INITIAL_VISIBLE_COUNT)
+
+    SearchPanelGroupedResultCard(
+        modifier = modifier,
+        sectionTitle = stringResource(R.string.search_panel_card_shortcuts),
+        itemCount = shortcuts.size,
+        expanded = expanded,
+        onToggleExpand = if (shortcuts.size > INITIAL_VISIBLE_COUNT) {
+            { onExpandedChange(!expanded) }
+        } else {
+            null
+        },
+        collapseThreshold = INITIAL_VISIBLE_COUNT,
+        scrollWhenExpanded = expanded && shortcuts.size > INITIAL_VISIBLE_COUNT,
+        maxHeight = ExpandedCardMaxHeight,
+    ) {
+        displayShortcuts.forEachIndexed { index, shortcut ->
+            SearchPanelResultCard(
+                title = shortcut.label,
+                subtitle = shortcut.appLabel.takeIf { it.isNotBlank() },
+                leading = {
+                    SearchPanelAppIcon(
+                        packageName = shortcut.packageName,
+                        contentDescription = shortcut.appLabel,
+                        size = LeadingSlotSize,
+                        corner = RoundedCornerShape(8.dp),
+                    )
+                },
+                longPressEnabled = longPressEnabled,
+                onClick = { onLaunchShortcut(shortcut, false) },
+                onLongClick = { onLaunchShortcut(shortcut, true) },
+            )
+            if (index < displayShortcuts.lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 14.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchPanelClipboardResultCards(
+    entries: List<ClipboardEntry>,
+    expanded: Boolean,
+    onExpandedChange: (Boolean) -> Unit,
+    onClipboardEntryAction: (ClipboardEntry, longPressTriggered: Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    longPressEnabled: Boolean = false,
+) {
+    if (entries.isEmpty()) return
+    val displayEntries = if (expanded) entries else entries.take(INITIAL_VISIBLE_COUNT)
+
+    SearchPanelGroupedResultCard(
+        modifier = modifier,
+        sectionTitle = stringResource(R.string.search_panel_card_clipboard),
+        itemCount = entries.size,
+        expanded = expanded,
+        onToggleExpand = if (entries.size > INITIAL_VISIBLE_COUNT) {
+            { onExpandedChange(!expanded) }
+        } else {
+            null
+        },
+        collapseThreshold = INITIAL_VISIBLE_COUNT,
+        scrollWhenExpanded = expanded && entries.size > INITIAL_VISIBLE_COUNT,
+        maxHeight = ExpandedCardMaxHeight,
+    ) {
+        displayEntries.forEachIndexed { index, entry ->
+            SearchPanelResultCard(
+                title = clipboardEntryTitle(entry),
+                subtitle = clipboardEntryRelativeTime(entry.createdAtEpochMs),
+                leading = {
+                    val hasImage = entry.hasImageContent()
+                    Icon(
+                        imageVector = if (hasImage) Icons.Default.Image else Icons.Default.ContentPaste,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(LeadingSlotSize)
+                            .background(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                RoundedCornerShape(8.dp),
+                            )
+                            .padding(8.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                },
+                longPressEnabled = longPressEnabled,
+                onClick = { onClipboardEntryAction(entry, false) },
+                onLongClick = { onClipboardEntryAction(entry, true) },
+            )
+            if (index < displayEntries.lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 14.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun clipboardEntryTitle(entry: ClipboardEntry): String {
+    if (entry.hasImageContent()) {
+        val text = entry.text.trim()
+        if (text.isEmpty() || ClipboardHtmlParser.isImageSrc(text)) {
+            return stringResource(R.string.search_panel_clipboard_image_entry)
+        }
+    }
+    val raw = entry.text.trim().ifBlank { entry.uri?.trim().orEmpty() }
+        .ifBlank { entry.intentUri?.trim().orEmpty() }
+    if (raw.isEmpty()) return stringResource(R.string.search_panel_clipboard_image_entry)
+    return raw.replace(CLIPBOARD_WHITESPACE, " ").take(CLIPBOARD_TITLE_MAX_CHARS)
+}
+
+@Composable
+private fun clipboardEntryRelativeTime(epochMs: Long): String {
+    val diffMs = (System.currentTimeMillis() - epochMs).coerceAtLeast(0L)
+    return when {
+        diffMs < 60_000L -> stringResource(R.string.stash_time_just_now)
+        diffMs < 3_600_000L ->
+            stringResource(R.string.stash_time_minutes_ago, (diffMs / 60_000L).toInt())
+        diffMs < 86_400_000L ->
+            stringResource(R.string.stash_time_hours_ago, (diffMs / 3_600_000L).toInt())
+        else -> {
+            val locale = LocalConfiguration.current.locales[0]
+            val now = Calendar.getInstance()
+            val then = Calendar.getInstance().apply { timeInMillis = epochMs }
+            val pattern = if (now.get(Calendar.YEAR) == then.get(Calendar.YEAR)) {
+                if (locale.language == "zh") "M月d日" else "MMM d"
+            } else {
+                "yyyy/M/d"
+            }
+            SimpleDateFormat(pattern, locale).format(Date(epochMs))
+        }
+    }
+}
+
+private val CLIPBOARD_WHITESPACE = "\\s+".toRegex()
+private const val CLIPBOARD_TITLE_MAX_CHARS = 200

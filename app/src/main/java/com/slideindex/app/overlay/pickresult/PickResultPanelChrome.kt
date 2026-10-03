@@ -555,7 +555,7 @@ private fun PickResultSearchQuickLaunchRow(
                 Text(
                     text = stringResource(
                         if (fullscreen) {
-                            R.string.search_panel_presentation_fullscreen
+                            R.string.search_panel_overlay_fullscreen
                         } else {
                             R.string.search_panel_app_quick_action_free_window
                         },

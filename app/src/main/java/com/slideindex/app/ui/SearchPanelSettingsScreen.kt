@@ -6,7 +6,9 @@ import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.ContentPaste
 import androidx.compose.material.icons.outlined.StarBorder
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Contacts
@@ -36,7 +38,6 @@ import com.slideindex.app.settings.SearchPanelHistoryCapacity
 import com.slideindex.app.settings.SearchPanelEnterAction
 import com.slideindex.app.settings.SearchPanelInputBehavior
 import com.slideindex.app.settings.SearchPanelListOrder
-import com.slideindex.app.settings.SearchPanelPresentationMode
 import com.slideindex.app.settings.SearchPanelSectionAliasSettings
 import com.slideindex.app.ui.miuix.MiuixConfirmDialog
 import com.slideindex.app.ui.miuix.groupedCardItems
@@ -65,8 +66,12 @@ fun SearchPanelSettingsScreen(
     onSetSearchPanelFileSearchEnabled: (Boolean) -> Unit,
     onSetSearchPanelAppSearchEnabled: (Boolean) -> Unit,
     onSetSearchPanelSettingsSearchEnabled: (Boolean) -> Unit,
+    onSetSearchPanelShortcutSearchEnabled: (Boolean) -> Unit,
+    onSetSearchPanelClipboardSearchEnabled: (Boolean) -> Unit,
     onSetSearchPanelSectionAliases: (SearchPanelSectionAliasSettings) -> Unit,
     onOpenAppSearchSettings: () -> Unit,
+    onOpenShortcutSearchSettings: () -> Unit,
+    onOpenClipboardSearchSettings: () -> Unit,
     onOpenContactSearchSettings: () -> Unit,
     onOpenFileSearchSettings: () -> Unit,
     onOpenSystemSettingsSearchSettings: () -> Unit,
@@ -123,9 +128,11 @@ fun SearchPanelSettingsScreen(
     val localCandidatesSectionTitle = stringResource(R.string.search_panel_settings_section_local_search)
     val smartCandidatesSectionTitle = stringResource(R.string.search_panel_settings_section_smart_candidates)
     val appsTitle = stringResource(R.string.search_panel_section_apps)
+    val shortcutsTitle = stringResource(R.string.search_panel_section_shortcuts)
     val contactsTitle = stringResource(R.string.search_panel_section_contacts)
     val filesTitle = stringResource(R.string.search_panel_section_files)
     val settingsSearchTitle = stringResource(R.string.search_panel_settings_search_title)
+    val clipboardTitle = stringResource(R.string.search_panel_section_clipboard)
     val historyHint = stringResource(R.string.search_panel_history_hint)
 
     SettingsScreenScaffold(
@@ -224,6 +231,32 @@ fun SearchPanelSettingsScreen(
                     },
                 )
                 add(
+                    settingsCardScopeItem("shortcuts-search") {
+                        SettingSwitchNavigationRow(
+                            title = shortcutsTitle,
+                            subtitle = stringResource(R.string.search_panel_shortcut_search_desc),
+                            icon = { label -> Icon(Icons.Default.Bolt, contentDescription = label) },
+                            checked = settings.searchPanelShortcutSearchEnabled,
+                            enabled = true,
+                            onCheckedChange = onSetSearchPanelShortcutSearchEnabled,
+                            onNavigate = onOpenShortcutSearchSettings,
+                            subtitleContent = {
+                                SectionAliasCodeDisplay(
+                                    aliasCode = sectionAliases.shortcuts,
+                                    sectionTitle = shortcutsTitle,
+                                    defaultAlias = SearchPanelSectionAliasSettings.DEFAULT_SHORTCUTS,
+                                    sectionAliases = sectionAliases,
+                                    engines = engines,
+                                    excludeSectionKey = SearchPanelSectionAliasSettings.SECTION_SHORTCUTS,
+                                    onAliasChange = {
+                                        onSetSearchPanelSectionAliases(sectionAliases.copy(shortcuts = it))
+                                    },
+                                )
+                            },
+                        )
+                    },
+                )
+                add(
                     settingsCardScopeItem("contacts-search") {
                         SettingSwitchNavigationRow(
                             title = contactsTitle,
@@ -307,6 +340,32 @@ fun SearchPanelSettingsScreen(
                                     excludeSectionKey = SearchPanelSectionAliasSettings.SECTION_SETTINGS,
                                     onAliasChange = {
                                         onSetSearchPanelSectionAliases(sectionAliases.copy(settings = it))
+                                    },
+                                )
+                            },
+                        )
+                    },
+                )
+                add(
+                    settingsCardScopeItem("clipboard-search") {
+                        SettingSwitchNavigationRow(
+                            title = clipboardTitle,
+                            subtitle = stringResource(R.string.search_panel_clipboard_search_desc),
+                            icon = { label -> Icon(Icons.Outlined.ContentPaste, contentDescription = label) },
+                            checked = settings.searchPanelClipboardSearchEnabled,
+                            enabled = true,
+                            onCheckedChange = onSetSearchPanelClipboardSearchEnabled,
+                            onNavigate = onOpenClipboardSearchSettings,
+                            subtitleContent = {
+                                SectionAliasCodeDisplay(
+                                    aliasCode = sectionAliases.clipboard,
+                                    sectionTitle = clipboardTitle,
+                                    defaultAlias = SearchPanelSectionAliasSettings.DEFAULT_CLIPBOARD,
+                                    sectionAliases = sectionAliases,
+                                    engines = engines,
+                                    excludeSectionKey = SearchPanelSectionAliasSettings.SECTION_CLIPBOARD,
+                                    onAliasChange = {
+                                        onSetSearchPanelSectionAliases(sectionAliases.copy(clipboard = it))
                                     },
                                 )
                             },
@@ -415,14 +474,6 @@ fun SettingsCardScope.SearchPanelEntryCard(
         subtitle = stringResource(R.string.search_panel_entry_desc),
         onClick = onClick,
     )
-}
-
-@Composable
-internal fun searchPanelPresentationLabel(mode: SearchPanelPresentationMode): String = when (mode) {
-    SearchPanelPresentationMode.BOTTOM_SHEET ->
-        stringResource(R.string.search_panel_presentation_bottom_sheet)
-    SearchPanelPresentationMode.FULLSCREEN ->
-        stringResource(R.string.search_panel_presentation_fullscreen)
 }
 
 @Composable

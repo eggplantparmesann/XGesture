@@ -126,4 +126,10 @@
     <plurals name="widget_group_count">
         <item quantity="other">%d 个小组件</item>
     </plurals>
+    <plurals name="search_panel_shortcut_index_count">
+        <item quantity="other">已收录 %d 个快捷方式</item>
+    </plurals>
+    <plurals name="search_panel_clipboard_index_count">
+        <item quantity="other">%d 条剪贴板记录</item>
+    </plurals>
 </resources>

@@ -7,9 +7,11 @@ import java.util.Locale
 enum class SearchPanelResultSection {
     ALL,
     APPS,
+    SHORTCUTS,
     CONTACTS,
     FILES,
     SETTINGS,
+    CLIPBOARD,
 }
 
 sealed class SearchPanelAliasMatch {
@@ -44,9 +46,11 @@ object SearchPanelAliasResolver {
         sectionAliases.toAliasLookup()[prefix]?.let { sectionId ->
             val section = when (sectionId) {
                 SearchPanelSectionAliasSettings.SECTION_APPS -> SearchPanelResultSection.APPS
+                SearchPanelSectionAliasSettings.SECTION_SHORTCUTS -> SearchPanelResultSection.SHORTCUTS
                 SearchPanelSectionAliasSettings.SECTION_CONTACTS -> SearchPanelResultSection.CONTACTS
                 SearchPanelSectionAliasSettings.SECTION_FILES -> SearchPanelResultSection.FILES
                 SearchPanelSectionAliasSettings.SECTION_SETTINGS -> SearchPanelResultSection.SETTINGS
+                SearchPanelSectionAliasSettings.SECTION_CLIPBOARD -> SearchPanelResultSection.CLIPBOARD
                 else -> null
             }
             if (section != null) {

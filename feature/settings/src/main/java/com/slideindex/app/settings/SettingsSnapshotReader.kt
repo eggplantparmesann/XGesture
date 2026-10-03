@@ -668,6 +668,8 @@ internal object SettingsSnapshotReader {
             searchPanelFileSearchEnabled = prefs[SettingsPreferenceKeys.SEARCH_PANEL_FILE_SEARCH_ENABLED] ?: true,
             searchPanelAppSearchEnabled = prefs[SettingsPreferenceKeys.SEARCH_PANEL_APP_SEARCH_ENABLED] ?: true,
             searchPanelSettingsSearchEnabled = prefs[SettingsPreferenceKeys.SEARCH_PANEL_SETTINGS_SEARCH_ENABLED] ?: true,
+            searchPanelShortcutSearchEnabled = prefs[SettingsPreferenceKeys.SEARCH_PANEL_SHORTCUT_SEARCH_ENABLED] ?: true,
+            searchPanelClipboardSearchEnabled = prefs[SettingsPreferenceKeys.SEARCH_PANEL_CLIPBOARD_SEARCH_ENABLED] ?: true,
             searchPanelFileTypesEnabled =
                 prefs[SettingsPreferenceKeys.SEARCH_PANEL_FILE_TYPES_ENABLED] ?: emptySet(),
             searchPanelFileShowFolders =
@@ -680,9 +682,6 @@ internal object SettingsSnapshotReader {
                 prefs[SettingsPreferenceKeys.SEARCH_PANEL_FILE_FOLDER_WHITELIST] ?: emptySet(),
             searchPanelFileFolderBlacklist =
                 prefs[SettingsPreferenceKeys.SEARCH_PANEL_FILE_FOLDER_BLACKLIST] ?: emptySet(),
-            searchPanelPresentationMode = SearchPanelPresentationMode.fromId(
-                prefs[SettingsPreferenceKeys.SEARCH_PANEL_PRESENTATION_MODE],
-            ),
             searchPanelBarPosition = SearchPanelBarPosition.fromId(
                 prefs[SettingsPreferenceKeys.SEARCH_PANEL_BAR_POSITION],
             ),

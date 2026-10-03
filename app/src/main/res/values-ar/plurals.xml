@@ -328,4 +328,20 @@
         <item quantity="many">تمت إضافة %1$d تطبيقًا</item>
         <item quantity="other">تمت إضافة %1$d تطبيق</item>
     </plurals>
+    <plurals name="search_panel_shortcut_index_count">
+        <item quantity="zero">%d اختصارات مفهرسة</item>
+        <item quantity="one">اختصار واحد مفهرس</item>
+        <item quantity="two">اختصاران مفهران</item>
+        <item quantity="few">%d اختصارات مفهرسة</item>
+        <item quantity="many">%d اختصارًا مفهرسًا</item>
+        <item quantity="other">%d اختصار مفهرس</item>
+    </plurals>
+    <plurals name="search_panel_clipboard_index_count">
+        <item quantity="zero">%d سجلات حافظة</item>
+        <item quantity="one">سجل حافظة واحد</item>
+        <item quantity="two">سجلان للحافظة</item>
+        <item quantity="few">%d سجلات حافظة</item>
+        <item quantity="many">%d سجل حافظة</item>
+        <item quantity="other">%d سجل حافظة</item>
+    </plurals>
 </resources>

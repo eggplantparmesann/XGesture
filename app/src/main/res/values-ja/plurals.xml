@@ -123,4 +123,10 @@
     <plurals name="clipboard_lsposed_whitelist_desc">
         <item quantity="other">%1$d 個のアプリを追加しました</item>
     </plurals>
+    <plurals name="search_panel_shortcut_index_count">
+        <item quantity="other">ショートカット %d 件を収録</item>
+    </plurals>
+    <plurals name="search_panel_clipboard_index_count">
+        <item quantity="other">クリップボード履歴 %d 件</item>
+    </plurals>
 </resources>

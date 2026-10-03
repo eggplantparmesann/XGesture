@@ -1417,6 +1417,14 @@ class OverlaySettingsMutator @Inject constructor(
         it[SettingsPreferenceKeys.SEARCH_PANEL_SETTINGS_SEARCH_ENABLED] = enabled
     }
 
+    suspend fun setSearchPanelShortcutSearchEnabled(enabled: Boolean) = editor.edit {
+        it[SettingsPreferenceKeys.SEARCH_PANEL_SHORTCUT_SEARCH_ENABLED] = enabled
+    }
+
+    suspend fun setSearchPanelClipboardSearchEnabled(enabled: Boolean) = editor.edit {
+        it[SettingsPreferenceKeys.SEARCH_PANEL_CLIPBOARD_SEARCH_ENABLED] = enabled
+    }
+
     suspend fun setSearchPanelFileTypesEnabled(types: Set<String>) = editor.edit {
         it[SettingsPreferenceKeys.SEARCH_PANEL_FILE_TYPES_ENABLED] = types
     }
@@ -1439,10 +1447,6 @@ class OverlaySettingsMutator @Inject constructor(
 
     suspend fun setSearchPanelFileFolderBlacklist(patterns: Set<String>) = editor.edit {
         it[SettingsPreferenceKeys.SEARCH_PANEL_FILE_FOLDER_BLACKLIST] = patterns
-    }
-
-    suspend fun setSearchPanelPresentationMode(mode: SearchPanelPresentationMode) = editor.edit {
-        it[SettingsPreferenceKeys.SEARCH_PANEL_PRESENTATION_MODE] = mode.name
     }
 
     suspend fun setSearchPanelBarPosition(position: SearchPanelBarPosition) = editor.edit {

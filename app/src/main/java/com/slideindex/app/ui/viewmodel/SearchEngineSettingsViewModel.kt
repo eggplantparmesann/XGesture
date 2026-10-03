@@ -3,6 +3,7 @@ package com.slideindex.app.ui.viewmodel
 import android.content.Context
 import android.net.Uri
 import com.slideindex.app.R
+import com.slideindex.app.clipboard.ClipboardHistoryRepository
 import com.slideindex.app.overlay.pickresult.invalidateSearchEngineIconCache
 import com.slideindex.app.search.SearchEngineIconStorage
 import com.slideindex.app.search.SearchEngineImportResult
@@ -63,6 +64,7 @@ class SearchEngineSettingsViewModel @Inject constructor(
     userMessageBus: UserMessageBus,
     @ApplicationContext context: Context,
     private val searchHistoryRepository: SearchHistoryRepository,
+    private val clipboardHistoryRepository: ClipboardHistoryRepository,
 ) : SettingsViewModel(settingsRepository, userMessageBus, context) {
     private val _editorDraft = MutableStateFlow<SearchEngineDraft?>(null)
     val editorDraft: StateFlow<SearchEngineDraft?> = _editorDraft.asStateFlow()
@@ -354,6 +356,14 @@ class SearchEngineSettingsViewModel @Inject constructor(
         settingsRepository.setSearchPanelSettingsSearchEnabled(enabled)
     }
 
+    fun setSearchPanelShortcutSearchEnabled(enabled: Boolean) = launchSettingsWrite {
+        settingsRepository.setSearchPanelShortcutSearchEnabled(enabled)
+    }
+
+    fun setSearchPanelClipboardSearchEnabled(enabled: Boolean) = launchSettingsWrite {
+        settingsRepository.setSearchPanelClipboardSearchEnabled(enabled)
+    }
+
     fun setSearchPanelFileTypesEnabled(types: Set<String>) = launchSettingsWrite {
         settingsRepository.setSearchPanelFileTypesEnabled(types)
     }
@@ -377,11 +387,6 @@ class SearchEngineSettingsViewModel @Inject constructor(
     fun setSearchPanelFileFolderBlacklist(patterns: Set<String>) = launchSettingsWrite {
         settingsRepository.setSearchPanelFileFolderBlacklist(patterns)
     }
-
-    fun setSearchPanelPresentationMode(mode: com.slideindex.app.settings.SearchPanelPresentationMode) =
-        launchSettingsWrite {
-            settingsRepository.setSearchPanelPresentationMode(mode)
-        }
 
     fun setSearchPanelBarPosition(position: com.slideindex.app.settings.SearchPanelBarPosition) =
         launchSettingsWrite {
@@ -425,6 +430,12 @@ class SearchEngineSettingsViewModel @Inject constructor(
 
     fun clearSearchHistory() = launchRepositoryWrite {
         runCatching { searchHistoryRepository.clear() }
+    }
+
+    val clipboardHistoryEntryCount: StateFlow<Int> = clipboardHistoryRepository.entryCount
+
+    fun clearClipboardHistory() = launchRepositoryWrite {
+        runCatching { clipboardHistoryRepository.clearAll() }
     }
 
     fun setSearchPanelBackgroundStyle(style: Int) = launchSettingsWrite {
