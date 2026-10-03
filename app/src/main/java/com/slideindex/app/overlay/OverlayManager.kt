@@ -393,8 +393,14 @@ class OverlayManager(
         if (KeyboardTriggerImeState.imeVisible &&
             OverlaySceneController.scene is OverlayScene.ContentPanelVisible
         ) {
-            FloatBallOverlay.bringChromeAbovePanelsForce()
-            bringEdgeChromeAbovePanels(forceReAdd = true)
+            // 真机修复：原来这里是 bringChromeAbovePanelsForce() + forceReAdd = true，
+            // 其实现是**故意 remove + add** 整批边缘 chrome 与悬浮球，才能压到面板之上 ——
+            // 但这会让触钮与悬浮球被拆掉重建（实测一次呼出：8 个窗口被移除、9 个新增，
+            // 4 秒内 6 次属性变化、浮层窗口 ID 反复更换 → 肉眼"闪好几次"）。
+            // 且该分支的条件 OverlayScene.ContentPanelVisible 是单例状态、会残留，故"有时闪有时不闪"。
+            // 改为非强制：已挂上时走 updateViewLayout。
+            FloatBallOverlay.bringChromeAbovePanels()
+            bringEdgeChromeAbovePanels(forceReAdd = false)
         }
         leftController?.windowManager?.syncCaptureWindowLayout()
         rightController?.windowManager?.syncCaptureWindowLayout()

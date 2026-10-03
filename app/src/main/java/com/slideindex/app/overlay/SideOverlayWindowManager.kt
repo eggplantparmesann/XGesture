@@ -611,11 +611,19 @@ internal class SideOverlayWindowManager(
         OverlayWindowTypes.ensureNoBrightnessOverride(params)
         if (!view.isAttachedToWindow) {
             if (!forceReAdd) return
+            // 真机日志：这里直接 addView 会抛 "View ... has already been added to the window manager"
+            // —— 窗口过渡瞬间 isAttachedToWindow 可能为 false，但 WM 里其实还留着这份 view。
+            // 一抛异常，这批边缘/悬浮球窗口就被拆掉重建，用户看到它们"闪一下"。
+            // 因此先尝试 updateViewLayout（已添加时生效且不动 z 序），失败再 addView。
             runCatching {
+                windowManager.updateViewLayout(view, params)
+                view.requestLayout()
+                view.invalidate()
+            }.recoverCatching {
                 windowManager.addView(view, params)
                 view.requestLayout()
                 view.invalidate()
-            }.onFailure { Log.e(TAG, "Failed to re-add edge window", it) }
+            }.onFailure { Log.e(TAG, "Failed to attach edge window", it) }
             return
         }
         val effectiveForceReAdd = forceReAdd && !OverlayDisplayRotationGate.suppressCaptureWindowReAdd

@@ -78,6 +78,8 @@ object FloatBallOverlay {
     private const val DRAG_PASTE_PICK_UPGRADE_MS = 800L
     /** Defer chrome z-order sync until side-panel enter animation settles. */
     private const val CHROME_RAISE_DEFER_MS = 320L
+    /** 确认"chrome 真的被系统摘掉"的等待时长（排除窗口过渡瞬间的误判）。 */
+    private const val CHROME_REBUILD_CONFIRM_MS = 250L
     /** After deferred pick screenshot lands, let panel layout settle before chrome WM work. */
     private const val PICK_SCREENSHOT_CHROME_SETTLE_MS = 48L
     /** Fallback when deferred screenshot never arrives. */
@@ -184,6 +186,9 @@ object FloatBallOverlay {
     /** Non-null: only re-add triggers on these sides; null = all sides (center/fullscreen panels). */
     private var edgeChromeRaiseSides: Set<PanelSide>? = null
     private var pendingChromeRaiseRunnable: Runnable? = null
+
+    /** 正在等待"确认 chrome 真的被摘掉"的重建窗口（见 showOrUpdate）。 */
+    private var pendingChromeRebuild = false
     private var pendingPickScreenshotChromeFallback: Runnable? = null
 
     /**
@@ -680,12 +685,27 @@ object FloatBallOverlay {
         if (isShowing && !areChromeWindowsAttached()) {
             // 熄屏/锁屏后系统可能摘掉 TYPE_ACCESSIBILITY_OVERLAY，本地引用仍在。
             // 先清理再重建，避免 isShowing=true 却永远不 ensureWindows。
-            val persistPosition = onPositionPersisted
-            val persistSide = onActiveSidePersisted
-            dismiss()
-            this.onPositionPersisted = persistPosition
-            this.onActiveSidePersisted = persistSide
-            ensureWindows(hostContext, settings)
+            //
+            // 真机修复：窗口过渡瞬间（例如面板出现 / 前台包名变化）isAttachedToWindow 会短暂为 false，
+            // 但窗口其实还在 WM 里。此处若立刻 dismiss()+ensureWindows()，就是把悬浮球拆掉又装回 ——
+            // 用户看到"每次触发面板，悬浮球闪一下"。logcat 实测调用栈：
+            //   EdgeOverlayHost.refreshOverlaySuppression ← onForegroundPackageChanged
+            //     ← updateForegroundPackage ← SlideIndexAccessibilityForegroundTracker
+            // 因此先延后确认，仍然没挂上才真正重建。
+            if (!pendingChromeRebuild) {
+                pendingChromeRebuild = true
+                mainHandler.postDelayed({
+                    pendingChromeRebuild = false
+                    if (isShowing && !areChromeWindowsAttached()) {
+                        val persistPosition = onPositionPersisted
+                        val persistSide = onActiveSidePersisted
+                        dismiss()
+                        this.onPositionPersisted = persistPosition
+                        this.onActiveSidePersisted = persistSide
+                        ensureWindows(hostContext, settings)
+                    }
+                }, CHROME_REBUILD_CONFIRM_MS)
+            }
         } else if (!isShowing) {
             ensureWindows(hostContext, settings)
         } else {
