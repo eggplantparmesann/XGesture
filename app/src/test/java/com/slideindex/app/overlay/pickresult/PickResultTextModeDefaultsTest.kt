@@ -9,7 +9,7 @@ import org.junit.Test
  * 「点词默认状态」设置 → 取词面板进入模式的映射。
  *
  * 设置本身的读写在 feature/settings（`SettingsSnapshotReader` 用
- * `PickResultTextModeDefault.fromStorageKey`，读不到键即回落 ALWAYS_ON），
+ * `PickResultTextModeDefault.fromStorageKey`，读不到键即回落 REMEMBER_LAST），
  * 这里覆盖「三选一 + 记住上次 + 未知值回落」与显式入口优先的映射规则。
  */
 class PickResultTextModeDefaultsTest {
@@ -102,14 +102,15 @@ class PickResultTextModeDefaultsTest {
     }
 
     @Test
-    fun `setting storage keys round trip and default to always on`() {
+    fun `setting storage keys round trip and default to remember last`() {
         PickResultTextModeDefault.values().forEach { state ->
             assertEquals(state, PickResultTextModeDefault.fromStorageKey(state.storageKey))
         }
-        // 老用户读不到新键 / 键值非法时必须回落 ALWAYS_ON（保持原有行为）。
-        assertEquals(PickResultTextModeDefault.ALWAYS_ON, PickResultTextModeDefault.fromStorageKey(null))
-        assertEquals(PickResultTextModeDefault.ALWAYS_ON, PickResultTextModeDefault.fromStorageKey(""))
-        assertEquals(PickResultTextModeDefault.ALWAYS_ON, PickResultTextModeDefault.fromStorageKey("legacy_value"))
+        // 老用户读不到新键 / 键值非法时回落 REMEMBER_LAST；
+        // 由于没有"上次状态"记录，实际进入面板仍是 WORD_TAP（点词开启），观感与老版本一致。
+        assertEquals(PickResultTextModeDefault.REMEMBER_LAST, PickResultTextModeDefault.fromStorageKey(null))
+        assertEquals(PickResultTextModeDefault.REMEMBER_LAST, PickResultTextModeDefault.fromStorageKey(""))
+        assertEquals(PickResultTextModeDefault.REMEMBER_LAST, PickResultTextModeDefault.fromStorageKey("legacy_value"))
     }
 
     @Test
