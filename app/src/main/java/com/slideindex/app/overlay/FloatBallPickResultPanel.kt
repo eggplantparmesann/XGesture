@@ -36,7 +36,9 @@ import com.slideindex.app.imageeditor.ImageEditorPickReturnContext
 import com.slideindex.app.imageeditor.ImageEditorSavedImageDeleteScheduler
 import com.slideindex.app.overlay.pickresult.FloatBallPickResultContent
 import com.slideindex.app.overlay.pickresult.PickResultTextMode
+import com.slideindex.app.overlay.pickresult.PickResultTextModeStore
 import com.slideindex.app.overlay.pickresult.preloadPickResultSearchEngineIcons
+import com.slideindex.app.overlay.pickresult.resolvePickResultEnterTextMode
 import com.slideindex.app.overlay.pickresult.translateErrorMessage
 import com.slideindex.app.overlay.searchpanel.SearchPanelQueryBridge
 import com.slideindex.app.perf.PickPerf
@@ -45,6 +47,7 @@ import com.slideindex.app.service.RegionalScreenshotOcr
 import com.slideindex.app.service.ShareImageOcrCoordinator
 import com.slideindex.app.settings.AppSettings
 import com.slideindex.app.settings.PickPanelSlideAnimationDefaults
+import com.slideindex.app.settings.PickResultTextModeDefault
 import com.slideindex.app.settings.SearchEngineStore
 import com.slideindex.app.settings.SearchEngineType
 import com.slideindex.app.stash.StashCoordinator
@@ -64,6 +67,15 @@ object FloatBallPickResultPanel {
     private val historyOcrScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var historyOcrJob: Job? = null
     private var historyOcrRequestId = 0
+
+    /** 「记住上次」写回用；独立于面板生命周期，避免 dismiss 后协程被取消。 */
+    private val textModePersistScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    /** 本进程内最近一次「点词」状态：DataStore 回流有延迟，重开面板时以它为准。 */
+    private var rememberedTextMode: PickResultTextMode? = null
+
+    /** 已交给 DataStore 的值，避免同一状态重复写盘。 */
+    private var persistedTextMode: PickResultTextMode? = null
 
     private var composeViewRef = java.lang.ref.WeakReference<ComposeView>(null)
     private var composeView: ComposeView?
@@ -257,6 +269,7 @@ object FloatBallPickResultPanel {
     private fun exitEditModeFromBack() {
         hidePanelKeyboard()
         textModeState?.value = PickResultTextMode.WORD_TAP
+        rememberTextModeForNextOpen(PickResultTextMode.WORD_TAP)
     }
 
     private fun handlePanelBack() {
@@ -357,8 +370,9 @@ object FloatBallPickResultPanel {
         layoutMetaState?.value = result.layoutMeta
         barcodeResultsState?.value = result.barcodeResults
         clearTranslateState()
-        textModeState?.value = initialTextMode ?: defaultTextModeFor(result.text)
-        updateWindowFocusableForMode(textModeState?.value ?: PickResultTextMode.WORD_TAP)
+        val enterTextMode = initialTextMode ?: defaultTextModeFor(result.text)
+        textModeState?.value = enterTextMode
+        updateWindowFocusableForMode(enterTextMode)
         panelShowTokenState?.let { it.intValue++ }
         if (panelRevealedState?.value == true) {
             panelVisibilityState?.targetState = true
@@ -471,7 +485,9 @@ object FloatBallPickResultPanel {
         layoutMetaState?.value = null
         barcodeResultsState?.value = emptyList()
         clearTranslateState()
-        textModeState?.value = PickResultTextMode.WORD_TAP
+        // 加载态先按设置的默认模式占位：OCR 完成时若未显式指定模式（updateOcrText 的 initialTextMode
+        // 为 null），这里就是用户实际看到/使用的模式。
+        textModeState?.value = defaultTextModeFor(null)
         when (loadingSource) {
             PickResultTextSource.A11Y -> {
                 a11ySourceEnabledState?.value = true
@@ -752,6 +768,8 @@ object FloatBallPickResultPanel {
         }
         panelDismissing = true
         pickPanelVisible = false
+        // 「记住上次」：面板隐藏时记录当前模式，下次进入按它还原。
+        textModeState?.value?.let { rememberTextModeForNextOpen(it) }
         FloatBallOverlay.cancelPickPanelChromeRaiseDeferred()
         OverlaySceneController.onContentPanelHidden()
         panelRevealGeneration++
@@ -1109,6 +1127,7 @@ object FloatBallPickResultPanel {
                         val previousMode = textModeHolder.value
                         textModeHolder.value = mode
                         updateWindowFocusableForMode(mode)
+                        rememberTextModeForNextOpen(mode)
                         if (previousMode == PickResultTextMode.EDIT && mode != PickResultTextMode.EDIT) {
                             requestPanelFocus()
                         }
@@ -1388,7 +1407,36 @@ object FloatBallPickResultPanel {
         runCatching { context.registerReceiver(receiver, IntentFilter(Intent.ACTION_SCREEN_OFF)) }
     }
 
+    /**
+     * 没有显式 `initialTextMode` 时的进入模式：按「点词默认状态」设置计算
+     * （记住上次 / 始终开启 / 始终关闭），显式入口不受影响。
+     */
     private fun defaultTextModeFor(@Suppress("UNUSED_PARAMETER") text: String?): PickResultTextMode {
-        return PickResultTextMode.WORD_TAP
+        val settings = settingsState?.value
+        return resolvePickResultEnterTextMode(
+            explicit = null,
+            defaultState = settings?.floatBallPickTextModeDefault ?: PickResultTextModeDefault.ALWAYS_ON,
+            lastStoredMode = rememberedTextMode?.let(PickResultTextModeStore::toStorageKey)
+                ?: settings?.floatBallPickTextModeLastMode,
+        )
+    }
+
+    /**
+     * 记录「上次退出面板时的点词状态」。
+     *
+     * 同步更新内存值（DataStore 回流有延迟，短时间重开面板要立刻生效），
+     * 同时异步写盘（跨进程/重启后仍能读到）。
+     */
+    private fun rememberTextModeForNextOpen(mode: PickResultTextMode) {
+        rememberedTextMode = mode
+        if (persistedTextMode == mode) return
+        val context = appContext ?: return
+        val repository = OverlayDependencyAccess.overlayDependencies(context)?.settingsRepository ?: return
+        persistedTextMode = mode
+        val storageKey = PickResultTextModeStore.toStorageKey(mode)
+        textModePersistScope.launch {
+            runCatching { repository.setFloatBallPickTextModeLastMode(storageKey) }
+                .onFailure { Log.w(TAG, "persist pick text mode failed", it) }
+        }
     }
 }

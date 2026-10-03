@@ -266,6 +266,15 @@ data class FloatBallSettings(
     val floatBallPickSearchGridDefaultState: PickResultSearchGridDefaultState = PickResultSearchGridDefaultState.REMEMBER_LAST,
     /** Pick panel: last search grid expanded state for REMEMBER_LAST mode. */
     val floatBallPickSearchGridLastExpanded: Boolean = false,
+    /** Pick panel: 文本区「点词」进入面板时的默认状态（REMEMBER_LAST / ALWAYS_ON / ALWAYS_OFF）。 */
+    val floatBallPickTextModeDefault: PickResultTextModeDefault = PickResultTextModeDefault.ALWAYS_ON,
+    /**
+     * Pick panel: 上次退出面板时「点词」的状态，仅 REMEMBER_LAST 生效。
+     *
+     * 存 overlay 的 `PickResultTextMode` 存储键（见 PickResultTextModeStore）；
+     * 空串表示还没有记录过，读取方需回落默认值。
+     */
+    val floatBallPickTextModeLastMode: String = "",
     /** Pick panel: engine used by search-button long-press quick search (null = long press idle). */
     val floatBallPickDefaultSearchEngineId: String? = null,
     /** Pick panel: auto-select all text when the panel opens after word pick or screenshot. */

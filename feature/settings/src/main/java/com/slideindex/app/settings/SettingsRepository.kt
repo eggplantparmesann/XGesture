@@ -597,6 +597,12 @@ class SettingsRepository @Inject constructor(
     suspend fun setFloatBallPickSearchGridLastExpanded(expanded: Boolean) =
         overlay.setFloatBallPickSearchGridLastExpanded(expanded)
 
+    suspend fun setFloatBallPickTextModeDefault(state: PickResultTextModeDefault) =
+        overlay.setFloatBallPickTextModeDefault(state)
+
+    suspend fun setFloatBallPickTextModeLastMode(storageKey: String) =
+        overlay.setFloatBallPickTextModeLastMode(storageKey)
+
     suspend fun setFloatBallPickDefaultSearchEngineId(id: String?) =
         overlay.setFloatBallPickDefaultSearchEngineId(id)
 

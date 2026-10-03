@@ -978,6 +978,18 @@ class OverlaySettingsMutator @Inject constructor(
         it[SettingsPreferenceKeys.FLOAT_BALL_PICK_SEARCH_GRID_LAST_EXPANDED] = expanded
     }
 
+    suspend fun setFloatBallPickTextModeDefault(state: PickResultTextModeDefault) = editor.edit {
+        it[SettingsPreferenceKeys.FLOAT_BALL_PICK_TEXT_MODE_DEFAULT] = state.storageKey
+    }
+
+    suspend fun setFloatBallPickTextModeLastMode(storageKey: String) = editor.edit {
+        if (storageKey.isBlank()) {
+            it.remove(SettingsPreferenceKeys.FLOAT_BALL_PICK_TEXT_MODE_LAST_MODE)
+        } else {
+            it[SettingsPreferenceKeys.FLOAT_BALL_PICK_TEXT_MODE_LAST_MODE] = storageKey
+        }
+    }
+
     suspend fun setFloatBallPickDefaultSearchEngineId(id: String?) = editor.edit {
         if (id.isNullOrBlank()) {
             it.remove(SettingsPreferenceKeys.FLOAT_BALL_PICK_DEFAULT_SEARCH_ENGINE_ID)

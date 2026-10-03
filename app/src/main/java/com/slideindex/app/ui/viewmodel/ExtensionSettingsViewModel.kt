@@ -628,6 +628,11 @@ class ExtensionSettingsViewModel @Inject constructor(
         settingsRepository.setFloatBallPickSearchGridLastExpanded(expanded)
     }
 
+    fun setFloatBallPickTextModeDefault(state: com.slideindex.app.settings.PickResultTextModeDefault) =
+        launchSettingsWrite {
+            settingsRepository.setFloatBallPickTextModeDefault(state)
+        }
+
     fun setFloatBallPickDefaultSearchEngineId(id: String?) = launchSettingsWrite {
         settingsRepository.setFloatBallPickDefaultSearchEngineId(id)
     }

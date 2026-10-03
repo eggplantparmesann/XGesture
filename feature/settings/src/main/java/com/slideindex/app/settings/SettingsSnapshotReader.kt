@@ -463,6 +463,12 @@ internal object SettingsSnapshotReader {
                 PickResultSearchGridDefaultState.fromStorageKey(prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_SEARCH_GRID_DEFAULT_STATE]),
             floatBallPickSearchGridLastExpanded =
                 prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_SEARCH_GRID_LAST_EXPANDED] ?: false,
+            floatBallPickTextModeDefault =
+                PickResultTextModeDefault.fromStorageKey(
+                    prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_TEXT_MODE_DEFAULT],
+                ),
+            floatBallPickTextModeLastMode =
+                prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_TEXT_MODE_LAST_MODE].orEmpty(),
             floatBallPickDefaultSearchEngineId =
                 prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_DEFAULT_SEARCH_ENGINE_ID],
             floatBallPickAutoSelectAll =

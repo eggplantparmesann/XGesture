@@ -24,6 +24,7 @@ fun FloatBallPickPanelLayoutBehaviorSettingsScreen(
     onBack: () -> Unit,
     onPickPanelStyleChange: (com.slideindex.app.settings.PickResultPanelStyle) -> Unit,
     onPickSearchGridDefaultStateChange: (com.slideindex.app.settings.PickResultSearchGridDefaultState) -> Unit,
+    onPickTextModeDefaultChange: (com.slideindex.app.settings.PickResultTextModeDefault) -> Unit,
     onPickTextFirstPanelChange: (Boolean) -> Unit,
     onPickAutoSelectAllChange: (Boolean) -> Unit,
     onPickCopyDismissPanelChange: (Boolean) -> Unit,
@@ -75,6 +76,27 @@ fun FloatBallPickPanelLayoutBehaviorSettingsScreen(
     }
     val searchGridStateItems = remember(searchGridStateOptions) {
         searchGridStateOptions.map { DropdownItem(text = it.second) }
+    }
+
+    val textModeRememberLabel = stringResource(R.string.float_ball_pick_text_mode_state_remember)
+    val textModeAlwaysOnLabel = stringResource(R.string.float_ball_pick_text_mode_state_always_on)
+    val textModeAlwaysOffLabel = stringResource(R.string.float_ball_pick_text_mode_state_always_off)
+    val textModeOptions = remember(
+        textModeRememberLabel,
+        textModeAlwaysOnLabel,
+        textModeAlwaysOffLabel,
+    ) {
+        listOf(
+            com.slideindex.app.settings.PickResultTextModeDefault.REMEMBER_LAST to textModeRememberLabel,
+            com.slideindex.app.settings.PickResultTextModeDefault.ALWAYS_ON to textModeAlwaysOnLabel,
+            com.slideindex.app.settings.PickResultTextModeDefault.ALWAYS_OFF to textModeAlwaysOffLabel,
+        )
+    }
+    val selectedTextModeIndex = remember(settings.floatBallPickTextModeDefault, textModeOptions) {
+        textModeOptions.indexOfFirst { it.first == settings.floatBallPickTextModeDefault }.coerceAtLeast(0)
+    }
+    val textModeItems = remember(textModeOptions) {
+        textModeOptions.map { DropdownItem(text = it.second) }
     }
 
     val copyButtonPositionLeftLabel = stringResource(R.string.float_ball_pick_copy_button_position_left)
@@ -231,6 +253,23 @@ fun FloatBallPickPanelLayoutBehaviorSettingsScreen(
         groupedCardItems(
             keyPrefix = "fb-pick-panel-select-copy",
             items = buildList {
+                add(
+                    settingsCardScopeItem("text-mode-default-state") {
+                        SettingSpinnerRow(
+                            title = stringResource(R.string.float_ball_pick_text_mode_state_title),
+                            subtitle = textModeOptions.getOrNull(selectedTextModeIndex)?.second.orEmpty(),
+                            dialogButtonText = stringResource(R.string.cancel),
+                            items = textModeItems,
+                            selectedIndex = selectedTextModeIndex,
+                            enabled = true,
+                            onSelectedIndexChange = { index ->
+                                val selected = textModeOptions.getOrNull(index)?.first
+                                    ?: return@SettingSpinnerRow
+                                onPickTextModeDefaultChange(selected)
+                            },
+                        )
+                    },
+                )
                 add(
                     settingsCardScopeItem("auto-select-all") {
                         SettingSwitchRow(
