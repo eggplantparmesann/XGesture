@@ -24,6 +24,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -1341,12 +1342,52 @@ fun SearchPanelScreen(
                                         if (webSuggestions.isNotEmpty() && lockedSection == SearchPanelResultSection.ALL) list.add("web_suggestions")
                                         if (bottomUpListOrder) list.asReversed() else list
                                     }
+                                    // 自下而上的列表顺序要求候选**整体贴底**（第一个结果落在搜索引擎区上方）。
+                                    // 原来 modifier 是 fillMaxSize()：子项撑满整块区域，外层
+                                    // contentAlignment = BottomCenter 完全不起作用，条目因此贴顶、与引擎区之间空一截。
+                                    // 修法（与重构版同一套、已真机验证）：
+                                    //  - wrapContentHeight(Alignment.Bottom)：内容少时列表只有内容那么高、整体贴底；
+                                    //    内容多时撑满并可滚动；
+                                    //  - chrome 高度做成**布局留白**：让列表可视区本身止步于引擎坞/搜索框之上
+                                    //    （只靠 contentPadding 不够 —— 它只在滚到最底时才让出空间，
+                                    //     内容超出时底部那张卡片仍会压在浮层底下）。
+                                    // 查询/分区变化时把列表锚定到该顺序下的"起点"（移植自 ec6c579e）：
+                                    // - 自上而下：最顶（0）；
+                                    // - 自下而上：**最底**（最后一项）—— 贴底顺序下用户看的就是贴近引擎区的分区；
+                                    //   若锚到最顶，底部那些分区就被推出可视区（真机："本地应用被切掉/不贴底"）。
+                                    LaunchedEffect(candidateSectionKeys) {
+                                        if (candidateSectionKeys.isNotEmpty()) {
+                                            val anchor = if (bottomUpListOrder) {
+                                                candidateSectionKeys.size - 1
+                                            } else {
+                                                0
+                                            }
+                                            candidateListState.scrollToItem(anchor)
+                                        }
+                                    }
+
+                                    val chromeReserve =
+                                        if (barAtBottom) bottomChromeHeight else actionPillsHeight
                                     LazyColumn(
                                         state = candidateListState,
-                                        modifier = Modifier.fillMaxSize(),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .then(
+                                                if (bottomUpListOrder) {
+                                                    Modifier
+                                                        .wrapContentHeight(Alignment.Bottom)
+                                                        .padding(bottom = chromeReserve)
+                                                } else {
+                                                    Modifier.fillMaxSize()
+                                                },
+                                            ),
                                         contentPadding = PaddingValues(
-                                            bottom = SearchPanelCardVerticalSpacing +
-                                                if (barAtBottom) bottomChromeHeight else actionPillsHeight,
+                                            bottom = if (bottomUpListOrder) {
+                                                // 贴底模式下 chrome 已由布局留白让出，这里只留条目间距，避免重复预留。
+                                                SearchPanelCardVerticalSpacing
+                                            } else {
+                                                SearchPanelCardVerticalSpacing + chromeReserve
+                                            },
                                         ),
                                         verticalArrangement = Arrangement.spacedBy(SearchPanelCardVerticalSpacing),
                                     ) {
