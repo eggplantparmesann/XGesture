@@ -298,7 +298,7 @@ data class FloatBallSettings(
     /** 上滑短滑阈值 = percent × 40dp / 100；超过即为长滑。 */
     val floatBallUpSwipeShortPercent: Float = 256f,
     /** When false, translate opens Google Translate in browser; when true, shows in-app overlay. */
-    val floatBallInstantTranslate: Boolean = false,
+    val floatBallInstantTranslate: Boolean = true,
     val floatBallTranslateEngine: FloatBallTranslateEngine = FloatBallTranslateEngine.GOOGLE,
     /** BCP-47 style target language code, or [TranslateTargetLanguages.FOLLOW_APP] to follow app UI language. */
     val floatBallTranslateTargetLang: String = TranslateTargetLanguages.FOLLOW_APP,

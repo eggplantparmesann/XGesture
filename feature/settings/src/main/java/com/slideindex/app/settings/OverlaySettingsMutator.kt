@@ -1052,6 +1052,22 @@ class OverlaySettingsMutator @Inject constructor(
         it[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE] = enabled
     }
 
+    /**
+     * 一次性迁移：取词面板「即时翻译」默认值由关改为开。
+     *
+     * 存量用户如果从没碰过这个开关（键不存在），补写为新默认值 true；
+     * 已经显式选过关（键为 false）的保持不变，避免把用户的主动选择改掉。
+     */
+    suspend fun migrateFloatBallInstantTranslateDefaultOnOnce() = editor.edit { prefs ->
+        if (prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE_DEFAULT_ON_MIGRATED] == true) {
+            return@edit
+        }
+        prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE_DEFAULT_ON_MIGRATED] = true
+        if (prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE] == null) {
+            prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE] = true
+        }
+    }
+
     suspend fun setFloatBallTranslateEngine(engine: FloatBallTranslateEngine) = editor.edit {
         it[SettingsPreferenceKeys.FLOAT_BALL_TRANSLATE_ENGINE] = engine.storageKey
     }

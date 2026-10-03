@@ -127,7 +127,7 @@ data class OverlaySettings(
     val floatBallDownSwipeShortPercent: Float = 200f,
     val floatBallSideSwipeShortPercent: Float = 320f,
     val floatBallUpSwipeShortPercent: Float = 256f,
-    val floatBallInstantTranslate: Boolean = false,
+    val floatBallInstantTranslate: Boolean = true,
     val floatBallTranslateEngine: FloatBallTranslateEngine = FloatBallTranslateEngine.GOOGLE,
     val floatBallTranslateTargetLang: String = TranslateTargetLanguages.FOLLOW_APP,
     val floatBallImageSearchPickPanelTransparency: Float = 0.65f,

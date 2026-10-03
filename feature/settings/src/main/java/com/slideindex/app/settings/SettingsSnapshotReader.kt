@@ -504,7 +504,7 @@ internal object SettingsSnapshotReader {
                 prefs[SettingsPreferenceKeys.FLOAT_BALL_SIDE_SWIPE_SHORT_PERCENT] ?: 320f,
             floatBallUpSwipeShortPercent =
                 prefs[SettingsPreferenceKeys.FLOAT_BALL_UP_SWIPE_SHORT_PERCENT] ?: 256f,
-            floatBallInstantTranslate = prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE] ?: false,
+            floatBallInstantTranslate = prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE] ?: true,
             floatBallTranslateEngine = FloatBallTranslateEngine.fromStorageKey(
                 prefs[SettingsPreferenceKeys.FLOAT_BALL_TRANSLATE_ENGINE],
             ),

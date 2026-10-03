@@ -74,6 +74,7 @@ class SettingsRepository @Inject constructor(
             // （历史上表现为 overlay 进程按默认手势动作执行，例如短滑=返回）。
             runCatching {
                 editor.cleanupLegacyClipboardKeysOnce()
+                overlay.migrateFloatBallInstantTranslateDefaultOnOnce()
                 edge.persistOppositeGestureSlotRepairIfNeeded()
             }.onFailure {
                 android.util.Log.w(

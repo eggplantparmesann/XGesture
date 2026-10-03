@@ -473,6 +473,9 @@ internal object SettingsPreferenceKeys {
     val FLOAT_BALL_SIDE_SWIPE_SHORT_PERCENT = floatPreferencesKey("float_ball_side_swipe_short_percent")
     val FLOAT_BALL_UP_SWIPE_SHORT_PERCENT = floatPreferencesKey("float_ball_up_swipe_short_percent")
     val FLOAT_BALL_INSTANT_TRANSLATE = booleanPreferencesKey("float_ball_instant_translate")
+    /** [FLOAT_BALL_INSTANT_TRANSLATE] 改为默认开启时的一次性迁移标记。 */
+    val FLOAT_BALL_INSTANT_TRANSLATE_DEFAULT_ON_MIGRATED =
+        booleanPreferencesKey("float_ball_instant_translate_default_on_migrated")
     val FLOAT_BALL_TRANSLATE_ENGINE = stringPreferencesKey("float_ball_translate_engine")
     val FLOAT_BALL_TRANSLATE_TARGET_LANG = stringPreferencesKey("float_ball_translate_target_lang")
     val FLOAT_BALL_IMAGE_SEARCH_PICK_PANEL_TRANSPARENCY =
