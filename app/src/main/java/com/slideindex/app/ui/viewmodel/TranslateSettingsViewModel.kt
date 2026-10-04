@@ -69,6 +69,10 @@ class TranslateSettingsViewModel @Inject constructor(
         settingsRepository.setFloatBallTranslateTargetLang(languageCode)
     }
 
+    fun setTranslateAppPackage(packageName: String) = launchSettingsWrite {
+        settingsRepository.setFloatBallTranslateAppPackage(packageName)
+    }
+
     fun setDownloadWifiOnly(enabled: Boolean) = launchSettingsWrite {
         settingsRepository.setOcrDownloadWifiOnly(enabled)
     }

@@ -24,8 +24,25 @@ object FloatBallTranslateCoordinator {
             ?.readSnapshot()
             ?: return
 
+        // 网页回落那条路也要用同一个目标语言，所以提前解析（原来只服务即时浮窗）。
+        val targetLang = TranslateTargetResolver.resolve(
+            settings.floatBallTranslateTargetLang,
+            settings.appUiLanguageTag,
+        )
+
+        // 引擎选「本地 App」：译文只能由那个 App 显示，所以无视「即时翻译」开关。
+        if (settings.floatBallTranslateEngine == FloatBallTranslateEngine.LOCAL_APP) {
+            FloatBallTextPick.translateToApp(
+                context = context,
+                text = trimmed,
+                targetPackage = settings.floatBallTranslateAppPackage,
+                targetLang = targetLang,
+            )
+            return
+        }
+
         if (!settings.floatBallInstantTranslate) {
-            FloatBallTextPick.translateText(context, trimmed)
+            FloatBallTextPick.translateText(context, trimmed, targetLang)
             return
         }
 
@@ -36,14 +53,12 @@ object FloatBallTranslateCoordinator {
             return
         }
 
-        val targetLang = TranslateTargetResolver.resolve(
-            settings.floatBallTranslateTargetLang,
-            settings.appUiLanguageTag,
-        )
         val engine = when (settings.floatBallTranslateEngine) {
             FloatBallTranslateEngine.GOOGLE -> TranslateEngine.GOOGLE
             FloatBallTranslateEngine.ML_KIT -> TranslateEngine.ML_KIT
             FloatBallTranslateEngine.CLOUD_LLM -> TranslateEngine.CLOUD_LLM
+            // 上面已针对 LOCAL_APP 提前返回，这里只是让 when 穷尽。
+            FloatBallTranslateEngine.LOCAL_APP -> return
         }
 
         FloatBallPickResultPanel.showTranslateLoading()

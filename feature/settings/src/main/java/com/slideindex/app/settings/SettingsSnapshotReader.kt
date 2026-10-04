@@ -516,6 +516,8 @@ internal object SettingsSnapshotReader {
             ),
             floatBallTranslateTargetLang = prefs[SettingsPreferenceKeys.FLOAT_BALL_TRANSLATE_TARGET_LANG]
                 ?: TranslateTargetLanguages.FOLLOW_APP,
+            floatBallTranslateAppPackage =
+                prefs[SettingsPreferenceKeys.FLOAT_BALL_TRANSLATE_APP_PACKAGE] ?: "",
             floatBallImageSearchPickPanelTransparency =
                 prefs[SettingsPreferenceKeys.FLOAT_BALL_IMAGE_SEARCH_PICK_PANEL_TRANSPARENCY]?.coerceIn(0f, 1f)
                     ?: prefs[SettingsPreferenceKeys.FLOAT_BALL_TRANSLATE_PICK_PANEL_TRANSPARENCY]?.coerceIn(0f, 1f)

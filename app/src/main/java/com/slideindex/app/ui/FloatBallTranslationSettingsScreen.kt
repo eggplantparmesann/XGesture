@@ -4,8 +4,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.slideindex.app.R
 import com.slideindex.app.settings.AppSettings
@@ -27,8 +30,11 @@ fun FloatBallTranslationSettingsScreen(
     onTargetLangChange: (String) -> Unit,
     onOpenMlKitModels: () -> Unit,
     onOpenCloudTranslateSettings: () -> Unit,
+    onOpenTranslateAppPicker: () -> Unit,
 ) {
     val engineEntries = FloatBallTranslateEngine.entries
+    val engine = settings.floatBallTranslateEngine
+    val localAppEngine = engine == FloatBallTranslateEngine.LOCAL_APP
     val langOptions = TranslateLanguageCatalog.options
     val storedTarget = settings.floatBallTranslateTargetLang
     val langIndex = if (TranslateTargetLanguages.isFollowApp(storedTarget)) {
@@ -58,42 +64,67 @@ fun FloatBallTranslationSettingsScreen(
                             icon = { label -> Icon(Icons.Default.Translate, contentDescription = label) },
                             title = stringResource(R.string.float_ball_translate_engine),
                             items = engineEntries.map { translateEngineLabel(it) },
-                            selectedIndex = engineEntries.indexOf(settings.floatBallTranslateEngine).coerceAtLeast(0),
+                            selectedIndex = engineEntries.indexOf(engine).coerceAtLeast(0),
                             onSelectedIndexChange = { onEngineChange(engineEntries[it]) }
                         )
                     }
                 )
-                add(
-                    settingsCardScopeItem("target-lang") {
-                        SettingDropdownRow(
-                            icon = { label -> Icon(Icons.Default.Translate, contentDescription = label) },
-                            title = stringResource(R.string.float_ball_translate_target_lang),
-                            items = targetLangDropdownItems,
-                            selectedIndex = langIndex,
-                            onSelectedIndexChange = { index ->
-                                if (index == 0) {
-                                    onTargetLangChange(TranslateTargetLanguages.FOLLOW_APP)
-                                } else {
-                                    onTargetLangChange(langOptions[index - 1].code)
+                // 「本地 App」的译文语言由那个 App 自己决定，这一行对它没有意义。
+                if (!localAppEngine) {
+                    add(
+                        settingsCardScopeItem("target-lang") {
+                            SettingDropdownRow(
+                                icon = { label -> Icon(Icons.Default.Translate, contentDescription = label) },
+                                title = stringResource(R.string.float_ball_translate_target_lang),
+                                items = targetLangDropdownItems,
+                                selectedIndex = langIndex,
+                                onSelectedIndexChange = { index ->
+                                    if (index == 0) {
+                                        onTargetLangChange(TranslateTargetLanguages.FOLLOW_APP)
+                                    } else {
+                                        onTargetLangChange(langOptions[index - 1].code)
+                                    }
                                 }
-                            }
-                        )
-                    }
-                )
+                            )
+                        }
+                    )
+                }
                 add(
                     settingsCardScopeItem("instant") {
                         SettingSwitchRow(
                             title = stringResource(R.string.float_ball_instant_translate),
-                            subtitle = stringResource(R.string.float_ball_instant_translate_desc),
-                            checked = settings.floatBallInstantTranslate,
-                            enabled = true,
+                            subtitle = if (localAppEngine) {
+                                stringResource(R.string.float_ball_instant_translate_local_app_hint)
+                            } else {
+                                stringResource(R.string.float_ball_instant_translate_desc)
+                            },
+                            checked = settings.floatBallInstantTranslate && !localAppEngine,
+                            enabled = !localAppEngine,
                             onCheckedChange = onInstantTranslateChange
                         )
                     }
                 )
             }
         )
-        if (settings.floatBallTranslateEngine == FloatBallTranslateEngine.ML_KIT) {
+        if (localAppEngine) {
+            groupedCardItems(
+                keyPrefix = "fb-translation-local-app",
+                items = buildList {
+                    add(
+                        settingsCardScopeItem("translate-app") {
+                            SettingNavigationRow(
+                                icon = { label -> Icon(Icons.Outlined.Apps, contentDescription = label) },
+                                title = stringResource(R.string.float_ball_translate_app),
+                                subtitle = translateAppSubtitle(settings.floatBallTranslateAppPackage),
+                                enabled = true,
+                                onClick = onOpenTranslateAppPicker,
+                            )
+                        }
+                    )
+                }
+            )
+        }
+        if (engine == FloatBallTranslateEngine.ML_KIT) {
             groupedCardItems(
                 keyPrefix = "fb-translation-mlkit",
                 items = buildList {
@@ -111,7 +142,7 @@ fun FloatBallTranslationSettingsScreen(
                 }
             )
         }
-        if (settings.floatBallTranslateEngine == FloatBallTranslateEngine.CLOUD_LLM) {
+        if (engine == FloatBallTranslateEngine.CLOUD_LLM) {
             groupedCardItems(
                 keyPrefix = "fb-translation-cloud",
                 items = buildList {
@@ -137,4 +168,20 @@ private fun translateEngineLabel(engine: FloatBallTranslateEngine): String = whe
     FloatBallTranslateEngine.GOOGLE -> stringResource(R.string.float_ball_translate_engine_google)
     FloatBallTranslateEngine.ML_KIT -> stringResource(R.string.float_ball_translate_engine_mlkit)
     FloatBallTranslateEngine.CLOUD_LLM -> stringResource(R.string.float_ball_translate_engine_cloud)
+    FloatBallTranslateEngine.LOCAL_APP -> stringResource(R.string.float_ball_translate_engine_local_app)
+}
+
+/** 显示所选的翻译 App 名；没选或已卸载时给出可读文案。 */
+@Composable
+internal fun translateAppSubtitle(packageName: String): String {
+    val context = LocalContext.current
+    if (packageName.isBlank()) {
+        return stringResource(R.string.float_ball_translate_app_not_selected)
+    }
+    return remember(packageName) {
+        runCatching {
+            val info = context.packageManager.getApplicationInfo(packageName, 0)
+            context.packageManager.getApplicationLabel(info).toString()
+        }.getOrDefault(packageName)
+    }
 }

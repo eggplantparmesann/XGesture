@@ -224,6 +224,7 @@ fun OverlaySettings.toMinimalAppSettings(): AppSettings = AppSettings(
         floatBallInstantTranslate = floatBallInstantTranslate,
         floatBallTranslateEngine = floatBallTranslateEngine,
         floatBallTranslateTargetLang = floatBallTranslateTargetLang,
+        floatBallTranslateAppPackage = floatBallTranslateAppPackage,
         floatBallImageSearchPickPanelTransparency = floatBallImageSearchPickPanelTransparency,
         shareImageOcrHistoryEnabled = shareImageOcrHistoryEnabled,
     ),

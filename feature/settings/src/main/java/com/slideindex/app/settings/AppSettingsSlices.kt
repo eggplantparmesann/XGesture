@@ -311,6 +311,8 @@ data class FloatBallSettings(
     val floatBallTranslateEngine: FloatBallTranslateEngine = FloatBallTranslateEngine.GOOGLE,
     /** BCP-47 style target language code, or [TranslateTargetLanguages.FOLLOW_APP] to follow app UI language. */
     val floatBallTranslateTargetLang: String = TranslateTargetLanguages.FOLLOW_APP,
+    /** Engine [FloatBallTranslateEngine.LOCAL_APP]: 用户指定的翻译 App 包名；空 = 未选择。 */
+    val floatBallTranslateAppPackage: String = "",
     /** Pick-result card transparency while the in-app translate overlay is open (0=opaque, 1=transparent). */
     val floatBallImageSearchPickPanelTransparency: Float = 0.65f,
     /** Save shared long-image OCR results for later re-open from pick settings. */

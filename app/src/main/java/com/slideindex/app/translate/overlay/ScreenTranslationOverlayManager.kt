@@ -162,7 +162,11 @@ class ScreenTranslationOverlayManager {
         val engine = when (settings?.floatBallTranslateEngine) {
             FloatBallTranslateEngine.ML_KIT -> TranslateEngine.ML_KIT
             FloatBallTranslateEngine.CLOUD_LLM -> TranslateEngine.CLOUD_LLM
-            FloatBallTranslateEngine.GOOGLE, null -> TranslateEngine.GOOGLE
+            // 屏幕翻译要在原位画出译文，没法把文本交给外部 App，所以「本地 App」退回内置的 Google 引擎。
+            FloatBallTranslateEngine.GOOGLE,
+            FloatBallTranslateEngine.LOCAL_APP,
+            null,
+            -> TranslateEngine.GOOGLE
         }
         val translateService = TranslateDependencyAccess.translateService(service)
             ?: return emptyList()

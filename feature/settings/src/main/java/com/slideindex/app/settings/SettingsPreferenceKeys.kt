@@ -480,6 +480,8 @@ internal object SettingsPreferenceKeys {
         booleanPreferencesKey("float_ball_instant_translate_default_on_migrated")
     val FLOAT_BALL_TRANSLATE_ENGINE = stringPreferencesKey("float_ball_translate_engine")
     val FLOAT_BALL_TRANSLATE_TARGET_LANG = stringPreferencesKey("float_ball_translate_target_lang")
+    /** 引擎选 [FloatBallTranslateEngine.LOCAL_APP] 时，用户指定的翻译 App 包名。 */
+    val FLOAT_BALL_TRANSLATE_APP_PACKAGE = stringPreferencesKey("float_ball_translate_app_package")
     val FLOAT_BALL_IMAGE_SEARCH_PICK_PANEL_TRANSPARENCY =
         floatPreferencesKey("float_ball_image_search_pick_panel_transparency")
     val FLOAT_BALL_TRANSLATE_PICK_PANEL_TRANSPARENCY =

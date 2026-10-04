@@ -22,6 +22,10 @@ import com.slideindex.app.R
 import com.slideindex.app.imageeditor.ImageEditorPickReturnContext
 import com.slideindex.app.search.SearchEngineLauncher
 import com.slideindex.app.settings.AppSettings
+import com.slideindex.app.translate.TranslateAppCapability
+import com.slideindex.app.translate.TranslateLanguageCatalog
+import com.slideindex.app.translate.TranslateLaunchChannel
+import com.slideindex.app.translate.TranslateLaunchPlanner
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -82,16 +86,107 @@ object FloatBallTextPick {
 
     fun readClipboardPayload(context: Context): ClipboardPayload? = ClipboardReader.read(context)
 
-    fun translateText(context: Context, text: String) {
-        val encoded = Uri.encode(text)
+    private const val WEB_TRANSLATE_URL = "https://translate.google.com/"
+    private const val FALLBACK_WEB_TARGET_LANG = "zh-CN"
+
+    /**
+     * 取词面板的「跳转翻译」（关闭即时翻译时的行为）。
+     *
+     * 优先把文本**直接交给 Google 翻译 App**：`ACTION_PROCESS_TEXT` 会让文本进它的输入框，
+     * 这是唯一"跳过去还带着文本"的方式；`ACTION_SEND` 作为兜底（部分版本只注册了分享入口）。
+     * 没装、或两个通道都拉不起来时，才回落到网页翻译。
+     *
+     * 以前这里是发一个裸的 `https://translate.google.com/?...&text=` 链接：Google 翻译注册了该
+     * 域名的 App Links，系统会把这种隐式 Intent 优先交给 App，而 App 不消费 URL 里的 `text`，
+     * 于是只会"打开一个空白输入框"，选中的文本还丢了。
+     *
+     * [targetLang] 由调用方用 `TranslateTargetResolver` 解析好；网页翻译不再写死成中文。
+     */
+    fun translateText(context: Context, text: String, targetLang: String) {
+        if (launchToTranslateApp(context, text, TranslateLaunchPlanner.GOOGLE_TRANSLATE_PACKAGE)) return
+        if (openTranslateWeb(context, text, targetLang)) return
+        // 连浏览器都拉不起来：退回原来的"搜索一下"，别让用户点了没反应。
+        searchText(context, "translate $text")
+    }
+
+    /**
+     * 引擎选「本地 App」时：只走用户在设置里指定的那个 App。
+     *
+     * 用户主动选过目标，所以失败时给提示、不静默改道：没选 App 提示「未设置翻译应用」并回落网页，
+     * 选了却拉不起来提示「未找到翻译应用」并把文本复制到剪贴板，免得白点一下。
+     */
+    fun translateToApp(context: Context, text: String, targetPackage: String, targetLang: String) {
+        val pkg = targetPackage.trim()
+        if (pkg.isNotEmpty() && launchToTranslateApp(context, text, pkg)) return
+
+        if (pkg.isEmpty()) {
+            Toast.makeText(context, R.string.float_ball_translate_app_not_set, Toast.LENGTH_SHORT).show()
+            if (openTranslateWeb(context, text, targetLang)) return
+            searchText(context, "translate $text")
+            return
+        }
+
+        copyText(context, text)
+        Toast.makeText(context, R.string.float_ball_translate_app_not_found_copied, Toast.LENGTH_SHORT).show()
+    }
+
+    /** 按 [TranslateLaunchPlanner] 给出的顺序尝试把文本交给 [targetPackage]；全都失败返回 false。 */
+    private fun launchToTranslateApp(context: Context, text: String, targetPackage: String): Boolean {
+        val channels = TranslateLaunchPlanner.plan(
+            processTextPackages = TranslateAppCapability.processTextPackages(context),
+            sendPackages = TranslateAppCapability.sendPackages(context),
+            targetPackage = targetPackage,
+        )
+        for (channel in channels) {
+            val launched = when (channel) {
+                TranslateLaunchChannel.PROCESS_TEXT -> startTranslateApp(
+                    context,
+                    translateAppIntent(Intent.ACTION_PROCESS_TEXT, text, targetPackage),
+                )
+
+                TranslateLaunchChannel.SEND -> startTranslateApp(
+                    context,
+                    translateAppIntent(Intent.ACTION_SEND, text, targetPackage),
+                )
+
+                // 末尾的 WEB 由调用方决定是"静默回落"还是"提示 + 复制"。
+                TranslateLaunchChannel.WEB -> return false
+            }
+            if (launched) return true
+        }
+        return false
+    }
+
+    private fun translateAppIntent(action: String, text: String, targetPackage: String): Intent =
+        Intent(action).apply {
+            type = "text/plain"
+            setPackage(targetPackage)
+            if (action == Intent.ACTION_PROCESS_TEXT) {
+                putExtra(Intent.EXTRA_PROCESS_TEXT, text)
+                // 只读：翻译用不上"把改写后的文本回填到编辑器"的语义。
+                putExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, true)
+            } else {
+                putExtra(Intent.EXTRA_TEXT, text)
+            }
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+    private fun startTranslateApp(context: Context, intent: Intent): Boolean =
+        runCatching {
+            context.startActivity(intent)
+            true
+        }.getOrDefault(false)
+
+    private fun openTranslateWeb(context: Context, text: String, targetLang: String): Boolean {
+        val lang = TranslateLanguageCatalog.find(targetLang)?.code ?: FALLBACK_WEB_TARGET_LANG
         val intent = Intent(
             Intent.ACTION_VIEW,
-            "https://translate.google.com/?sl=auto&tl=zh-CN&text=$encoded".toUri()
+            "$WEB_TRANSLATE_URL?sl=auto&tl=$lang&text=${Uri.encode(text)}".toUri()
         ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        runCatching { context.startActivity(intent) }
-            .onFailure {
-                searchText(context, "translate $text")
-            }
+        return runCatching {
+            context.startActivity(intent)
+            true
+        }.getOrDefault(false)
     }
 
     fun searchText(context: Context, text: String) {

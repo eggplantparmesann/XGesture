@@ -139,11 +139,15 @@ internal fun pickPanelTranslationNavSubtitle(settings: AppSettings): String {
             stringResource(R.string.float_ball_translate_engine_mlkit)
         com.slideindex.app.settings.FloatBallTranslateEngine.CLOUD_LLM ->
             stringResource(R.string.float_ball_translate_engine_cloud)
+        com.slideindex.app.settings.FloatBallTranslateEngine.LOCAL_APP ->
+            stringResource(R.string.float_ball_translate_engine_local_app)
     }
-    val mode = if (settings.floatBallInstantTranslate) {
-        stringResource(R.string.float_ball_instant_translate_on)
-    } else {
-        stringResource(R.string.float_ball_instant_translate_off)
+    val mode = when {
+        // 「本地 App」没有"即时/跳转"之分：一律交给所选 App，副标题直接显示它是谁。
+        settings.floatBallTranslateEngine == com.slideindex.app.settings.FloatBallTranslateEngine.LOCAL_APP ->
+            translateAppSubtitle(settings.floatBallTranslateAppPackage)
+        settings.floatBallInstantTranslate -> stringResource(R.string.float_ball_instant_translate_on)
+        else -> stringResource(R.string.float_ball_instant_translate_off)
     }
     return "$engine · $mode"
 }

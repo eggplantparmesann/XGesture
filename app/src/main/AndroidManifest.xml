@@ -77,6 +77,11 @@
         <intent>
             <action android:name="android.intent.action.SEND_MULTIPLE" />
         </intent>
+        <!-- 「跳转翻译」要探测谁能接收取词文本（Android 11+ 的包可见性）。 -->
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.CREATE_SHORTCUT" />
         </intent>

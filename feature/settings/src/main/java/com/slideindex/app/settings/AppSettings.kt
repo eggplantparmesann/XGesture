@@ -316,6 +316,7 @@ data class AppSettings(
     val floatBallInstantTranslate get() = floatBall.floatBallInstantTranslate
     val floatBallTranslateEngine get() = floatBall.floatBallTranslateEngine
     val floatBallTranslateTargetLang get() = floatBall.floatBallTranslateTargetLang
+    val floatBallTranslateAppPackage get() = floatBall.floatBallTranslateAppPackage
     val floatBallImageSearchPickPanelTransparency get() = floatBall.floatBallImageSearchPickPanelTransparency
     val shareImageOcrHistoryEnabled get() = floatBall.shareImageOcrHistoryEnabled
 

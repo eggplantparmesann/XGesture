@@ -1385,7 +1385,7 @@
     <string name="pick_settings_page_hint">取词面板、OCR、搜索引擎与拾取手感设置</string>
     <string name="pick_settings_section_search">搜索引擎</string>
     <string name="pick_panel_translation_nav_subtitle">引擎、目标语言与即时翻译</string>
-    <string name="pick_panel_translation_page_hint">配置取词面板上翻译按钮：即时浮窗或跳转网页</string>
+    <string name="pick_panel_translation_page_hint">配置取词面板上翻译按钮：即时浮窗或跳转翻译</string>
     <string name="pick_settings_how_to_trigger_tip">触发取词\n① 悬浮球：开启后拖到文字上悬停。\n② 触钮集合：为触钮绑定「区域截图&amp;取词」持续手势，从屏幕边缘拖出可持续取词。\n③ 悬浮指针：在「悬浮指针」设置中开启「悬停进入框选」，从屏幕边缘拖出指针后悬停取词。</string>
     <string name="pick_settings_image_open_edit_hint">在取词面板中单击图片时打开</string>
     <string name="pick_settings_section_panel_appearance">外观与结构</string>
@@ -1687,9 +1687,19 @@
     <string name="translate_target_label_es" translatable="false">Español</string>
     <string name="translate_target_label_ru" translatable="false">Русский</string>
     <string name="float_ball_instant_translate">即时翻译</string>
-    <string name="float_ball_instant_translate_desc">翻译结果以悬浮窗显示在取词面板上方，无需跳转浏览器</string>
+    <string name="float_ball_instant_translate_desc">开启后在取词面板上方用浮窗显示译文；关闭则跳转翻译，装了翻译 App 就用它，否则打开网页</string>
     <string name="float_ball_instant_translate_on">即时翻译</string>
-    <string name="float_ball_instant_translate_off">网页翻译</string>
+    <string name="float_ball_instant_translate_off">跳转翻译</string>
+    <string name="float_ball_translate_engine_local_app">本地 App</string>
+    <string name="float_ball_translate_app">翻译 App</string>
+    <string name="float_ball_translate_app_not_selected">未选择</string>
+    <string name="float_ball_translate_app_pick_title">选择翻译 App</string>
+    <string name="float_ball_translate_app_pick_hint">只列出能接收取词文本的应用；选中后取词翻译会把文本直接交给它</string>
+    <string name="float_ball_translate_app_pick_search_hint">搜索应用</string>
+    <string name="float_ball_translate_app_pick_empty">没有可接收文本的应用</string>
+    <string name="float_ball_instant_translate_local_app_hint">译文由所选翻译 App 显示，即时浮窗不适用</string>
+    <string name="float_ball_translate_app_not_set">未设置翻译应用</string>
+    <string name="float_ball_translate_app_not_found_copied">未找到翻译应用，已复制文本</string>
     <string name="float_ball_image_search_pick_panel_transparency">图搜时取词卡片透明度</string>
     <string name="float_ball_appearance_settings_title">外观</string>
     <string name="float_ball_gesture_settings_title">手势</string>

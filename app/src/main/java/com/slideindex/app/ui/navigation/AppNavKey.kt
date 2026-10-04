@@ -455,6 +455,8 @@ sealed interface AppNavKey : NavKey {
         val selectedActivityClassName: String,
     ) : AppNavKey
     @Serializable data object TranslateModels : AppNavKey
+    /** 「选择翻译 App」：引擎选「本地 App」时挑一个能接收取词文本的应用。 */
+    @Serializable data object TranslateAppPicker : AppNavKey
     @Serializable data object FloatingPointerPointer : AppNavKey
     @Serializable data object FloatingPointerJoystick : AppNavKey
     @Serializable data object FloatingPointerRadialMenu : AppNavKey
