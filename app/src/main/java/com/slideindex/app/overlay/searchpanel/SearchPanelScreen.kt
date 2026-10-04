@@ -26,7 +26,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -1122,13 +1121,13 @@ fun SearchPanelScreen(
             exit = exitTransition,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            // imePadding first so BoxWithConstraints.maxHeight excludes keyboard — engines stay above IME.
+            // imePadding 留在 panelModifier 里：键盘弹出时面板内容（含引擎 Dock）整体上移，不被 IME 遮住。
             val panelModifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding()
                 .imePadding()
-            BoxWithConstraints(modifier = panelModifier) {
+            Box(modifier = panelModifier) {
                 val hasQueryCandidates = mode == SearchMode.TEXT && textQuery.isNotBlank()
                 val hasCandidatePanel = hasQueryCandidates || showHistoryPanel
 

@@ -1,6 +1,5 @@
 package com.slideindex.app.overlay.screenshot
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -70,7 +69,6 @@ import com.slideindex.app.R
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun SmartScreenshotEditor(
     bitmap: Bitmap,
