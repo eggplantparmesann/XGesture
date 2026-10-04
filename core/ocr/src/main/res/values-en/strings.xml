@@ -12,6 +12,24 @@
     <string name="vlm_provider_custom_name">Custom endpoint</string>
     <string name="vlm_provider_custom_desc">Self-hosted OneAPI, reverse proxy, or OpenAI-compatible endpoint</string>
     <string name="vlm_provider_custom_hint">Any standard OpenAI /chat/completions compatible endpoint</string>
+    <string name="vlm_provider_gemini_name">Gemini</string>
+    <string name="vlm_provider_gemini_desc">Google Gemini · Strong vision and a free tier, via the official OpenAI compatibility layer</string>
+    <string name="vlm_provider_gemini_hint">Get an API key from Google AI Studio</string>
+    <string name="vlm_provider_openai_name">OpenAI</string>
+    <string name="vlm_provider_openai_desc">GPT series · Versatile for both vision and translation, most mature ecosystem</string>
+    <string name="vlm_provider_openai_hint">Get an API key (sk-…) from the OpenAI platform</string>
+    <string name="vlm_provider_anthropic_name">Claude</string>
+    <string name="vlm_provider_anthropic_desc">Anthropic Claude · Top-tier recognition for long documents and complex formulas</string>
+    <string name="vlm_provider_anthropic_hint">Get an API key (sk-ant-…) from the Anthropic Console</string>
+    <string name="vlm_provider_deepseek_name">DeepSeek</string>
+    <string name="vlm_provider_deepseek_desc">DeepSeek · Low cost; deepseek-flash reads text straight from screenshots</string>
+    <string name="vlm_provider_deepseek_hint">Get an API key from the DeepSeek platform</string>
+    <string name="vlm_provider_groq_name">Groq</string>
+    <string name="vlm_provider_groq_desc">Groq · Extremely fast inference; qwen3.8-27b handles OCR and image recognition (not xAI’s Grok)</string>
+    <string name="vlm_provider_groq_hint">Get an API key (gsk_…) from the GroqCloud console</string>
+    <string name="vlm_provider_xai_name">Grok (xAI)</string>
+    <string name="vlm_provider_xai_desc">xAI Grok · Image understanding with strong reasoning (a different company from Groq)</string>
+    <string name="vlm_provider_xai_hint">Get an API key from the xAI console</string>
 
     <string name="ocr_error_unknown_model">Unknown OCR model: %1$s</string>
     <string name="ocr_error_model_not_installed">OCR model not installed</string>

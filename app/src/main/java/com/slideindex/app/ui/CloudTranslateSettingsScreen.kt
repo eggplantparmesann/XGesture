@@ -2,6 +2,8 @@ package com.slideindex.app.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +29,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.slideindex.app.R
+import com.slideindex.app.ocr.vlm.VlmCustomPreset
 import com.slideindex.app.ocr.vlm.VlmOcrConfigManager
 import com.slideindex.app.ocr.vlm.VlmProvider
 import com.slideindex.app.ui.miuix.MiuixLabeledTextField
@@ -42,12 +45,14 @@ import com.slideindex.app.ui.settings.components.settingsLazyTipCard
 import com.slideindex.app.translate.CloudTranslateRemoteModelsUiState
 import com.slideindex.app.ui.viewmodel.CloudTranslateConnectionTestState
 import top.yukonga.miuix.kmp.basic.Button
+import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.CircularProgressIndicator
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CloudTranslateSettingsScreen(
     vlmConfigManager: VlmOcrConfigManager,
@@ -106,6 +111,13 @@ fun CloudTranslateSettingsScreen(
         baseUrl = value
         vlmConfigManager.setBaseUrl(translateProvider, value.trim())
         onApiCredentialsChanged(translateProvider)
+    }
+    // 一键预设：立即落盘并刷新远程模型列表，与手动改 baseUrl 的行为保持一致。
+    val onApplyCustomPreset: (VlmCustomPreset) -> Unit = { preset ->
+        vlmConfigManager.applyCustomTranslatePreset(preset)
+        baseUrl = vlmConfigManager.getBaseUrl(translateProvider)
+        translateModel = vlmConfigManager.getTranslateModel(translateProvider)
+        onLoadRemoteModels(translateProvider, true)
     }
 
     val screenTitle = stringResource(R.string.cloud_translate_settings_title)
@@ -195,6 +207,37 @@ fun CloudTranslateSettingsScreen(
                         style = MiuixTheme.textStyles.body2,
                         color = MiuixTheme.colorScheme.onSurfaceSecondary,
                     )
+                    if (translateProvider == VlmProvider.CUSTOM) {
+                        Text(
+                            text = stringResource(R.string.vlm_custom_preset_title),
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.onSurfaceSecondary,
+                        )
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            VlmCustomPreset.translatePresets().forEach { preset ->
+                                val isPresetSelected = vlmConfigManager
+                                    .matchesCustomPreset(translateProvider, preset)
+                                Button(
+                                    onClick = { onApplyCustomPreset(preset) },
+                                    colors = if (isPresetSelected) {
+                                        ButtonDefaults.buttonColorsPrimary()
+                                    } else {
+                                        ButtonDefaults.buttonColors()
+                                    },
+                                ) {
+                                    Text(preset.displayName, style = MiuixTheme.textStyles.body2)
+                                }
+                            }
+                        }
+                        Text(
+                            text = stringResource(R.string.vlm_custom_preset_hint),
+                            style = MiuixTheme.textStyles.footnote2,
+                            color = MiuixTheme.colorScheme.onSurfaceSecondary,
+                        )
+                    }
                     MiuixLabeledTextField(
                         value = apiKey,
                         onValueChange = onSaveApiKey,

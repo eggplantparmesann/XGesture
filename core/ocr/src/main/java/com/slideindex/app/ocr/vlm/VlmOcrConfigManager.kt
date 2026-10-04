@@ -7,9 +7,20 @@ import com.slideindex.app.ocr.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
- * 云端视觉大模型服务商定义
+ * 云端视觉大模型服务商定义。
+ *
+ * 收录规则：每一项都必须是**自己训练模型的厂商**。中转站 / 聚合器（如 OpenRouter）
+ * 请走 [VlmProvider.CUSTOM] + [VlmCustomPreset]，不占用枚举位——这样枚举的语义才统一，
+ * 且每家都有独立 API Key 与独立 baseUrl，用户能随时切换。
+ *
+ * 不变量：[defaultModel] 必须支持图片输入。云端 OCR 会直接拿它发图，
+ * 若填了纯文本模型，用户选中后必然失败；纯文本模型只应出现在 [presetTranslateModels]。
  */
 enum class VlmProvider(
     val id: String,
@@ -63,6 +74,87 @@ enum class VlmProvider(
             "zai-org/GLM-4.5",
         ),
         websiteHintRes = R.string.vlm_provider_siliconflow_hint,
+    ),
+    GEMINI(
+        id = "gemini",
+        displayNameRes = R.string.vlm_provider_gemini_name,
+        descriptionRes = R.string.vlm_provider_gemini_desc,
+        // Google 官方 OpenAI 兼容层，末尾斜杠与官方示例一致。
+        defaultBaseUrl = "https://generativelanguage.googleapis.com/v1beta/openai/",
+        defaultModel = "gemini-3.8-flash",
+        presetModels = listOf("gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-pro"),
+        defaultTranslateModel = "gemini-3.8-flash",
+        presetTranslateModels = listOf("gemini-3.8-flash", "gemini-2.5-flash"),
+        websiteHintRes = R.string.vlm_provider_gemini_hint,
+    ),
+    OPENAI(
+        id = "openai",
+        displayNameRes = R.string.vlm_provider_openai_name,
+        descriptionRes = R.string.vlm_provider_openai_desc,
+        defaultBaseUrl = "https://api.openai.com/v1",
+        defaultModel = "gpt-5-mini",
+        presetModels = listOf("gpt-5-mini", "gpt-5", "gpt-6-luna"),
+        defaultTranslateModel = "gpt-5-mini",
+        presetTranslateModels = listOf("gpt-5-mini", "gpt-5", "gpt-6-luna"),
+        websiteHintRes = R.string.vlm_provider_openai_hint,
+    ),
+    ANTHROPIC(
+        id = "anthropic",
+        displayNameRes = R.string.vlm_provider_anthropic_name,
+        descriptionRes = R.string.vlm_provider_anthropic_desc,
+        // Anthropic 官方 OpenAI SDK 兼容层。官方声明该兼容层非长期/生产级方案。
+        defaultBaseUrl = "https://api.anthropic.com/v1/",
+        defaultModel = "claude-sonnet-5-5",
+        presetModels = listOf("claude-sonnet-5-5", "claude-opus-5-5", "claude-haiku-4-5-20251001"),
+        defaultTranslateModel = "claude-haiku-4-5-20251001",
+        presetTranslateModels = listOf(
+            "claude-haiku-4-5-20251001",
+            "claude-sonnet-5-5",
+            "claude-opus-5-5",
+        ),
+        websiteHintRes = R.string.vlm_provider_anthropic_hint,
+    ),
+    DEEPSEEK(
+        id = "deepseek",
+        displayNameRes = R.string.vlm_provider_deepseek_name,
+        descriptionRes = R.string.vlm_provider_deepseek_desc,
+        // 官方 base_url 为 https://api.deepseek.com，后缀拼 /chat/completions。
+        defaultBaseUrl = "https://api.deepseek.com",
+        defaultModel = "deepseek-flash",
+        presetModels = listOf("deepseek-flash", "deepseek-v4-pro"),
+        defaultTranslateModel = "deepseek-flash",
+        presetTranslateModels = listOf("deepseek-flash", "deepseek-v4-pro"),
+        websiteHintRes = R.string.vlm_provider_deepseek_hint,
+    ),
+    GROQ(
+        id = "groq",
+        displayNameRes = R.string.vlm_provider_groq_name,
+        descriptionRes = R.string.vlm_provider_groq_desc,
+        defaultBaseUrl = "https://api.groq.com/openai/v1",
+        // 注意：Groq 只有 qwen/qwen3.8-27b 支持图片输入，
+        // defaultModel 必须是它，否则云端 OCR 会必然失败。
+        defaultModel = "qwen/qwen3.8-27b",
+        presetModels = listOf("qwen/qwen3.8-27b", "openai/gpt-oss-120b", "openai/gpt-oss-20b"),
+        defaultTranslateModel = "openai/gpt-oss-120b",
+        presetTranslateModels = listOf(
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+            "llama-3.3-70b-versatile",
+        ),
+        websiteHintRes = R.string.vlm_provider_groq_hint,
+    ),
+    XAI(
+        id = "xai",
+        displayNameRes = R.string.vlm_provider_xai_name,
+        descriptionRes = R.string.vlm_provider_xai_desc,
+        // xAI API 域名为 api.x.ai，OpenAI 兼容路径为 /v1。
+        // 其 Chat Completions 已被官方标为 legacy（转向 Responses API），但目前仍可用。
+        defaultBaseUrl = "https://api.x.ai/v1",
+        defaultModel = "grok-4.7",
+        presetModels = listOf("grok-4.7", "grok-4.6", "grok-4.5"),
+        defaultTranslateModel = "grok-4.7",
+        presetTranslateModels = listOf("grok-4.7", "grok-4.3"),
+        websiteHintRes = R.string.vlm_provider_xai_hint,
     ),
     CUSTOM(
         id = "custom",
@@ -142,6 +234,32 @@ class VlmOcrConfigManager @Inject constructor(
         }
     }
 
+    /**
+     * 配置版本号：本类任何一次写入都会 +1。
+     *
+     * 本类直接读写 SharedPreferences，不属于 Compose 的观察体系：改 prefs 不会让界面重组。
+     * 界面只要 collect 这个 flow，并在重组时重新读取所需的值，就能拿到最新配置，
+     * 而不必依赖"别的写操作恰好触发了重组"——那正是"切换服务商后勾号不刷新、要重进页面才对"
+     * 这类 bug 的根源。
+     */
+    private val _configVersion = MutableStateFlow(0L)
+    val configVersion: StateFlow<Long> = _configVersion.asStateFlow()
+
+    private fun notifyConfigChanged() {
+        _configVersion.update { it + 1 }
+    }
+
+    /**
+     * 统一写入入口：写入 SharedPreferences 并通知配置已变更。
+     *
+     * 所有写入都必须走这里，这样"改了 prefs 却忘了通知界面"在结构上就不可能发生。
+     * [prefs] 用 `apply()` 落盘：内存中的值会同步更新，因此紧接着的读取能立即拿到新值。
+     */
+    private fun writeConfig(block: SharedPreferences.Editor.() -> Unit) {
+        prefs.edit().also { it.block() }.apply()
+        notifyConfigChanged()
+    }
+
     private fun defaultPrompt(): String = VlmFormulaOcrEngine.defaultSystemPrompt(context)
 
     private fun shouldUseDefaultPrompt(stored: String?): Boolean {
@@ -181,7 +299,7 @@ class VlmOcrConfigManager @Inject constructor(
     // --- 当前激活服务商 ---
     var activeProviderId: String
         get() = prefs.getString(KEY_ACTIVE_PROVIDER, VlmProvider.DASHSCOPE.id) ?: VlmProvider.DASHSCOPE.id
-        set(value) = prefs.edit().putString(KEY_ACTIVE_PROVIDER, value).apply()
+        set(value) = writeConfig { putString(KEY_ACTIVE_PROVIDER, value) }
 
     val activeProvider: VlmProvider
         get() = VlmProvider.fromId(activeProviderId)
@@ -194,7 +312,7 @@ class VlmOcrConfigManager @Inject constructor(
     var translateActiveProviderId: String
         get() = prefs.getString(KEY_TRANSLATE_ACTIVE_PROVIDER, VlmProvider.DASHSCOPE.id)
             ?: VlmProvider.DASHSCOPE.id
-        set(value) = prefs.edit().putString(KEY_TRANSLATE_ACTIVE_PROVIDER, value).apply()
+        set(value) = writeConfig { putString(KEY_TRANSLATE_ACTIVE_PROVIDER, value) }
 
     val translateActiveProvider: VlmProvider
         get() = VlmProvider.fromId(translateActiveProviderId)
@@ -208,7 +326,7 @@ class VlmOcrConfigManager @Inject constructor(
         prefs.getString(PREFIX_API_KEY + provider.id, "") ?: ""
 
     fun setApiKey(provider: VlmProvider, key: String) {
-        prefs.edit().putString(PREFIX_API_KEY + provider.id, key.trim()).apply()
+        writeConfig { putString(PREFIX_API_KEY + provider.id, key.trim()) }
     }
 
     fun getBaseUrl(provider: VlmProvider): String =
@@ -216,7 +334,7 @@ class VlmOcrConfigManager @Inject constructor(
             ?: provider.defaultBaseUrl
 
     fun setBaseUrl(provider: VlmProvider, url: String) {
-        prefs.edit().putString(PREFIX_BASE_URL + provider.id, url.trim().ifBlank { provider.defaultBaseUrl }).apply()
+        writeConfig { putString(PREFIX_BASE_URL + provider.id, url.trim().ifBlank { provider.defaultBaseUrl }) }
     }
 
     fun getModel(provider: VlmProvider): String =
@@ -225,7 +343,7 @@ class VlmOcrConfigManager @Inject constructor(
 
     fun setModel(provider: VlmProvider, model: String) {
         val trimmed = model.trim().ifBlank { provider.defaultModel }
-        prefs.edit().putString(PREFIX_MODEL + provider.id, trimmed).apply()
+        writeConfig { putString(PREFIX_MODEL + provider.id, trimmed) }
         if (trimmed !in provider.presetModels) {
             addCustomModel(provider, trimmed)
         }
@@ -239,7 +357,7 @@ class VlmOcrConfigManager @Inject constructor(
         if (trimmed.isNotBlank() && trimmed !in provider.presetModels) {
             val updated = getCustomModels(provider).toMutableSet()
             updated.add(trimmed)
-            prefs.edit().putStringSet(PREFIX_CUSTOM_MODELS + provider.id, updated).apply()
+            writeConfig { putStringSet(PREFIX_CUSTOM_MODELS + provider.id, updated) }
         }
     }
 
@@ -251,7 +369,7 @@ class VlmOcrConfigManager @Inject constructor(
 
     fun setTranslateModel(provider: VlmProvider, model: String) {
         val trimmed = model.trim().ifBlank { provider.defaultTranslateModel }
-        prefs.edit().putString(PREFIX_TRANSLATE_MODEL + provider.id, trimmed).apply()
+        writeConfig { putString(PREFIX_TRANSLATE_MODEL + provider.id, trimmed) }
         if (trimmed !in provider.presetTranslateModels) {
             addTranslateCustomModel(provider, trimmed)
         }
@@ -265,7 +383,7 @@ class VlmOcrConfigManager @Inject constructor(
         if (trimmed.isNotBlank() && trimmed !in provider.presetTranslateModels) {
             val updated = getTranslateCustomModels(provider).toMutableSet()
             updated.add(trimmed)
-            prefs.edit().putStringSet(PREFIX_TRANSLATE_CUSTOM_MODELS + provider.id, updated).apply()
+            writeConfig { putStringSet(PREFIX_TRANSLATE_CUSTOM_MODELS + provider.id, updated) }
         }
     }
 
@@ -277,6 +395,29 @@ class VlmOcrConfigManager @Inject constructor(
             model = getTranslateModel(provider),
         )
     }
+
+    // --- 「自定义端点」一键预设 ---
+    // 只作用于 VlmProvider.CUSTOM：填入 baseUrl 与推荐模型，API Key 仍需用户自己提供。
+
+    /** 应用预设到云端 OCR：写入 baseUrl 与该厂商的视觉模型。 */
+    fun applyCustomVisionPreset(preset: VlmCustomPreset) {
+        setBaseUrl(VlmProvider.CUSTOM, preset.baseUrl)
+        setModel(VlmProvider.CUSTOM, preset.visionModel)
+    }
+
+    /** 应用预设到云端翻译：写入 baseUrl 与该厂商的文本模型。 */
+    fun applyCustomTranslatePreset(preset: VlmCustomPreset) {
+        setBaseUrl(VlmProvider.CUSTOM, preset.baseUrl)
+        setTranslateModel(VlmProvider.CUSTOM, preset.translateModel)
+    }
+
+    /**
+     * 判断 [preset] 是否为 [provider] 当前生效的自定义预设。
+     * 比较时忽略末尾斜杠，因为 [VlmFormulaOcrEngine] 拼接请求路径前也会做同样处理。
+     */
+    fun matchesCustomPreset(provider: VlmProvider, preset: VlmCustomPreset): Boolean =
+        provider == VlmProvider.CUSTOM &&
+            getBaseUrl(provider).trim().trimEnd('/') == preset.baseUrl.trimEnd('/')
 
     private fun migrateProviderPromptFlagsIfNeeded() {
         VlmProvider.entries.forEach { provider ->
@@ -294,7 +435,7 @@ class VlmOcrConfigManager @Inject constructor(
         prefs.getBoolean(PREFIX_PROMPT_ENABLED + provider.id, false)
 
     fun setProviderPromptEnabled(provider: VlmProvider, enabled: Boolean) {
-        prefs.edit().putBoolean(PREFIX_PROMPT_ENABLED + provider.id, enabled).apply()
+        writeConfig { putBoolean(PREFIX_PROMPT_ENABLED + provider.id, enabled) }
     }
 
     fun getProviderPromptDraft(provider: VlmProvider): String =
@@ -303,9 +444,9 @@ class VlmOcrConfigManager @Inject constructor(
     fun setProviderPromptDraft(provider: VlmProvider, draft: String) {
         val trimmed = draft.trim()
         if (trimmed.isBlank()) {
-            prefs.edit().remove(PREFIX_PROMPT + provider.id).apply()
+            writeConfig { remove(PREFIX_PROMPT + provider.id) }
         } else {
-            prefs.edit().putString(PREFIX_PROMPT + provider.id, trimmed).apply()
+            writeConfig { putString(PREFIX_PROMPT + provider.id, trimmed) }
         }
     }
 
@@ -365,7 +506,7 @@ class VlmOcrConfigManager @Inject constructor(
             }
             return stored!!
         }
-        set(value) = prefs.edit().putString(KEY_PROMPT, value.trim().ifBlank { defaultPrompt() }).apply()
+        set(value) = writeConfig { putString(KEY_PROMPT, value.trim().ifBlank { defaultPrompt() }) }
 
     // --- 当前激活服务商的生效提示词（支持读写兼容） ---
     var prompt: String
@@ -383,7 +524,9 @@ class VlmOcrConfigManager @Inject constructor(
     fun importRawJson(raw: String, replaceExisting: Boolean = true) {
         if (raw.isBlank()) return
         val document = VlmOcrConfigBackupCodec.decode(raw)
+        // 编解码器直接批量写 prefs，走不了 writeConfig，所以在这里显式通知。
         VlmOcrConfigBackupCodec.apply(prefs, document, replaceExisting)
+        notifyConfigChanged()
     }
 }
 

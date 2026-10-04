@@ -3351,6 +3351,8 @@
     <string name="vlm_ocr_api_key_label">API Key（秘密鍵）</string>
     <string name="vlm_ocr_base_url_label">Base URL（エンドポイント）</string>
     <string name="vlm_ocr_default_endpoint">デフォルトのエンドポイント: %1$s</string>
+    <string name="vlm_custom_preset_title">クイックプリセット</string>
+    <string name="vlm_custom_preset_hint">プリセットを選ぶとエンドポイントと推奨モデルが自動入力されます。後から手動で変更できます。モデル名は各社の更新で古くなるため、プロバイダーから取得したモデル一覧を優先してください。</string>
     <string name="vlm_ocr_section_model">モデル選択とテスト</string>
     <string name="vlm_ocr_model_label">モデル名</string>
     <string name="vlm_ocr_recommended_models">このプロバイダーの推奨モデルを選択:</string>

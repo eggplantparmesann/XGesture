@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -91,6 +92,21 @@ fun OcrModelSettingsScreen(
     val localHint = stringResource(R.string.ocr_models_hint)
     val cloudSectionTitle = stringResource(R.string.ocr_models_section_cloud)
     val cloudHint = stringResource(R.string.ocr_models_cloud_hint)
+    // VlmOcrConfigManager 直接读写 SharedPreferences，不参与 Compose 的观察体系：
+    // 改 prefs 不会让界面重组。订阅 configVersion 并在其变化时重新读取，勾号 /
+    // 「已就绪」/「当前模型」才能即时刷新。
+    //
+    // 不订阅的话，界面只在"别的写操作恰好触发了重组"时才更新——在云端各家之间切换时，
+    // selectProviderAndModel 里 selectModel 写入的是同一个常量 "vlm-formula-qwen"，
+    // DataStore 去重后不发射，于是勾号会滞后到重进页面才更新。
+    val configVersion = if (vlmConfigManager == null) {
+        0L
+    } else {
+        vlmConfigManager.configVersion.collectAsState().value
+    }
+    val activeProviderId = remember(vlmConfigManager, configVersion) {
+        vlmConfigManager?.activeProviderId
+    }
     val isVlmSelected = settings.floatBallOcrModelId == "vlm-formula-qwen"
 
     var selectedTabIndex by rememberSaveable {
@@ -210,7 +226,7 @@ fun OcrModelSettingsScreen(
                 keyPrefix = "ocr-cloud-providers",
                 items = VlmProvider.entries.map { provider ->
                     val isProviderConfigured = vlmConfigManager?.isProviderConfigured(provider) == true
-                    val isProviderActive = isVlmSelected && vlmConfigManager?.activeProviderId == provider.id
+                    val isProviderActive = isVlmSelected && activeProviderId == provider.id
                     val currentProviderModel = vlmConfigManager?.getModel(provider) ?: provider.defaultModel
                     val isCustomPromptEnabled = vlmConfigManager?.isProviderPromptEnabled(provider) == true
 

@@ -31,8 +31,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.slideindex.app.R
+import com.slideindex.app.ocr.vlm.VlmCustomPreset
 import com.slideindex.app.ocr.vlm.VlmFormulaOcrEngine
 import com.slideindex.app.ocr.vlm.VlmOcrConfigManager
+import com.slideindex.app.ocr.vlm.VlmProvider
 import com.slideindex.app.ui.miuix.MiuixLabeledTextField
 import com.slideindex.app.ui.settings.components.LazySettingsItem
 import com.slideindex.app.ui.settings.components.SettingsScreenScaffold
@@ -164,6 +166,43 @@ fun VlmOcrSettingsScreen(
                         style = MiuixTheme.textStyles.body2,
                         color = MiuixTheme.colorScheme.onSurfaceSecondary,
                     )
+
+                    if (targetProvider == VlmProvider.CUSTOM) {
+                        Text(
+                            text = stringResource(R.string.vlm_custom_preset_title),
+                            style = MiuixTheme.textStyles.body2,
+                            color = MiuixTheme.colorScheme.onSurfaceSecondary,
+                        )
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            VlmCustomPreset.visionPresets().forEach { preset ->
+                                val isPresetSelected =
+                                    baseUrl.trim().trimEnd('/') == preset.baseUrl.trimEnd('/')
+                                Button(
+                                    onClick = {
+                                        baseUrl = preset.baseUrl
+                                        model = preset.visionModel
+                                        testStatusText = null
+                                        lastTestSucceeded = null
+                                    },
+                                    colors = if (isPresetSelected) {
+                                        ButtonDefaults.buttonColorsPrimary()
+                                    } else {
+                                        ButtonDefaults.buttonColors()
+                                    },
+                                ) {
+                                    Text(preset.displayName, style = MiuixTheme.textStyles.body2)
+                                }
+                            }
+                        }
+                        Text(
+                            text = stringResource(R.string.vlm_custom_preset_hint),
+                            style = MiuixTheme.textStyles.footnote2,
+                            color = MiuixTheme.colorScheme.onSurfaceSecondary,
+                        )
+                    }
 
                     MiuixLabeledTextField(
                         value = apiKey,

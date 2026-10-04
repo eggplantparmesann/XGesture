@@ -3525,6 +3525,8 @@
     <string name="vlm_ocr_api_key_label">API Key (密钥)</string>
     <string name="vlm_ocr_base_url_label">Base URL (端点地址)</string>
     <string name="vlm_ocr_default_endpoint">默认端点为：%1$s</string>
+    <string name="vlm_custom_preset_title">一键预设</string>
+    <string name="vlm_custom_preset_hint">选择预设会自动填入接口地址与推荐模型，之后仍可手动修改。模型名称会随厂商更新而过期，建议以从厂商加载的模型列表为准。</string>
     <string name="vlm_ocr_section_model">模型选择与测试</string>
     <string name="vlm_ocr_model_label">Model 模型名称</string>
     <string name="vlm_ocr_recommended_models">快捷选择该服务商推荐型号：</string>

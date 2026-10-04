@@ -3425,6 +3425,8 @@ Questions: open a GitHub Issue on the project repository.</string>
     <string name="vlm_ocr_api_key_label">API Key</string>
     <string name="vlm_ocr_base_url_label">Base URL (endpoint)</string>
     <string name="vlm_ocr_default_endpoint">Default endpoint: %1$s</string>
+    <string name="vlm_custom_preset_title">Quick presets</string>
+    <string name="vlm_custom_preset_hint">A preset fills in the endpoint and a recommended model; you can still edit both afterwards. Model names go stale as vendors update them, so prefer the list loaded from the provider.</string>
     <string name="vlm_ocr_section_model">Model selection &amp; test</string>
     <string name="vlm_ocr_model_label">Model name</string>
     <string name="vlm_ocr_recommended_models">Quick-select recommended models:</string>

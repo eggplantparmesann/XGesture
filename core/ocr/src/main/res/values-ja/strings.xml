@@ -12,6 +12,24 @@
     <string name="vlm_provider_custom_name">カスタムエンドポイント</string>
     <string name="vlm_provider_custom_desc">自前の OneAPI、リバースプロキシ、OpenAI 互換エンドポイント</string>
     <string name="vlm_provider_custom_hint">標準の OpenAI /chat/completions 互換エンドポイント</string>
+    <string name="vlm_provider_gemini_name">Gemini</string>
+    <string name="vlm_provider_gemini_desc">Google Gemini · 視覚認識に強く無料枠あり。公式の OpenAI 互換レイヤー経由</string>
+    <string name="vlm_provider_gemini_hint">Google AI Studio で API Key を取得</string>
+    <string name="vlm_provider_openai_name">OpenAI</string>
+    <string name="vlm_provider_openai_desc">GPT シリーズ · 視覚と翻訳の両方に使え、エコシステムが最も成熟</string>
+    <string name="vlm_provider_openai_hint">OpenAI プラットフォームで API Key（sk- で始まる）を取得</string>
+    <string name="vlm_provider_anthropic_name">Claude</string>
+    <string name="vlm_provider_anthropic_desc">Anthropic Claude · 長文書と複雑な公式の認識精度が最高水準</string>
+    <string name="vlm_provider_anthropic_hint">Anthropic Console で API Key（sk-ant- で始まる）を取得</string>
+    <string name="vlm_provider_deepseek_name">DeepSeek</string>
+    <string name="vlm_provider_deepseek_desc">DeepSeek · 低価格。deepseek-flash はスクリーンショットの文字認識に対応</string>
+    <string name="vlm_provider_deepseek_hint">DeepSeek 開放プラットフォームで API Key を取得</string>
+    <string name="vlm_provider_groq_name">Groq</string>
+    <string name="vlm_provider_groq_desc">Groq · 推論が極めて高速。qwen3.8-27b が OCR と画像認識に対応（xAI の Grok とは無関係）</string>
+    <string name="vlm_provider_groq_hint">GroqCloud コンソールで API Key（gsk_ で始まる）を取得</string>
+    <string name="vlm_provider_xai_name">Grok (xAI)</string>
+    <string name="vlm_provider_xai_desc">xAI Grok · 画像理解に対応し推論が得意（Groq とは別会社）</string>
+    <string name="vlm_provider_xai_hint">xAI コンソールで API Key を取得</string>
 
     <string name="ocr_error_unknown_model">不明な OCR モデル: %1$s</string>
     <string name="ocr_error_model_not_installed">OCR モデルが未インストール</string>

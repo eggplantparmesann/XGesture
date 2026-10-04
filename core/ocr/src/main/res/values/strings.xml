@@ -12,6 +12,24 @@
     <string name="vlm_provider_custom_name">自定义端点</string>
     <string name="vlm_provider_custom_desc">支持自建 OneAPI、反向代理或 OpenAI 兼容端点</string>
     <string name="vlm_provider_custom_hint">支持任意标准 OpenAI /chat/completions 兼容端点</string>
+    <string name="vlm_provider_gemini_name">Gemini</string>
+    <string name="vlm_provider_gemini_desc">Google Gemini · 视觉识别强，有免费额度，走官方 OpenAI 兼容层</string>
+    <string name="vlm_provider_gemini_hint">在 Google AI Studio 获取 API Key</string>
+    <string name="vlm_provider_openai_name">OpenAI</string>
+    <string name="vlm_provider_openai_desc">GPT 系列 · 视觉与翻译通用，生态最成熟</string>
+    <string name="vlm_provider_openai_hint">在 OpenAI 平台获取 API Key (sk- 开头)</string>
+    <string name="vlm_provider_anthropic_name">Claude</string>
+    <string name="vlm_provider_anthropic_desc">Anthropic Claude · 长文档与复杂公式识别质量顶级</string>
+    <string name="vlm_provider_anthropic_hint">在 Anthropic Console 获取 API Key (sk-ant- 开头)</string>
+    <string name="vlm_provider_deepseek_name">DeepSeek</string>
+    <string name="vlm_provider_deepseek_desc">DeepSeek · 国产直连、价格低，deepseek-flash 支持截图识字</string>
+    <string name="vlm_provider_deepseek_hint">在 DeepSeek 开放平台获取 API Key</string>
+    <string name="vlm_provider_groq_name">Groq</string>
+    <string name="vlm_provider_groq_desc">Groq · 推理极快，qwen3.8-27b 支持 OCR 与图像识别（注意与 xAI 的 Grok 无关）</string>
+    <string name="vlm_provider_groq_hint">在 GroqCloud 控制台获取 API Key (gsk_ 开头)</string>
+    <string name="vlm_provider_xai_name">Grok (xAI)</string>
+    <string name="vlm_provider_xai_desc">xAI Grok · 支持图像理解，擅长推理（与 Groq 是两家不同公司）</string>
+    <string name="vlm_provider_xai_hint">在 xAI 控制台获取 API Key</string>
 
     <string name="ocr_error_unknown_model">未知 OCR 模型：%1$s</string>
     <string name="ocr_error_model_not_installed">OCR 模型未安装</string>

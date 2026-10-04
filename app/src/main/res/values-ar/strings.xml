@@ -3318,6 +3318,8 @@
     <string name="vlm_ocr_api_key_label">مفتاح API (المفتاح السري)</string>
     <string name="vlm_ocr_base_url_label">عنوان Base URL (نقطة النهاية)</string>
     <string name="vlm_ocr_default_endpoint">نقطة النهاية الافتراضية هي: %1$s</string>
+    <string name="vlm_custom_preset_title">إعدادات سريعة</string>
+    <string name="vlm_custom_preset_hint">اختيار إعداد مسبق يملأ عنوان النهاية والطراز الموصى به تلقائيًا، ويمكنك تعديلهما لاحقًا. قد تتقادم أسماء الطرازات مع تحديث المزوّدين، لذا يُفضّل الاعتماد على قائمة الطرازات المحمّلة من المزوّد.</string>
     <string name="vlm_ocr_section_model">اختيار النموذج والاختبار</string>
     <string name="vlm_ocr_model_label">اسم نموذج Model</string>
     <string name="vlm_ocr_recommended_models">اختيار سريع للنماذج الموصى بها من هذا المزود:</string>
