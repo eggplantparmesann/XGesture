@@ -115,6 +115,10 @@ enum class GestureActionType(val id: Int) {
     SCREEN_SEARCH(88),
     /** 智能截图 (全屏/选区编辑裁剪与贴图) */
     SMART_SCREENSHOT(90),
+    /** 音量增加一级（媒体流），同时弹出系统音量面板。 */
+    VOLUME_UP(91),
+    /** 音量减小一级（媒体流），同时弹出系统音量面板。 */
+    VOLUME_DOWN(92),
     ;
 
     companion object {
@@ -587,6 +591,18 @@ sealed class GestureAction {
         override val payload = ""
     }
 
+    /** 媒体音量增加一级，同时弹出系统音量面板。 */
+    data object VolumeUp : GestureAction() {
+        override val type = GestureActionType.VOLUME_UP
+        override val payload = ""
+    }
+
+    /** 媒体音量减小一级，同时弹出系统音量面板。 */
+    data object VolumeDown : GestureAction() {
+        override val type = GestureActionType.VOLUME_DOWN
+        override val payload = ""
+    }
+
     /** 屏幕翻译：在原位覆盖译文（开关式）。 */
     data object ScreenTranslate : GestureAction() {
         override val type = GestureActionType.SCREEN_TRANSLATE
@@ -813,6 +829,8 @@ sealed class GestureAction {
                 GestureActionType.FINGERTIP_RING -> FingertipRing
                 GestureActionType.HOLOGRAPHIC_LAUNCHER -> HolographicLauncher
                 GestureActionType.VOLUME_PANEL -> VolumePanel
+                GestureActionType.VOLUME_UP -> VolumeUp
+                GestureActionType.VOLUME_DOWN -> VolumeDown
                 GestureActionType.SCREEN_TRANSLATE -> ScreenTranslate
                 GestureActionType.REMIND -> Remind
                 GestureActionType.REMIND_1M,

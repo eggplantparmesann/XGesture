@@ -53,6 +53,8 @@ internal fun gestureActionTypeOutlinedIcon(type: GestureActionType): ImageVector
     GestureActionType.CLICK_PASSTHROUGH -> ThinActionIcons.ClickPassthrough
     GestureActionType.FLASHLIGHT -> ThinActionIcons.Flashlight
     GestureActionType.ADJUST_VOLUME -> ThinActionIcons.VolumeUp
+    GestureActionType.VOLUME_UP -> ThinActionIcons.VolumeIncrease
+    GestureActionType.VOLUME_DOWN -> ThinActionIcons.VolumeDecrease
     GestureActionType.ADJUST_BRIGHTNESS -> ThinActionIcons.Brightness
     GestureActionType.TOGGLE_AUTO_BRIGHTNESS -> ThinActionIcons.BrightnessAuto
     GestureActionType.LAUNCH_ASSISTANT -> ThinActionIcons.Assistant
@@ -143,6 +145,8 @@ internal fun gestureActionTypeThinIcon(type: GestureActionType): ImageVector = w
     GestureActionType.CLICK_PASSTHROUGH -> ThinActionIcons.ClickPassthrough
     GestureActionType.FLASHLIGHT -> ThinActionIcons.Flashlight
     GestureActionType.ADJUST_VOLUME -> ThinActionIcons.VolumeUp
+    GestureActionType.VOLUME_UP -> ThinActionIcons.VolumeIncrease
+    GestureActionType.VOLUME_DOWN -> ThinActionIcons.VolumeDecrease
     GestureActionType.ADJUST_BRIGHTNESS -> ThinActionIcons.Brightness
     GestureActionType.TOGGLE_AUTO_BRIGHTNESS -> ThinActionIcons.BrightnessAuto
     GestureActionType.LAUNCH_ASSISTANT -> ThinActionIcons.Assistant

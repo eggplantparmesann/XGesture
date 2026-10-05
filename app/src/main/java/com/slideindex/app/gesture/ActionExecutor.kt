@@ -338,6 +338,14 @@ class ActionExecutor(
             GestureAction.MediaNext -> SystemGestureActions.dispatchMediaKey(context, KeyEvent.KEYCODE_MEDIA_NEXT)
             GestureAction.OpenInternetPanel -> SystemGestureActions.openNativeInternetPanel(context)
             GestureAction.OpenVolumePanel -> SystemGestureActions.openNativeVolumePanel(context)
+            GestureAction.VolumeUp -> {
+                SystemGestureActions.volumeUp(context)
+                true
+            }
+            GestureAction.VolumeDown -> {
+                SystemGestureActions.volumeDown(context)
+                true
+            }
             GestureAction.CurrentAppInfo -> SystemGestureActions.openCurrentAppInfo(context)
             GestureAction.ScreenOffKeepAwake -> {
                 com.slideindex.app.overlay.PseudoScreenOffOverlayWindow.toggle(context)

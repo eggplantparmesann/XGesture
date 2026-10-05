@@ -435,6 +435,8 @@ internal fun GestureSession.handleClassifiedGesture(
         GestureAction.Remind15m,
         GestureAction.OpenInternetPanel,
         GestureAction.OpenVolumePanel,
+        GestureAction.VolumeUp,
+        GestureAction.VolumeDown,
         GestureAction.CurrentAppInfo,
         GestureAction.ScreenOffKeepAwake,
         GestureAction.PinToScreen,

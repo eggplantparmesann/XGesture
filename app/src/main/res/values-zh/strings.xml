@@ -964,6 +964,10 @@
     <string name="gesture_action_open_internet_panel_desc">弹出系统原生 Wi-Fi 与移动网络控制面板</string>
     <string name="gesture_action_open_volume_panel">原生声音调节面板</string>
     <string name="gesture_action_open_volume_panel_desc">调出系统原生音量调节条浮窗</string>
+    <string name="gesture_action_volume_up">音量增加</string>
+    <string name="gesture_action_volume_up_desc">媒体音量增加一级，并弹出系统音量面板</string>
+    <string name="gesture_action_volume_down">音量减小</string>
+    <string name="gesture_action_volume_down_desc">媒体音量减小一级，并弹出系统音量面板</string>
     <string name="gesture_action_current_app_info">当前应用信息</string>
     <string name="gesture_action_current_app_info_desc">打开当前前台应用的应用详情管理页</string>
     <string name="gesture_action_simulate_key_event">模拟按键 (KeyEvent)</string>

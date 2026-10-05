@@ -60,6 +60,18 @@ object SystemGestureActions {
         return true
     }
 
+    /** 媒体音量增加一级；同时弹出系统音量面板。 */
+    fun volumeUp(context: Context) {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI)
+    }
+
+    /** 媒体音量减小一级；同时弹出系统音量面板。 */
+    fun volumeDown(context: Context) {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI)
+    }
+
     fun dispatchMediaKey(context: Context, keyCode: Int): Boolean {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return false
         return runCatching {

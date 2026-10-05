@@ -955,6 +955,10 @@
     <string name="gesture_action_open_internet_panel_desc">システムネイティブの Wi-Fi とモバイルネットワークパネルを表示</string>
     <string name="gesture_action_open_volume_panel">ネイティブ音量パネル</string>
     <string name="gesture_action_open_volume_panel_desc">システムネイティブの音量スライダーポップアップを表示</string>
+    <string name="gesture_action_volume_up">音量を上げる</string>
+    <string name="gesture_action_volume_up_desc">メディア音量を1段階上げ、システム音量パネルを表示します</string>
+    <string name="gesture_action_volume_down">音量を下げる</string>
+    <string name="gesture_action_volume_down_desc">メディア音量を1段階下げ、システム音量パネルを表示します</string>
     <string name="gesture_action_current_app_info">現在のアプリ情報</string>
     <string name="gesture_action_current_app_info_desc">現在の前面アプリのアプリ情報設定を開く</string>
     <string name="gesture_action_simulate_key_event">キーイベントをシミュレート（KeyEvent）</string>

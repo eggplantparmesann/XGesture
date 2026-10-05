@@ -123,6 +123,18 @@ fun gestureActionSearchAliases(context: Context, action: GestureAction): List<St
         context.getString(R.string.gesture_search_volume_3),
         "volume panel",
     )
+    GestureActionType.VOLUME_UP -> listOf(
+        context.getString(R.string.gesture_search_volume_1),
+        context.getString(R.string.gesture_search_volume_2),
+        context.getString(R.string.gesture_search_volume_3),
+        "volume up",
+    )
+    GestureActionType.VOLUME_DOWN -> listOf(
+        context.getString(R.string.gesture_search_volume_1),
+        context.getString(R.string.gesture_search_volume_2),
+        context.getString(R.string.gesture_search_volume_3),
+        "volume down",
+    )
     GestureActionType.SIMULATE_KEY_EVENT -> listOf(
         context.getString(R.string.gesture_search_keyevent_1),
         context.getString(R.string.gesture_search_keyevent_2),
@@ -171,6 +183,8 @@ fun gestureActionDescriptionText(context: Context, action: GestureAction): Strin
         GestureActionType.SNOOZE_OVERLAYS -> context.getString(R.string.gesture_action_snooze_overlays_desc)
         GestureActionType.OPEN_INTERNET_PANEL -> context.getString(R.string.gesture_action_open_internet_panel_desc)
         GestureActionType.OPEN_VOLUME_PANEL -> context.getString(R.string.gesture_action_open_volume_panel_desc)
+        GestureActionType.VOLUME_UP -> context.getString(R.string.gesture_action_volume_up_desc)
+        GestureActionType.VOLUME_DOWN -> context.getString(R.string.gesture_action_volume_down_desc)
         GestureActionType.CURRENT_APP_INFO -> context.getString(R.string.gesture_action_current_app_info_desc)
         GestureActionType.SIMULATE_KEY_EVENT -> context.getString(R.string.gesture_action_simulate_key_event_desc)
         else -> null
@@ -255,6 +269,8 @@ fun gestureActionLabelText(context: Context, action: GestureAction): String = wh
         GestureActionType.SEARCH_PANEL -> context.getString(R.string.gesture_action_search_panel)
         GestureActionType.OPEN_LINK -> context.getString(R.string.gesture_action_open_link)
         GestureActionType.VOLUME_PANEL -> context.getString(R.string.gesture_action_volume_panel)
+        GestureActionType.VOLUME_UP -> context.getString(R.string.gesture_action_volume_up)
+        GestureActionType.VOLUME_DOWN -> context.getString(R.string.gesture_action_volume_down)
         GestureActionType.SCREEN_TRANSLATE -> context.getString(R.string.gesture_action_screen_translate)
         GestureActionType.REMIND,
         GestureActionType.REMIND_1M,
@@ -402,6 +418,8 @@ fun gestureActionLabel(action: GestureAction, settings: AppSettings? = null): St
         GestureActionType.SEARCH_PANEL -> stringResource(R.string.gesture_action_search_panel)
         GestureActionType.OPEN_LINK -> stringResource(R.string.gesture_action_open_link)
         GestureActionType.VOLUME_PANEL -> stringResource(R.string.gesture_action_volume_panel)
+        GestureActionType.VOLUME_UP -> stringResource(R.string.gesture_action_volume_up)
+        GestureActionType.VOLUME_DOWN -> stringResource(R.string.gesture_action_volume_down)
         GestureActionType.SCREEN_TRANSLATE -> stringResource(R.string.gesture_action_screen_translate)
         GestureActionType.REMIND,
         GestureActionType.REMIND_1M,
@@ -489,6 +507,8 @@ fun gestureActionDescription(action: GestureAction): String? = when (action.type
     GestureActionType.SEARCH_PANEL -> stringResource(R.string.gesture_action_search_panel_desc)
     GestureActionType.OPEN_LINK -> stringResource(R.string.gesture_action_open_link_desc)
     GestureActionType.VOLUME_PANEL -> stringResource(R.string.gesture_action_volume_panel_desc)
+    GestureActionType.VOLUME_UP -> stringResource(R.string.gesture_action_volume_up_desc)
+    GestureActionType.VOLUME_DOWN -> stringResource(R.string.gesture_action_volume_down_desc)
     GestureActionType.SCREEN_TRANSLATE -> stringResource(R.string.gesture_action_screen_translate_desc)
     GestureActionType.UNIVERSAL_COPY -> stringResource(R.string.gesture_action_universal_copy_desc)
     GestureActionType.SCREEN_SEARCH -> stringResource(R.string.gesture_action_screen_search_desc)

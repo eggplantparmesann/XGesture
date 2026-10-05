@@ -506,6 +506,52 @@ internal object ThinActionIcons {
         }
     }
 
+    /** 扬声器 + 加号：音量增加。 */
+    val VolumeIncrease: ImageVector by lazy {
+        createThinIcon("ThinVolumeIncrease") {
+            path(
+                stroke = strokeBrush,
+                strokeLineWidth = STROKE_WIDTH,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+            ) {
+                moveTo(4f, 9f)
+                lineTo(7.5f, 9f)
+                lineTo(12f, 5.5f)
+                lineTo(12f, 18.5f)
+                lineTo(7.5f, 15f)
+                lineTo(4f, 15f)
+                close()
+                moveTo(18.5f, 9.5f)
+                lineTo(18.5f, 14.5f)
+                moveTo(16f, 12f)
+                lineTo(21f, 12f)
+            }
+        }
+    }
+
+    /** 扬声器 − 减号：音量减小。 */
+    val VolumeDecrease: ImageVector by lazy {
+        createThinIcon("ThinVolumeDecrease") {
+            path(
+                stroke = strokeBrush,
+                strokeLineWidth = STROKE_WIDTH,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round,
+            ) {
+                moveTo(4f, 9f)
+                lineTo(7.5f, 9f)
+                lineTo(12f, 5.5f)
+                lineTo(12f, 18.5f)
+                lineTo(7.5f, 15f)
+                lineTo(4f, 15f)
+                close()
+                moveTo(16f, 12f)
+                lineTo(21f, 12f)
+            }
+        }
+    }
+
     val VolumeOff: ImageVector by lazy {
         createThinIcon("ThinVolumeOff") {
             path(
