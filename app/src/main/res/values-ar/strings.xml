@@ -435,6 +435,8 @@
     <string name="corner_gesture_slot_haptic_desc">اهتزاز عند انتقال الإصبع إلى فتحة جديدة (مع احترام إعداد الاهتزاز في الصفحة الرئيسية)</string>
     <string name="corner_gesture_show_selected_name">عرض اسم الإصابة</string>
     <string name="corner_gesture_show_selected_name_desc">عرض الأيقونة والاسم في الجزء العلوي من الشاشة عند تمييز الفتحة (مشابه لبدء تشغيل خلية النحل)</string>
+    <string name="corner_gesture_show_edit_button">إظهار زر التحرير السريع</string>
+    <string name="corner_gesture_show_edit_button_desc">عرض زر للدخول إلى وضع التحرير خارج العجلة؛ عند التعطيل يمكن تكوين الفتحات من هذه الإعدادات</string>
     <string name="corner_gesture_background_style">خلفية العجلة</string>
     <string name="corner_gesture_background_none">لا شيء</string>
     <string name="action_category_navigation">التنقل والنظام</string>
@@ -616,6 +618,8 @@
     <string name="free_window_preview_title">ضبط حجم وموضع النافذة الحرة</string>
     <string name="free_window_preview_save">إنهاء المعاينة والحفظ</string>
     <string name="free_window_portrait_preview">معاينة الوضع العمودي</string>
+    <string name="free_window_landscape_preview">معاينة الوضع الأفقي</string>
+    <string name="free_window_layout_summary">عمودي %1$d%% × %2$d%% · أفقي %3$d%% × %4$d%%</string>
     <string name="launch_policy_title">سياسة التشغيل</string>
     <string name="launch_policy_always_fullscreen">ملء الشاشة دائماً</string>
     <string name="launch_policy_always_fullscreen_desc">فتح ملء الشاشة عند رفع الإصبع</string>
@@ -627,6 +631,12 @@
     <string name="launch_policy_free_window_long_press_fullscreen_desc">نافذة حرة افتراضيًا؛ اضغط مطولًا على الأيقونة ثم ارفع لفتح ملء الشاشة</string>
     <string name="long_press_launch_duration">وقت تشغيل الضغط المطول</string>
     <string name="long_press_launch_duration_value">%1$d مللي ثانية</string>
+    <string name="launch_window_mode_title">وضع التشغيل</string>
+    <string name="launch_window_mode_follow_global">اتباع السياسة العامة</string>
+    <string name="launch_window_mode_follow_global_desc">يعتمد ملء الشاشة أو النافذة الحرة على سياسة التشغيل في إعدادات النوافذ الحرة</string>
+    <string name="launch_window_mode_fullscreen">ملء الشاشة دائماً</string>
+    <string name="launch_window_mode_free_window">نافذة حرة دائماً</string>
+    <string name="launch_window_mode_free_window_desc">يتطلب تفعيل النافذة الحرة في إعدادات النوافذ الحرة</string>
     <string name="hidden_apps_entry_title">إخفاء التطبيقات</string>
     <string name="hidden_apps_entry_desc">إخفاء تطبيقات محددة من قائمة فهرس التطبيقات</string>
     <string name="hidden_apps_title">إخفاء التطبيقات</string>
@@ -1220,6 +1230,8 @@
     <string name="honeycomb_launcher_add">إضافة تطبيق</string>
     <string name="honeycomb_launcher_editor_desc">تكوين التطبيقات والاختصارات المعروضة في مشغل خلية النحل. يُنصح بتعيين وضع تشغيل الإيماءة على «التشغيل المستمر»، اضغط واسحب للاختيار، أفلت للتشغيل.</string>
     <string name="honeycomb_launcher_entry_desc">تكوين قائمة التطبيقات لمشغل خلية النحل</string>
+    <string name="fv_app_switcher_entry_title">مشغّل الحلقة</string>
+    <string name="fv_app_switcher_entry_desc">مشغّل حلقات متحدة المركز: طبقات الحلقة والأبعاد وشريط الأدوات</string>
     <string name="fv_app_switcher_appearance_title">مظهر وتخطيط الحلقة</string>
     <string name="fv_app_switcher_circle_count_title">عدد الحلقات المعروضة</string>
     <string name="fv_app_switcher_circle_count_desc">اختر عدد طبقات الدوائر المتداخلة لمشغل الحلقة</string>
@@ -1244,8 +1256,13 @@
     <string name="fv_app_switcher_link_merge_slot_kind">مزامنة الفتحات</string>
     <string name="fv_app_switcher_link_merge_use_other">اعتماد المحور الآخر</string>
     <string name="fv_app_switcher_link_merge_use_current">المحور الحالي يكتب فوق المحور الآخر</string>
+    <string name="fv_app_switcher_show_toolbar_title">إظهار شريط الأدوات</string>
+    <string name="fv_app_switcher_show_toolbar_desc">عرض أزرار الطي والتحريك والتحرير والإعدادات وتبديل لوحة المفاتيح بجانب الحلقات</string>
     <string name="fv_app_switcher_reset_defaults">استعادة المظهر الافتراضي</string>
     <string name="fv_app_switcher_done">تم</string>
+    <string name="fv_app_switcher_open_overlay">تشغيل مشغّل الحلقة</string>
+    <string name="fv_app_switcher_open_overlay_desc">إظهار الحلقة على الشاشة الآن لتكوين الفتحات والاختصارات مباشرة</string>
+    <string name="fv_app_switcher_accessibility_required">يلزم تفعيل خدمة إمكانية الوصول لتشغيل الحلقة</string>
     <string name="honeycomb_display_settings_title">عرض وحركة خلية النحل</string>
     <string name="honeycomb_display_settings_entry">العرض والحركة</string>
     <string name="honeycomb_display_settings_entry_desc">طريقة التشغيل، الموضع، التخطيط، الخلفية، والرسوم المتحركة</string>
@@ -1410,6 +1427,10 @@
     <string name="float_ball_pick_search_grid_state_remember">تذكر آخر حالة (موصى به)</string>
     <string name="float_ball_pick_search_grid_state_expanded">موسّع دائمًا عند الفتح</string>
     <string name="float_ball_pick_search_grid_state_collapsed">مطوي دائمًا عند الفتح</string>
+    <string name="float_ball_pick_text_mode_state_title">الحالة الافتراضية لاختيار كلمة</string>
+    <string name="float_ball_pick_text_mode_state_remember">تذكر آخر حالة (موصى به)</string>
+    <string name="float_ball_pick_text_mode_state_always_on">مفعّل دائماً عند فتح اللوحة</string>
+    <string name="float_ball_pick_text_mode_state_always_off">معطّل دائماً عند فتح اللوحة</string>
     <string name="float_ball_pick_default_engine_desc">اضغط مطوّلًا على زر البحث في لوحة الالتقاط للبحث مباشرة؛ لا استجابة عند عدم التعيين</string>
     <string name="float_ball_pick_panel_tab_text">النص</string>
     <string name="float_ball_pick_panel_tab_image">لقطة الشاشة</string>
@@ -3570,6 +3591,10 @@
     <string name="inspire_image_edit_text_title">إدخال النص</string>
     <string name="inspire_image_edit_title">تحرير الصورة</string>
     <string name="inspire_image_edit_undo">تراجع</string>
+    <string name="gesture_action_smart_screenshot">لقطة شاشة ذكية</string>
+    <string name="gesture_action_smart_screenshot_desc">قص وتحرير لقطة شاشة لمنطقة أو ملء الشاشة، مع تثبيتها على الشاشة (11+)</string>
+    <string name="smart_screenshot_saved">تم حفظ لقطة الشاشة في الألبوم</string>
+    <string name="smart_screenshot_copied">تم نسخ لقطة الشاشة إلى الحافظة</string>
     <string name="otp_hub_tab_settings">الإعدادات</string>
     <string name="otp_extraction_entry_title">استخراج الرمز</string>
     <string name="otp_extraction_entry_desc">ما يحدث بعد العثور على الرمز: إشعار، Toast، نسخ تلقائي؛ إضافة إلى حجب الرسائل والأمان</string>

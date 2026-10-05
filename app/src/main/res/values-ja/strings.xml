@@ -614,6 +614,8 @@
     <string name="free_window_preview_title">フリーフォームのサイズと位置を調整</string>
     <string name="free_window_preview_save">プレビューを終了して保存</string>
     <string name="free_window_portrait_preview">縦向きプレビュー</string>
+    <string name="free_window_landscape_preview">横向きプレビュー</string>
+    <string name="free_window_layout_summary">縦向き %1$d%% × %2$d%% · 横向き %3$d%% × %4$d%%</string>
     <string name="launch_policy_title">起動ポリシー</string>
     <string name="launch_policy_always_fullscreen">常に全画面</string>
     <string name="launch_policy_always_fullscreen_desc">アイコンを離すと全画面で開きます</string>
@@ -625,6 +627,12 @@
     <string name="launch_policy_free_window_long_press_fullscreen_desc">デフォルトはフリーフォーム。設定時間だけアイコンを長押ししてから離すと全画面で開きます</string>
     <string name="long_press_launch_duration">長押し時間</string>
     <string name="long_press_launch_duration_value">%1$d ミリ秒</string>
+    <string name="launch_window_mode_title">起動モード</string>
+    <string name="launch_window_mode_follow_global">グローバル起動ポリシーに従う</string>
+    <string name="launch_window_mode_follow_global_desc">全画面かフリーフォームかは、フリーウィンドウ設定の起動ポリシーに従います</string>
+    <string name="launch_window_mode_fullscreen">常に全画面</string>
+    <string name="launch_window_mode_free_window">常にフリーフォーム</string>
+    <string name="launch_window_mode_free_window_desc">フリーウィンドウ設定で有効にする必要があります</string>
     <string name="hidden_apps_entry_title">非表示アプリ</string>
     <string name="hidden_apps_entry_desc">アプリインデックス一覧からアプリを非表示</string>
     <string name="hidden_apps_title">非表示アプリ</string>
@@ -1432,6 +1440,10 @@
     <string name="float_ball_pick_search_grid_state_remember">前回の状態を記憶（推奨）</string>
     <string name="float_ball_pick_search_grid_state_expanded">常に展開して表示</string>
     <string name="float_ball_pick_search_grid_state_collapsed">常に折りたたんで表示</string>
+    <string name="float_ball_pick_text_mode_state_title">単語タップの初期状態</string>
+    <string name="float_ball_pick_text_mode_state_remember">前回の状態を記憶（推奨）</string>
+    <string name="float_ball_pick_text_mode_state_always_on">パネルを開くたびに常にオン</string>
+    <string name="float_ball_pick_text_mode_state_always_off">パネルを開くたびに常にオフ</string>
     <string name="float_ball_pick_default_engine_desc">取词パネルの検索ボタンを長押しすると直接検索できます。未設定時は長押ししても反応しません</string>
     <string name="float_ball_pick_haptic_enabled">パネル触覚フィードバック</string>
     <string name="float_ball_pick_haptic_enabled_desc">コピー成功時や単語選択モードでのスライド選択時に軽快なマイクロ触覚フィードバックを提供します</string>
@@ -3638,6 +3650,10 @@
     <string name="inspire_image_edit_text_title">文字を入力</string>
     <string name="inspire_image_edit_title">画像編集</string>
     <string name="inspire_image_edit_undo">取り消し</string>
+    <string name="gesture_action_smart_screenshot">スマートスクリーンショット</string>
+    <string name="gesture_action_smart_screenshot_desc">範囲/全画面のスクリーンショット編集と画面上へのピン留め（11+）</string>
+    <string name="smart_screenshot_saved">スクリーンショットをアルバムに保存しました</string>
+    <string name="smart_screenshot_copied">スクリーンショットをクリップボードにコピーしました</string>
     <string name="settings_app_language_label_zh">简体中文</string>
     <string name="settings_app_language_label_en">English</string>
     <string name="settings_app_language_label_ja">日本語</string>

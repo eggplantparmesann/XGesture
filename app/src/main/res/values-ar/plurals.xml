@@ -161,6 +161,14 @@
         <item quantity="other">تم تحميل %d عناصر</item>
     </plurals>
     <plurals name="honeycomb_launcher_entry_summary">
+    <plurals name="fv_app_switcher_entry_summary">
+        <item quantity="zero">تم تكوين %d عناصر</item>
+        <item quantity="one">تم تكوين %d عنصر</item>
+        <item quantity="two">تم تكوين %d عنصر</item>
+        <item quantity="few">تم تكوين %d عناصر</item>
+        <item quantity="many">تم تكوين %d عناصر</item>
+        <item quantity="other">تم تكوين %d عناصر</item>
+    </plurals>
         <item quantity="zero">%d مُعدّة</item>
         <item quantity="one">%d مُعدّ</item>
         <item quantity="two">%d مُعدّ</item>
