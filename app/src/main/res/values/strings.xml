@@ -1155,7 +1155,7 @@
     <string name="floating_pointer_area_preview_desc">Show joystick travel bounds on the real screen</string>
     <string name="floating_pointer_preview_pointer_range">Pointer start</string>
     <string name="floating_pointer_pointer_settings_title">Pointer appearance</string>
-    <string name="floating_pointer_pointer_settings_summary">Ring %1$d px 路 Dot %2$d px</string>
+    <string name="floating_pointer_pointer_settings_summary">Ring %1$d px · Dot %2$d px</string>
     <string name="floating_pointer_joystick_settings_title">Joystick appearance &amp; behavior</string>
     <string name="floating_pointer_joystick_settings_summary">%1$d px diameter</string>
     <string name="floating_pointer_preview_section">Preview</string>
@@ -1285,7 +1285,7 @@
     <string name="pointer_swipe_duration_title">Swipe duration</string>
     <string name="pointer_swipe_duration_value">%1$d ms</string>
     <string name="pointer_swipe_pointer_count_title">Multi-touch</string>
-    <string name="pointer_swipe_action_summary">%1$s 路 tap gear to configure</string>
+    <string name="pointer_swipe_action_summary">%1$s · tap gear to configure</string>
     <string name="notification_history_entry_title">Notification filter box</string>
     <string name="notification_history_entry_desc">View live and archived notifications; hide and reopen</string>
     <string name="notification_history_entry_summary">Saved notifications: %1$d</string>
@@ -1841,7 +1841,7 @@
     <string name="handle_width_small">Small</string>
     <string name="handle_width_large">Large</string>
     <string name="align_handles">Align handles</string>
-    <string name="align_handles_desc">Match this group鈥檚 handles to the same position on the opposite side</string>
+    <string name="align_handles_desc">Match this group’s handles to the same position on the opposite side</string>
     <string name="align_opposite_gestures">Sync gestures with opposite side</string>
     <string name="align_opposite_gestures_desc">Left and right handles in this group share slot actions and trigger modes</string>
     <string name="align_opposite_gestures_mirror_title">Sync gestures with opposite side</string>
@@ -2249,7 +2249,7 @@
     <string name="temp_dnd_notification_redefine_hint">Minutes</string>
     <string name="temp_dnd_notification_stop_action">Turn off now</string>
     <string name="gesture_action_screen_record">Screen record</string>
-    <string name="gesture_action_toggle_wifi">Toggle Wi鈥慒i</string>
+    <string name="gesture_action_toggle_wifi">Toggle Wi-Fi</string>
     <string name="gesture_action_toggle_mobile_data">Toggle mobile data</string>
     <string name="gesture_action_screen_record_permission">Needs “Display over other apps” permission</string>
     <string name="screen_record_channel_name">Screen recording</string>
