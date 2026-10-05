@@ -78,7 +78,10 @@ fun FloatBallAppearanceSettingsScreen(
     val positionMode = settings.floatBallPositionMode
     val positionModeEntries = FloatBallPositionMode.selectable
     val positionModeIndex = positionModeEntries.indexOf(positionMode).coerceAtLeast(0)
-    val showEdgeLineSettings = positionMode == FloatBallPositionMode.BOTH_EDGES
+    val showEdgeLineSettings = positionMode == FloatBallPositionMode.BOTH_EDGES ||
+        positionMode == FloatBallPositionMode.BOTH_LINES
+    // 「两侧都是线」没有常驻球，球的显示比例滑条无意义。
+    val showVisibleFractionSetting = positionMode != FloatBallPositionMode.BOTH_LINES
 
     SettingsScreenScaffold(
         title = stringResource(R.string.float_ball_appearance_settings_title),
@@ -176,27 +179,29 @@ fun FloatBallAppearanceSettingsScreen(
                         )
                     }
                 )
-                add(
-                    settingsCardScopeItem("visible-fraction") {
-                        SettingsSliderRow(
-                            title = stringResource(R.string.float_ball_visible_fraction),
-                            value = settings.floatBallVisibleFraction,
-                            valueRange = floatBallVisibleFractionRange,
-                            enabled = true,
-                            label = fractionPercentLabel(settings.floatBallVisibleFraction),
-                            formatLabel = ::fractionPercentLabel,
-                            snapValue = fractionPercentSnap(floatBallVisibleFractionRange),
-                            triggersLayoutPreview = true,
-                            onLayoutPreviewValueChange = { value ->
-                                onPreviewAppearance(null, null, value, null, null, null)
-                            },
-                            onValueChange = { value ->
-                                onAppearancePreviewCommit()
-                                onVisibleFractionChange(value)
-                            }
-                        )
-                    }
-                )
+                if (showVisibleFractionSetting) {
+                    add(
+                        settingsCardScopeItem("visible-fraction") {
+                            SettingsSliderRow(
+                                title = stringResource(R.string.float_ball_visible_fraction),
+                                value = settings.floatBallVisibleFraction,
+                                valueRange = floatBallVisibleFractionRange,
+                                enabled = true,
+                                label = fractionPercentLabel(settings.floatBallVisibleFraction),
+                                formatLabel = ::fractionPercentLabel,
+                                snapValue = fractionPercentSnap(floatBallVisibleFractionRange),
+                                triggersLayoutPreview = true,
+                                onLayoutPreviewValueChange = { value ->
+                                    onPreviewAppearance(null, null, value, null, null, null)
+                                },
+                                onValueChange = { value ->
+                                    onAppearancePreviewCommit()
+                                    onVisibleFractionChange(value)
+                                }
+                            )
+                        }
+                    )
+                }
                 add(
                     settingsCardScopeItem("position-y") {
                         SettingsSliderRow(
@@ -311,5 +316,6 @@ internal fun floatBallPositionModeLabel(mode: FloatBallPositionMode): String =
         FloatBallPositionMode.LEFT -> stringResource(R.string.float_ball_position_left)
         FloatBallPositionMode.RIGHT -> stringResource(R.string.float_ball_position_right)
         FloatBallPositionMode.BOTH_EDGES -> stringResource(R.string.float_ball_position_both_edges)
+        FloatBallPositionMode.BOTH_LINES -> stringResource(R.string.float_ball_position_both_lines)
         FloatBallPositionMode.CUSTOM -> stringResource(R.string.float_ball_position_right)
     }

@@ -30,6 +30,9 @@ interface MessageOverlayPort {
 
     fun dismissImmediate(style: MessageStyle?)
 
+    /** 解锁后补显锁屏期间保留下来的悬浮球提醒（未处于保留状态时无副作用）。 */
+    fun replayFloatIconAfterUnlock()
+
     fun snapshotDisplayedKeys(): Set<String>
 
     fun dismissAllReminders()

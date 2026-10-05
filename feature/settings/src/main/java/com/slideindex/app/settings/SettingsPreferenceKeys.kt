@@ -420,6 +420,9 @@ internal object SettingsPreferenceKeys {
         stringSetPreferencesKey("message_open_last_always_packages")
     val MESSAGE_UNLOCK_CONFIRMATION_AUTO_DISMISS_SECONDS =
         intPreferencesKey("message_unlock_confirmation_auto_dismiss_seconds")
+    /** 锁屏期间到达的消息，其悬浮球提醒保留到解锁后再显示。 */
+    val MESSAGE_KEEP_FLOAT_ICON_AFTER_UNLOCK =
+        booleanPreferencesKey("message_keep_float_icon_after_unlock")
     val DEBUG_PERFORMANCE_MONITOR = booleanPreferencesKey("debug_performance_monitor")
     val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
     val FLOAT_BALL_ENABLED = booleanPreferencesKey("float_ball_enabled")
@@ -452,6 +455,8 @@ internal object SettingsPreferenceKeys {
         floatPreferencesKey("float_ball_pick_bottom_transition_fraction")
     val FLOAT_BALL_PICK_TEXT_FIRST_PANEL = booleanPreferencesKey("float_ball_pick_text_first_panel")
     val FLOAT_BALL_PICK_PANEL_STYLE = stringPreferencesKey("float_ball_pick_panel_style")
+    /** 取词面板落位方式：贴底 / 屏幕中间。 */
+    val FLOAT_BALL_PICK_PANEL_PLACEMENT = stringPreferencesKey("float_ball_pick_panel_placement")
     val FLOAT_BALL_PICK_SEARCH_GRID_DEFAULT_STATE = stringPreferencesKey("float_ball_pick_search_grid_default_state")
     val FLOAT_BALL_PICK_SEARCH_GRID_LAST_EXPANDED = booleanPreferencesKey("float_ball_pick_search_grid_last_expanded")
     val FLOAT_BALL_PICK_TEXT_MODE_DEFAULT = stringPreferencesKey("float_ball_pick_text_mode_default")

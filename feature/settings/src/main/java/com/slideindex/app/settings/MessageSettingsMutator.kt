@@ -251,6 +251,9 @@ class MessageSettingsMutator @Inject constructor(
     suspend fun setMessageOpenLastOnUnlock(enabled: Boolean) =
         editor.edit { it[SettingsPreferenceKeys.MESSAGE_OPEN_LAST_ON_UNLOCK] = enabled }
 
+    suspend fun setMessageKeepFloatIconAfterUnlock(enabled: Boolean) =
+        editor.edit { it[SettingsPreferenceKeys.MESSAGE_KEEP_FLOAT_ICON_AFTER_UNLOCK] = enabled }
+
     suspend fun setMessageUnlockConfirmationAutoDismissSeconds(seconds: Int) =
         editor.edit {
             it[SettingsPreferenceKeys.MESSAGE_UNLOCK_CONFIRMATION_AUTO_DISMISS_SECONDS] =

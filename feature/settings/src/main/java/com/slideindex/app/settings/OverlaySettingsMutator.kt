@@ -970,6 +970,10 @@ class OverlaySettingsMutator @Inject constructor(
         it[SettingsPreferenceKeys.FLOAT_BALL_PICK_PANEL_STYLE] = style.storageKey
     }
 
+    suspend fun setFloatBallPickPanelPlacement(placement: PickResultPanelPlacement) = editor.edit {
+        it[SettingsPreferenceKeys.FLOAT_BALL_PICK_PANEL_PLACEMENT] = placement.storageKey
+    }
+
     suspend fun setFloatBallPickSearchGridDefaultState(state: PickResultSearchGridDefaultState) = editor.edit {
         it[SettingsPreferenceKeys.FLOAT_BALL_PICK_SEARCH_GRID_DEFAULT_STATE] = state.storageKey
     }

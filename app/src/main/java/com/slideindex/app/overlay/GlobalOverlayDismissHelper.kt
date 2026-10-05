@@ -21,13 +21,18 @@ object GlobalOverlayDismissHelper {
     @Volatile
     private var dismissPosted = false
 
-    fun dismissAllPanels() {
+    /**
+     * @param lockScreenBoundary 由熄屏/锁屏触发时传 true：悬浮球提醒交由
+     *   [FloatIconOverlayWindow.handleLockScreenBoundary] 决定是清除还是保留到解锁后补显；
+     *   截图、语言切换等场景保持 false（一律清除）。
+     */
+    fun dismissAllPanels(lockScreenBoundary: Boolean = false) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             if (dismissPosted) return
             dismissPosted = true
             mainHandler.post {
                 dismissPosted = false
-                dismissAllPanels()
+                dismissAllPanels(lockScreenBoundary)
             }
             return
         }
@@ -48,7 +53,13 @@ object GlobalOverlayDismissHelper {
         runCatching { FloatBallStashPanel.dismiss() }
         runCatching { FreezerOverlayWindow.dismiss() }
         runCatching { FloatBallTranslatePanel.dismiss() }
-        runCatching { FloatIconOverlayWindow.dismiss() }
+        runCatching {
+            if (lockScreenBoundary) {
+                FloatIconOverlayWindow.handleLockScreenBoundary()
+            } else {
+                FloatIconOverlayWindow.dismiss()
+            }
+        }
         runCatching { CNoticeOverlayWindow.closePanel() }
         runCatching { MessageReplyOverlayWindow.dismiss() }
         runCatching { ForegroundActivityInspectorOverlayWindow.dismiss() }

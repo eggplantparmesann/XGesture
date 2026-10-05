@@ -68,9 +68,11 @@ object FloatIconOverlayWindow {
     private var rootLayoutParams: WindowManager.LayoutParams? = null
     private var owner: OverlayComposeOwner? = null
     private var placementSettings: MessageSettings? = null
-    private val screenOffDismissReceiver = ScreenOffDismissReceiver { dismiss() }
+    private val screenOffDismissReceiver = ScreenOffDismissReceiver { handleLockScreenBoundary() }
     private var appContext: Context? = null
     private var nextEntryId = 0L
+    /** 锁屏期间已冻结计时的提醒，等解锁后由 [replayAfterUnlock] 补显。 */
+    private var suspendedForLockScreen = false
 
     val isShowing: Boolean get() = composeView != null
 
@@ -98,6 +100,21 @@ object FloatIconOverlayWindow {
 
         while (items.isNotEmpty()) {
             removeEntry(items.last(), animate = false)
+        }
+
+        if (suspendedForLockScreen) {
+            // 锁屏期间只入队等解锁后补显，不建窗口、不起计时（避免倒计时在锁屏期间流逝）。
+            if (plan.data.key == MessageReminderPreviewController.PREVIEW_KEY) return
+            items.add(
+                FloatIconEntry(
+                    id = ++nextEntryId,
+                    planState = mutableStateOf(plan),
+                    visible = mutableStateOf(false),
+                    onAction = onAction,
+                    onDismiss = onDismiss
+                )
+            )
+            return
         }
 
         ensureWindow(hostContext, plan.settings)
@@ -206,6 +223,48 @@ object FloatIconOverlayWindow {
             return
         }
         items.toList().forEach { removeEntry(it, animate = true) }
+    }
+
+    /**
+     * 熄屏/锁屏边界：开启「解锁后继续显示悬浮球提醒」时冻结计时并隐藏窗口，
+     * 否则与旧行为一致（整窗清除）。
+     */
+    fun handleLockScreenBoundary() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mainHandler.post { handleLockScreenBoundary() }
+            return
+        }
+        if (items.any { it.plan.settings.keepFloatIconAfterUnlock }) {
+            suspendForLockScreen()
+        } else {
+            dismiss()
+        }
+    }
+
+    /** 隐藏窗口但保留提醒（清除计时），等解锁后 [replayAfterUnlock] 按原时长重新计时。 */
+    private fun suspendForLockScreen() {
+        // 预览条目不是真实提醒，直接收掉。
+        items.filter { it.plan.data.key == MessageReminderPreviewController.PREVIEW_KEY }
+            .toList()
+            .forEach { removeEntry(it, animate = false) }
+        items.forEach { cancelAutoDismiss(it) }
+        suspendedForLockScreen = true
+        detachWindow()
+    }
+
+    /** 解锁后补显锁屏期间保留下来的悬浮球提醒；未处于保留状态时无副作用。 */
+    fun replayAfterUnlock() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mainHandler.post { replayAfterUnlock() }
+            return
+        }
+        if (!suspendedForLockScreen) return
+        suspendedForLockScreen = false
+        if (items.isEmpty()) return
+        val context = appContext ?: return
+        ensureWindow(context, items.first().plan.settings)
+        items.forEach { scheduleAutoDismiss(it) }
+        composeView?.post { items.forEach { it.visible.value = true } }
     }
 
     private fun ensureWindow(hostContext: Context, settings: MessageSettings) {
@@ -326,6 +385,13 @@ object FloatIconOverlayWindow {
     }
 
     private fun cleanupWindow() {
+        suspendedForLockScreen = false
+        detachWindow()
+        appContext = null
+    }
+
+    /** 拆掉窗口但保留条目与 [appContext]，供解锁后重建。 */
+    private fun detachWindow() {
         val wm = windowManager
         val view = composeView
         val dialogOwner = owner
@@ -337,7 +403,6 @@ object FloatIconOverlayWindow {
         rootLayoutParams = null
         placementSettings = null
         windowManager = null
-        appContext = null
     }
 }
 

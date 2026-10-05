@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.slideindex.app.R
 import com.slideindex.app.message.MessageSettings
+import com.slideindex.app.ui.SettingSwitchRow
 import com.slideindex.app.ui.SettingsSliderRow
 import com.slideindex.app.ui.miuix.CardItem
 import com.slideindex.app.ui.miuix.groupedCardItems
@@ -22,6 +23,7 @@ fun floatIconSettingsCardItems(
     onOpacityChange: (Float) -> Unit,
     onFloatIconSizeDpChange: (Float) -> Unit,
     onAutoDismissSecondsChange: (Int) -> Unit,
+    onKeepAfterUnlockChange: (Boolean) -> Unit,
     onPreviewChange: (MessageSettings) -> Unit = {},
     onPreviewCommit: () -> Unit = {},
 ): List<CardItem> = buildList {
@@ -73,6 +75,17 @@ fun floatIconSettingsCardItems(
             enabled = enabled,
             onAutoDismissSecondsChange = onAutoDismissSecondsChange,
         ),
+    )
+    add(
+        settingsCardScopeItem("keep-after-unlock") {
+            SettingSwitchRow(
+                title = stringResource(R.string.message_reminder_keep_float_icon_after_unlock),
+                subtitle = stringResource(R.string.message_reminder_keep_float_icon_after_unlock_desc),
+                checked = settings.keepFloatIconAfterUnlock,
+                enabled = enabled,
+                onCheckedChange = onKeepAfterUnlockChange,
+            )
+        },
     )
 }
 

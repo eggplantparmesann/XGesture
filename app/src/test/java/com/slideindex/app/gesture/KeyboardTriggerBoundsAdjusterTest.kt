@@ -82,6 +82,36 @@ class KeyboardTriggerBoundsAdjusterTest {
     }
 
     @Test
+    fun narrow_from_right_edge_keeps_strip_flush_with_right_edge() {
+        val rect = rect(1000, 1800, 1080, 2200)
+        val adjusted = KeyboardTriggerBoundsAdjuster.adjustRect(
+            rect = rect,
+            behavior = KeyboardTriggerBehavior.NARROW,
+            imeTop = 2000,
+            density = 3f,
+            narrowScale = 0.5f,
+            narrowFromRightEdge = true,
+        )
+        // 贴右边缘的触发条收窄后必须仍贴右，否则会整条被推离屏幕边缘。
+        assertEquals(1080, adjusted.right)
+        assertEquals(40, adjusted.right - adjusted.left)
+    }
+
+    @Test
+    fun narrow_without_right_anchor_keeps_legacy_left_flush_behaviour() {
+        val rect = rect(1000, 1800, 1080, 2200)
+        val adjusted = KeyboardTriggerBoundsAdjuster.adjustRect(
+            rect = rect,
+            behavior = KeyboardTriggerBehavior.NARROW,
+            imeTop = 2000,
+            density = 3f,
+            narrowScale = 0.5f,
+        )
+        assertEquals(1000, adjusted.left)
+        assertEquals(40, adjusted.right - adjusted.left)
+    }
+
+    @Test
     fun disable_zeroesTouchStrip() {
         val adjusted = KeyboardTriggerBoundsAdjuster.adjustRect(
             rect = rect(0, 1800, 80, 2200),

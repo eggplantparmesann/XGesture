@@ -192,7 +192,11 @@ internal class FloatBallTouchHostLayout(
             onPickPreviewMove = onPickPreviewMove,
             onPickPreviewCancel = onPickPreviewCancel,
             onLauncherCaptureMove = onLauncherCaptureMove,
-            onLauncherCaptureUp = onLauncherCaptureUp
+            onLauncherCaptureUp = onLauncherCaptureUp,
+            inwardSignProvider = {
+                // 混合手势「向内」= 朝屏幕中心：左侧停靠为 +x，右侧停靠为 -x。
+                if (activeSideProvider() == FloatBallSide.LEFT) 1f else -1f
+            }
         )
     }
 

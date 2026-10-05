@@ -43,6 +43,7 @@ object KeyboardTriggerBoundsAdjuster {
         imeTop: Int?,
         density: Float,
         narrowScale: Float = DEFAULT_NARROW_SCALE,
+        narrowFromRightEdge: Boolean = false,
     ): Rect {
         if (imeTop == null || behavior == KeyboardTriggerBehavior.OVERLAY) {
             return rect.copyBounds()
@@ -70,7 +71,12 @@ object KeyboardTriggerBoundsAdjuster {
                 val newWidth = (currentWidth * narrowScale)
                     .roundToInt()
                     .coerceIn(MIN_NARROW_WIDTH_PX, currentWidth)
-                copy.right = copy.left + newWidth
+                if (narrowFromRightEdge) {
+                    // 贴右边缘的触发条：收窄时保持贴右、向左收缩，避免整条被推离屏幕边缘。
+                    copy.left = copy.right - newWidth
+                } else {
+                    copy.right = copy.left + newWidth
+                }
             }
             KeyboardTriggerBehavior.OVERLAY -> Unit
         }

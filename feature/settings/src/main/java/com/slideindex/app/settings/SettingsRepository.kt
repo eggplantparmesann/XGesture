@@ -591,6 +591,9 @@ class SettingsRepository @Inject constructor(
     suspend fun setFloatBallPickPanelStyle(style: PickResultPanelStyle) =
         overlay.setFloatBallPickPanelStyle(style)
 
+    suspend fun setFloatBallPickPanelPlacement(placement: PickResultPanelPlacement) =
+        overlay.setFloatBallPickPanelPlacement(placement)
+
     suspend fun setFloatBallPickSearchGridDefaultState(state: PickResultSearchGridDefaultState) =
         overlay.setFloatBallPickSearchGridDefaultState(state)
 
@@ -1071,6 +1074,8 @@ class SettingsRepository @Inject constructor(
     suspend fun removeMessageDndPackage(packageName: String) = message.removeMessageDndPackage(packageName)
     suspend fun setMessageSuppressWhenSystemDnd(enabled: Boolean) = message.setMessageSuppressWhenSystemDnd(enabled)
     suspend fun setMessageOpenLastOnUnlock(enabled: Boolean) = message.setMessageOpenLastOnUnlock(enabled)
+    suspend fun setMessageKeepFloatIconAfterUnlock(enabled: Boolean) =
+        message.setMessageKeepFloatIconAfterUnlock(enabled)
     suspend fun setMessageUnlockConfirmationAutoDismissSeconds(seconds: Int) =
         message.setMessageUnlockConfirmationAutoDismissSeconds(seconds)
     suspend fun setMessageOpenLastAlways(packageName: String, enabled: Boolean) =

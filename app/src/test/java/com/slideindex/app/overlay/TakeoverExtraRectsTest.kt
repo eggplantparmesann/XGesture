@@ -98,6 +98,25 @@ class TakeoverExtraRectsTest {
   }
 
   @Test
+  fun bothLinesMode_emitsLineShapedBallRectOnActiveSide() {
+    val rects = build(
+      AppSettings(
+        floatBall = FloatBallSettings(
+          floatBallEnabled = true,
+          floatBallPositionMode = FloatBallPositionMode.BOTH_LINES,
+          floatBallActiveSide = FloatBallSide.RIGHT,
+        ),
+      ),
+    )
+
+    // 球侧在「两侧都是线」下也是线条触发区：接管矩形必须与命中复核一致（贴右边缘）。
+    val ball = rects.single { it.target == ModuleHookBridgeContract.TARGET_FLOAT_BALL }
+    assertEquals(1f, ball.rightFraction, 0.001f)
+    val line = rects.single { it.target == ModuleHookBridgeContract.TARGET_FLOAT_LINE }
+    assertEquals(0f, line.leftFraction, 0.001f)
+  }
+
+  @Test
   fun singleSideMode_hasNoLine() {
     val rects = build(
       AppSettings(

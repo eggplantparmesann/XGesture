@@ -28,7 +28,7 @@ internal class SlideIndexAccessibilityWatchdog(
                 Intent.ACTION_SCREEN_OFF -> {
                     TriggerEnvironmentState.lockScreenActive = true
                     com.slideindex.app.overlay.OverlayStatePort.publish(service, "screenOff")
-                    GlobalOverlayDismissHelper.dismissAllPanels()
+                    GlobalOverlayDismissHelper.dismissAllPanels(lockScreenBoundary = true)
                     // 熄屏是硬边界：无条件收掉侧边会话/全屏直触，避免丢 UP 后整屏被浮层吃掉。
                     runCatching { overlayHost()?.forceRecoverInteractionState() }
                     // 触钮 + 悬浮球/边角轮盘一并按锁屏抑制策略刷新，避免解锁后只恢复触钮。
@@ -41,6 +41,8 @@ internal class SlideIndexAccessibilityWatchdog(
                 Intent.ACTION_USER_PRESENT -> {
                     TriggerEnvironmentState.lockScreenActive = false
                     com.slideindex.app.overlay.OverlayStatePort.publish(service, "userPresent")
+                    // 开启「解锁后继续显示悬浮球提醒」时，补显锁屏期间保留下来的悬浮球提醒。
+                    com.slideindex.app.overlay.FloatIconOverlayWindow.replayAfterUnlock()
                     overlayHost()?.refreshOverlaySuppression()
                 }
             }
@@ -53,7 +55,7 @@ internal class SlideIndexAccessibilityWatchdog(
         TriggerEnvironmentState.lockScreenActive = isLocked
         com.slideindex.app.overlay.OverlayStatePort.publish(service, "syncLockScreenState")
         if (isLocked) {
-            GlobalOverlayDismissHelper.dismissAllPanels()
+            GlobalOverlayDismissHelper.dismissAllPanels(lockScreenBoundary = true)
         }
     }
 

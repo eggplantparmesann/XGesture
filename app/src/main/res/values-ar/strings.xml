@@ -77,6 +77,8 @@
     <string name="message_reminder_intercept_notifications_desc">لن تظهر الإشعارات في شريط الإشعارات بعد التفعيل، يتم عرضها فقط عبر أنماط التنبيه أدناه</string>
     <string name="message_reminder_open_last_on_unlock">الدخول إلى آخر رسالة بعد إلغاء القفل</string>
     <string name="message_reminder_open_last_on_unlock_desc">فتح هذه الرسالة تلقائياً بعد إلغاء القفل عند استلام الرسائل أثناء قفل الشاشة</string>
+    <string name="message_reminder_keep_float_icon_after_unlock">إبقاء تنبيه الكرة العائمة بعد إلغاء القفل</string>
+    <string name="message_reminder_keep_float_icon_after_unlock_desc">عند وصول رسالة أثناء قفل الشاشة، يبقى تنبيه الكرة العائمة حتى إلغاء القفل ثم يتبع مدة الإغلاق التلقائي لنمط الكرة العائمة (نمط الكرة العائمة فقط)</string>
     <string name="message_reminder_open_last_rules_title">قواعد الفتح بعد إلغاء القفل</string>
     <string name="message_reminder_open_last_rules_desc_page">التطبيقات التي لم يتم تعيينها للسماح دائماً، سيتم السؤال أولاً عما إذا كنت تريد فتحها بعد إلغاء القفل.</string>
     <string name="message_reminder_open_last_rules_always">السماح دائماً بالفتح بعد إلغاء القفل</string>
@@ -1377,6 +1379,7 @@
     <string name="float_ball_position_left">الحافة اليسرى</string>
     <string name="float_ball_position_right">الحافة اليمنى</string>
     <string name="float_ball_position_both_edges">العرض على كلا الحافتين في نفس الوقت</string>
+    <string name="float_ball_position_both_lines">خطّان على كلا الحافتين</string>
     <string name="float_ball_position_y">الموضع العمودي</string>
     <string name="float_ball_visible_fraction">النسبة المئوية للعرض</string>
     <string name="float_ball_position_xy_hint">النسبة المئوية المعروضة تمثل نسبة بقاء الكرة العائمة داخل الشاشة عند اللصق بالحافة</string>
@@ -1399,6 +1402,9 @@
     <string name="float_ball_pick_panel_style_desc">اختر تخطيط عرض نتائج الالتقاط ولقطة الشاشة</string>
     <string name="float_ball_pick_panel_style_integrated">بطاقتان متجاورتان</string>
     <string name="float_ball_pick_panel_style_tab_paged">تبويبات متعددة الصفحات</string>
+    <string name="float_ball_pick_panel_placement">موضع اللوحة</string>
+    <string name="float_ball_pick_panel_placement_bottom">ملتصقة بالأسفل</string>
+    <string name="float_ball_pick_panel_placement_center">منتصف الشاشة</string>
     <string name="float_ball_pick_search_grid_state_title">طريقة توسيع شريط البحث</string>
     <string name="float_ball_pick_search_grid_state_desc">الحالة الابتدائية لمنطقة محركات البحث السفلية عند فتح اللوحة</string>
     <string name="float_ball_pick_search_grid_state_remember">تذكر آخر حالة (موصى به)</string>
@@ -1664,9 +1670,11 @@
     <string name="float_ball_gesture_swipe_up_short">السحب لأعلى (قصير)</string>
     <string name="float_ball_gesture_swipe_up_long">السحب لأعلى (طويل)</string>
     <string name="float_ball_gesture_swipe_up_return">السحب لأعلى ثم الرجوع</string>
+    <string name="float_ball_gesture_swipe_up_in">السحب لأعلى ثم للداخل</string>
     <string name="float_ball_gesture_swipe_down_short">السحب للأسفل (قصير)</string>
     <string name="float_ball_gesture_swipe_down_long">السحب للأسفل (طويل)</string>
     <string name="float_ball_gesture_swipe_down_return">السحب للأسفل ثم الرجوع</string>
+    <string name="float_ball_gesture_swipe_down_in">السحب للأسفل ثم للداخل</string>
     <string name="float_ball_gesture_swipe_side_short">السحب للجانب (قصير)</string>
     <string name="float_ball_gesture_swipe_side_long">السحب للجانب (طويل)</string>
     <string name="float_ball_gesture_swipe_side_return">السحب للجانب ثم الرجوع</string>

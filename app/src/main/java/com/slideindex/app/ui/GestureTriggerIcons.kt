@@ -190,6 +190,8 @@ fun FloatBallGestureType.toGestureTriggerType(): GestureTriggerType? = when (thi
     FloatBallGestureType.SWIPE_DOWN_LONG -> GestureTriggerType.LONG_SWIPE_DOWN
     FloatBallGestureType.SWIPE_SIDE_SHORT -> GestureTriggerType.SHORT_SWIPE_IN
     FloatBallGestureType.SWIPE_SIDE_LONG -> GestureTriggerType.LONG_SWIPE_IN
+    FloatBallGestureType.SWIPE_DOWN_IN -> GestureTriggerType.SHORT_SWIPE_DOWN_IN
+    FloatBallGestureType.SWIPE_UP_IN -> GestureTriggerType.SHORT_SWIPE_UP_IN
     FloatBallGestureType.SINGLE_TAP -> GestureTriggerType.SHORT_SINGLE_TAP
     FloatBallGestureType.LONG_PRESS -> GestureTriggerType.SHORT_LONG_PRESS
     FloatBallGestureType.DOUBLE_TAP,
@@ -203,7 +205,8 @@ fun AppSettings.floatBallGestureIconSide(): PanelSide {
     val ballSide = when (floatBallPositionMode) {
         FloatBallPositionMode.LEFT -> FloatBallSide.LEFT
         FloatBallPositionMode.RIGHT -> FloatBallSide.RIGHT
-        FloatBallPositionMode.BOTH_EDGES -> floatBallActiveSide
+        FloatBallPositionMode.BOTH_EDGES,
+        FloatBallPositionMode.BOTH_LINES -> floatBallActiveSide
         FloatBallPositionMode.CUSTOM ->
             if (floatBallCustomCenterXFraction >= 0.5f) FloatBallSide.RIGHT else FloatBallSide.LEFT
     }

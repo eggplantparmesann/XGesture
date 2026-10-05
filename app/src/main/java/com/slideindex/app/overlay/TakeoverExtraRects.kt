@@ -80,16 +80,28 @@ object TakeoverExtraRects {
 
     val metrics = displayMetrics(screenWidthPx, screenHeightPx, density)
     val activeSide = FloatBallLayout.resolvedActiveSide(settings)
-    val ballSizePx = FloatBallLayout.ballSizePx(settings, density)
-    val (ballLeft, ballTop) = FloatBallLayout.keyboardAdjustedBallTopLeft(
-      settings = settings,
-      metrics = metrics,
-      activeSide = activeSide,
-      isLandscape = isLandscape,
-      screenWidthPx = screenWidthPx,
-      screenHeightPx = screenHeightPx,
-    )
-    val ballRect = Rect(ballLeft, ballTop, ballLeft + ballSizePx, ballTop + ballSizePx)
+    val ballRect = if (FloatBallLayout.isBothLines(settings)) {
+      // 「两侧都是线」：球侧窗口本身就是线条触发区，接管矩形必须与命中复核一致。
+      FloatBallLayout.keyboardAdjustedLineStripBounds(
+        settings = settings,
+        metrics = metrics,
+        side = activeSide,
+        isLandscape = isLandscape,
+        screenWidthPx = screenWidthPx,
+        screenHeightPx = screenHeightPx,
+      )
+    } else {
+      val ballSizePx = FloatBallLayout.ballSizePx(settings, density)
+      val (ballLeft, ballTop) = FloatBallLayout.keyboardAdjustedBallTopLeft(
+        settings = settings,
+        metrics = metrics,
+        activeSide = activeSide,
+        isLandscape = isLandscape,
+        screenWidthPx = screenWidthPx,
+        screenHeightPx = screenHeightPx,
+      )
+      Rect(ballLeft, ballTop, ballLeft + ballSizePx, ballTop + ballSizePx)
+    }
 
     return buildList {
       nearestEdgeGroup(ballRect, screenWidthPx, screenHeightPx, density)?.let { group ->

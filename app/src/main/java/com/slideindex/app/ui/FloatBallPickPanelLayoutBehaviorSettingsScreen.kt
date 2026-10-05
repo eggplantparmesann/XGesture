@@ -23,6 +23,7 @@ fun FloatBallPickPanelLayoutBehaviorSettingsScreen(
     settings: AppSettings,
     onBack: () -> Unit,
     onPickPanelStyleChange: (com.slideindex.app.settings.PickResultPanelStyle) -> Unit,
+    onPickPanelPlacementChange: (com.slideindex.app.settings.PickResultPanelPlacement) -> Unit,
     onPickSearchGridDefaultStateChange: (com.slideindex.app.settings.PickResultSearchGridDefaultState) -> Unit,
     onPickTextModeDefaultChange: (com.slideindex.app.settings.PickResultTextModeDefault) -> Unit,
     onPickTextFirstPanelChange: (Boolean) -> Unit,
@@ -55,6 +56,21 @@ fun FloatBallPickPanelLayoutBehaviorSettingsScreen(
     }
     val panelStyleItems = remember(panelStyleOptions) {
         panelStyleOptions.map { DropdownItem(text = it.second) }
+    }
+
+    val placementBottomLabel = stringResource(R.string.float_ball_pick_panel_placement_bottom)
+    val placementCenterLabel = stringResource(R.string.float_ball_pick_panel_placement_center)
+    val placementOptions = remember(placementBottomLabel, placementCenterLabel) {
+        listOf(
+            com.slideindex.app.settings.PickResultPanelPlacement.BOTTOM_DOCKED to placementBottomLabel,
+            com.slideindex.app.settings.PickResultPanelPlacement.CENTER to placementCenterLabel,
+        )
+    }
+    val selectedPlacementIndex = remember(settings.floatBallPickPanelPlacement, placementOptions) {
+        placementOptions.indexOfFirst { it.first == settings.floatBallPickPanelPlacement }.coerceAtLeast(0)
+    }
+    val placementItems = remember(placementOptions) {
+        placementOptions.map { DropdownItem(text = it.second) }
     }
 
     val searchGridStateRememberLabel = stringResource(R.string.float_ball_pick_search_grid_state_remember)
@@ -152,6 +168,23 @@ fun FloatBallPickPanelLayoutBehaviorSettingsScreen(
                             onSelectedIndexChange = { index ->
                                 val selected = panelStyleOptions.getOrNull(index)?.first ?: return@SettingSpinnerRow
                                 onPickPanelStyleChange(selected)
+                            },
+                        )
+                    },
+                )
+                add(
+                    settingsCardScopeItem("panel-placement") {
+                        SettingSpinnerRow(
+                            title = stringResource(R.string.float_ball_pick_panel_placement),
+                            subtitle = placementOptions.getOrNull(selectedPlacementIndex)?.second.orEmpty(),
+                            dialogButtonText = stringResource(R.string.cancel),
+                            items = placementItems,
+                            selectedIndex = selectedPlacementIndex,
+                            enabled = true,
+                            onSelectedIndexChange = { index ->
+                                val selected = placementOptions.getOrNull(index)?.first
+                                    ?: return@SettingSpinnerRow
+                                onPickPanelPlacementChange(selected)
                             },
                         )
                     },

@@ -459,6 +459,9 @@ internal object SettingsSnapshotReader {
                 prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_TEXT_FIRST_PANEL] ?: false,
             floatBallPickPanelStyle =
                 PickResultPanelStyle.fromStorageKey(prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_PANEL_STYLE]),
+            floatBallPickPanelPlacement = PickResultPanelPlacement.fromStorageKey(
+                prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_PANEL_PLACEMENT],
+            ),
             floatBallPickSearchGridDefaultState =
                 PickResultSearchGridDefaultState.fromStorageKey(prefs[SettingsPreferenceKeys.FLOAT_BALL_PICK_SEARCH_GRID_DEFAULT_STATE]),
             floatBallPickSearchGridLastExpanded =
@@ -1098,6 +1101,8 @@ internal object SettingsSnapshotReader {
             unlockConfirmationAutoDismissSeconds =
                 (prefs[SettingsPreferenceKeys.MESSAGE_UNLOCK_CONFIRMATION_AUTO_DISMISS_SECONDS] ?: 3)
                     .coerceIn(0, 30),
+            keepFloatIconAfterUnlock =
+                prefs[SettingsPreferenceKeys.MESSAGE_KEEP_FLOAT_ICON_AFTER_UNLOCK] ?: false,
         )
     }
 

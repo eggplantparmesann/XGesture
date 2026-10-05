@@ -77,6 +77,8 @@
     <string name="message_reminder_intercept_notifications_desc">开启后通知栏不再弹出，仅通过下方提醒样式展示</string>
     <string name="message_reminder_open_last_on_unlock">解锁后进入最后一条消息</string>
     <string name="message_reminder_open_last_on_unlock_desc">锁屏期间收到消息时，解锁后自动打开该消息</string>
+    <string name="message_reminder_keep_float_icon_after_unlock">解锁后继续显示悬浮球提醒</string>
+    <string name="message_reminder_keep_float_icon_after_unlock_desc">锁屏期间收到消息时，悬浮球提醒保留到解锁后再显示，并按悬浮球样式的自动关闭时间停留（仅悬浮球样式）</string>
     <string name="message_reminder_open_last_rules_title">解锁后打开规则</string>
     <string name="message_reminder_open_last_rules_desc_page">未设置为始终允许的应用，解锁后会先询问是否打开。</string>
     <string name="message_reminder_open_last_rules_always">始终允许解锁后打开</string>
@@ -1420,6 +1422,7 @@
     <string name="float_ball_position_left">左边</string>
     <string name="float_ball_position_right">右边</string>
     <string name="float_ball_position_both_edges">左右两边同时显示</string>
+    <string name="float_ball_position_both_lines">两侧都是线</string>
     <string name="float_ball_position_y">垂直位置</string>
     <string name="float_ball_visible_fraction">显示百分比</string>
     <string name="float_ball_position_xy_hint">显示百分比表示贴边时球体留在屏幕内的比例</string>
@@ -1442,6 +1445,9 @@
     <string name="float_ball_pick_panel_style_desc">选择取词与截图结果的呈现交互风格</string>
     <string name="float_ball_pick_panel_style_integrated">同屏双卡片</string>
     <string name="float_ball_pick_panel_style_tab_paged">左右分页 Tab</string>
+    <string name="float_ball_pick_panel_placement">面板显示位置</string>
+    <string name="float_ball_pick_panel_placement_bottom">贴底显示</string>
+    <string name="float_ball_pick_panel_placement_center">屏幕中间</string>
     <string name="float_ball_pick_search_grid_state_title">搜索引擎栏展开方式</string>
     <string name="float_ball_pick_search_grid_state_desc">控制呼出取词面板时底部搜索引擎区域的初始展现形式</string>
     <string name="float_ball_pick_search_grid_state_remember">记住上次使用状态（推荐）</string>
@@ -1723,9 +1729,11 @@
     <string name="float_ball_gesture_swipe_up_short">上滑（短）</string>
     <string name="float_ball_gesture_swipe_up_long">上滑（长）</string>
     <string name="float_ball_gesture_swipe_up_return">上滑后返回</string>
+    <string name="float_ball_gesture_swipe_up_in">上滑再向内滑</string>
     <string name="float_ball_gesture_swipe_down_short">下滑（短）</string>
     <string name="float_ball_gesture_swipe_down_long">下滑（长）</string>
     <string name="float_ball_gesture_swipe_down_return">下滑后返回</string>
+    <string name="float_ball_gesture_swipe_down_in">下滑再向内滑</string>
     <string name="float_ball_gesture_swipe_side_short">侧滑（短）</string>
     <string name="float_ball_gesture_swipe_side_long">侧滑（长）</string>
     <string name="float_ball_gesture_swipe_side_return">侧滑后返回</string>

@@ -111,37 +111,62 @@ internal fun FloatBallLineChrome(
         }
 
         if (stripPreviewActive && !isCustom) {
-            val ballCenter = sceneState.dockBallCenter(
-                settings,
-                metrics,
-                activeSide,
-                screenWidthPx,
-                screenHeightPx
-            )
-            val ballSizePx = FloatBallLayout.ballSizePx(settings, metrics.density)
-            val ballSizeDp = with(density) { ballSizePx.toDp() }
-            val (ballLeft, ballTop) = sceneState.ballWindowTopLeft(
-                settings,
-                metrics,
-                activeSide,
-                ballCenter,
-                screenHeightPx
-            )
-            Box(
-                modifier = Modifier
-                    .offset { IntOffset(ballLeft, ballTop) }
-                    .size(ballSizeDp),
-                contentAlignment = when (activeSide) {
-                    FloatBallSide.LEFT -> Alignment.CenterStart
-                    FloatBallSide.RIGHT -> Alignment.CenterEnd
-                }
-            ) {
-                FloatBallStripZonePreviewLayer(
-                    settings = settings,
-                    side = activeSide,
-                    lineColor = lineColor,
-                    showEdgeLine = false
+            if (FloatBallLayout.isBothLines(settings)) {
+                // 两侧都是线：球侧预览也按线条触发区展示。
+                val activeLineRect = sceneState.lineHitRect(
+                    settings,
+                    metrics,
+                    activeSide,
+                    screenWidthPx,
+                    screenHeightPx,
+                    isLandscape,
                 )
+                Box(
+                    modifier = Modifier
+                        .offset { IntOffset(activeLineRect.left, activeLineRect.top) }
+                        .width(with(density) { activeLineRect.width().toDp() })
+                        .height(with(density) { activeLineRect.height().toDp() })
+                ) {
+                    FloatBallStripZonePreviewLayer(
+                        settings = settings,
+                        side = activeSide,
+                        lineColor = lineColor,
+                        showEdgeLine = true
+                    )
+                }
+            } else {
+                val ballCenter = sceneState.dockBallCenter(
+                    settings,
+                    metrics,
+                    activeSide,
+                    screenWidthPx,
+                    screenHeightPx
+                )
+                val ballSizePx = FloatBallLayout.ballSizePx(settings, metrics.density)
+                val ballSizeDp = with(density) { ballSizePx.toDp() }
+                val (ballLeft, ballTop) = sceneState.ballWindowTopLeft(
+                    settings,
+                    metrics,
+                    activeSide,
+                    ballCenter,
+                    screenHeightPx
+                )
+                Box(
+                    modifier = Modifier
+                        .offset { IntOffset(ballLeft, ballTop) }
+                        .size(ballSizeDp),
+                    contentAlignment = when (activeSide) {
+                        FloatBallSide.LEFT -> Alignment.CenterStart
+                        FloatBallSide.RIGHT -> Alignment.CenterEnd
+                    }
+                ) {
+                    FloatBallStripZonePreviewLayer(
+                        settings = settings,
+                        side = activeSide,
+                        lineColor = lineColor,
+                        showEdgeLine = false
+                    )
+                }
             }
         }
     }
@@ -191,6 +216,15 @@ internal fun FloatBallIdleBallChrome(
     val activeSide = sceneState.resolvedActiveSide(settings, dragActiveSideOverride)
     val density = LocalDensity.current
     val metrics = LocalResources.current.displayMetrics
+    if (FloatBallLayout.isBothLines(settings)) {
+        // 「两侧都是线」：球侧空闲时同样呈现为边缘线，球只在拖动时浮现。
+        FloatBallEdgeLineVisual(
+            side = activeSide,
+            lineColor = Color(settings.themeColorArgb)
+                .copy(alpha = settings.floatBallLineOpacity.coerceIn(0f, 1f))
+        )
+        return
+    }
     val ballSizePx = FloatBallLayout.ballSizePx(settings, metrics.density)
     val ballSizeDp = with(density) { ballSizePx.toDp() }
     val dockAlignment = when (settings.floatBallPositionMode) {

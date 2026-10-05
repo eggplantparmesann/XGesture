@@ -279,11 +279,15 @@ fun floatBallGestureLabel(type: FloatBallGestureType): String = when (type) {
 
     FloatBallGestureType.SWIPE_UP_RETURN -> stringResource(R.string.float_ball_gesture_swipe_up_return)
 
+    FloatBallGestureType.SWIPE_UP_IN -> stringResource(R.string.float_ball_gesture_swipe_up_in)
+
     FloatBallGestureType.SWIPE_DOWN_SHORT -> stringResource(R.string.float_ball_gesture_swipe_down_short)
 
     FloatBallGestureType.SWIPE_DOWN_LONG -> stringResource(R.string.float_ball_gesture_swipe_down_long)
 
     FloatBallGestureType.SWIPE_DOWN_RETURN -> stringResource(R.string.float_ball_gesture_swipe_down_return)
+
+    FloatBallGestureType.SWIPE_DOWN_IN -> stringResource(R.string.float_ball_gesture_swipe_down_in)
 
     FloatBallGestureType.SWIPE_SIDE_SHORT -> stringResource(R.string.float_ball_gesture_swipe_side_short)
 

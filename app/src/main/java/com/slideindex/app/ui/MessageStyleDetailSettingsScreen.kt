@@ -42,6 +42,7 @@ fun MessageStyleDetailSettingsScreen(
     onSideMaxLinesChange: (Int) -> Unit,
     onFloatIconSizeDpChange: (Float) -> Unit,
     onFloatIconAutoDismissSecondsChange: (Int) -> Unit,
+    onFloatIconKeepAfterUnlockChange: (Boolean) -> Unit,
     onSideBubbleAutoDismissSecondsChange: (Int) -> Unit,
     onSideHorizontalEdgeChange: (SideBubbleHorizontalEdge) -> Unit,
     onSideBubbleYFractionPreviewChange: (Float) -> Unit = {},
@@ -99,6 +100,7 @@ fun MessageStyleDetailSettingsScreen(
         onOpacityChange = onFloatIconOpacityChange,
         onFloatIconSizeDpChange = onFloatIconSizeDpChange,
         onAutoDismissSecondsChange = onFloatIconAutoDismissSecondsChange,
+        onKeepAfterUnlockChange = onFloatIconKeepAfterUnlockChange,
         onPreviewChange = onMessagePreviewChange,
         onPreviewCommit = onMessagePreviewCommit,
     )

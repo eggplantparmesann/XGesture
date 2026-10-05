@@ -672,6 +672,7 @@ internal fun PickResultPanelSlideHost(
     panelEnterAnimationMs: Int,
     panelExitAnimationMs: Int,
     onPanelBoundsInRoot: (ComposeRect) -> Unit,
+    centered: Boolean = false,
     content: @Composable (freezeCollapseAnimation: Boolean) -> Unit
 ) {
     val density = LocalDensity.current
@@ -705,7 +706,13 @@ internal fun PickResultPanelSlideHost(
                     CompositingStrategy.Auto
                 }
             }
-            .pickResultBottomPanelCard(suppressShadow = isPanelSlideAnimating)
+            .then(
+                if (centered) {
+                    Modifier.pickResultPanelCard()
+                } else {
+                    Modifier.pickResultBottomPanelCard(suppressShadow = isPanelSlideAnimating)
+                }
+            )
             .onGloballyPositioned { coords ->
                 if (!isPanelSlideAnimating) {
                     onPanelBoundsInRoot(coords.boundsInRoot())

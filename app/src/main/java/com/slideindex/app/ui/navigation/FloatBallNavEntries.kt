@@ -669,6 +669,7 @@ fun NavEntryBuilder.floatBallNavEntries(ctx: MainNavContext) {
             settings = settings,
             onBack = { ctx.navigateBackTo(AppNavKey.FloatBallPick) },
             onPickPanelStyleChange = viewModel::setFloatBallPickPanelStyle,
+            onPickPanelPlacementChange = viewModel::setFloatBallPickPanelPlacement,
             onPickSearchGridDefaultStateChange = viewModel::setFloatBallPickSearchGridDefaultState,
             onPickTextModeDefaultChange = viewModel::setFloatBallPickTextModeDefault,
             onPickTextFirstPanelChange = viewModel::setFloatBallPickTextFirstPanel,

@@ -169,6 +169,10 @@ class AppMessageOverlayPort @Inject constructor(
         DanmakuOverlayWindow.detach()
     }
 
+    override fun replayFloatIconAfterUnlock() {
+        FloatIconOverlayWindow.replayAfterUnlock()
+    }
+
     override fun dismissSameSourceReminders(sourceKey: String) {
         SideBubbleOverlayWindow.dismissSameSource(sourceKey)
         FloatIconOverlayWindow.dismissSameSource(sourceKey)

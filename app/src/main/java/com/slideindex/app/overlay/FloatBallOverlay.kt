@@ -2006,7 +2006,7 @@ object FloatBallOverlay {
             ?: displayView?.context?.applicationContext
             ?: return
         val deps = OverlayDependencyAccess.overlayDependencies(hostContext) ?: return
-        val panelSide = if (fromLineStrip && settings.floatBallPositionMode == FloatBallPositionMode.BOTH_EDGES) {
+        val panelSide = if (fromLineStrip && FloatBallLayout.usesEdgeLines(settings)) {
             FloatBallLayout.panelSideForLineStrip(settings)
         } else {
             FloatBallLayout.panelSideFor(settings)
@@ -2339,7 +2339,7 @@ object FloatBallOverlay {
     ) {
         val settings = settingsState?.value ?: return
         val dockedSide = FloatBallLayout.resolvedActiveSide(settings)
-        val bothEdges = settings.floatBallPositionMode == FloatBallPositionMode.BOTH_EDGES
+        val bothEdges = FloatBallLayout.usesEdgeLines(settings)
         activeSideAtDragStart = if (bothEdges) dockedSide else null
         lineDragEndedWithGesture = false
         if (!slopPhaseBallFollowActive) {
@@ -2367,7 +2367,7 @@ object FloatBallOverlay {
         if (!dragOriginatedFromLine) return
         val fromSide = activeSideAtDragStart ?: return
         val settings = settingsState?.value ?: return
-        if (settings.floatBallPositionMode != FloatBallPositionMode.BOTH_EDGES) return
+        if (!FloatBallLayout.usesEdgeLines(settings)) return
         val targetSide = FloatBallSide.opposite(fromSide)
         if (FloatBallLayout.resolvedActiveSide(settings) != targetSide) {
             applyActiveSide(targetSide)
@@ -2378,7 +2378,7 @@ object FloatBallOverlay {
         if (!dragOriginatedFromLine) return
         val revertSide = activeSideAtDragStart ?: return
         val settings = settingsState?.value ?: return
-        if (settings.floatBallPositionMode != FloatBallPositionMode.BOTH_EDGES) return
+        if (!FloatBallLayout.usesEdgeLines(settings)) return
         if (FloatBallLayout.resolvedActiveSide(settings) != revertSide) {
             applyActiveSide(revertSide)
         }
@@ -2411,7 +2411,7 @@ object FloatBallOverlay {
 
     private fun applyActiveSide(targetSide: FloatBallSide) {
         val settings = settingsState?.value ?: return
-        if (settings.floatBallPositionMode != FloatBallPositionMode.BOTH_EDGES) return
+        if (!FloatBallLayout.usesEdgeLines(settings)) return
         val updated = settings.copy(floatBall = settings.floatBall.copy(floatBallActiveSide = targetSide))
         settingsState?.value = updated
         committedActiveSideUntilPersist = targetSide
@@ -2612,7 +2612,7 @@ object FloatBallOverlay {
     private fun prepareLineDragStateForSlop() {
         val settings = settingsState?.value ?: return
         val dockedSide = FloatBallLayout.resolvedActiveSide(settings)
-        val bothEdges = settings.floatBallPositionMode == FloatBallPositionMode.BOTH_EDGES
+        val bothEdges = FloatBallLayout.usesEdgeLines(settings)
         if (!bothEdges) return
         dragOriginatedFromLine = true
         slopPhaseFromLineStrip = true

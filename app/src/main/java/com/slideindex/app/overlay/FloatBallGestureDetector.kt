@@ -40,6 +40,10 @@ internal class FloatBallGestureDetector(
         const val SWIPE_BASE_DP = 40f
         /** 折返手势反向位移门槛（约 28dp）。 */
         const val REBOUND_THRESHOLD_DP = 28f
+        /** 混合手势第二段「向内」位移门槛（与边缘触钮 TURN_SLOP_DP 一致）。 */
+        const val COMPOUND_TURN_DP = 32f
+        /** 混合手势第二段沿边分量相对向内分量的上限（与边缘触钮同容差，防斜滑误判）。 */
+        const val COMPOUND_MAX_ALONG_RATIO = 0.8f
         /** 拉回原点停顿超时判定为取消（ms）。 */
         const val REBOUND_CANCEL_HOLD_MS = 320L
         /**
@@ -79,6 +83,11 @@ internal class FloatBallGestureDetector(
     private var peakForwardProgressPx = 0f
     private var reboundStartTime = 0L
     private var longPressFired = false
+    /** 首段（上/下）达标时的拐点锚点，用于第二段「向内」判定；null 表示尚未达标。 */
+    private var firstSegmentAnchorX: Float? = null
+    private var firstSegmentAnchorY: Float? = null
+    /** 朝屏幕内侧的 X 方向符号（左侧停靠 = +1，右侧停靠 = -1）。 */
+    private var inwardSignProvider: () -> Float = { 1f }
     /** 本次按下后是否曾滑出 touch slop；用于拖出再拖回时不误判为单击。 */
     private var movedBeyondSlop = false
     private var pendingSingleTap = false
@@ -140,7 +149,8 @@ internal class FloatBallGestureDetector(
         onPickPreviewMove: (touchDownX: Float, touchDownY: Float, fingerX: Float, fingerY: Float) -> Unit = { _, _, _, _ -> },
         onPickPreviewCancel: () -> Unit = {},
         onLauncherCaptureMove: (rawX: Float, rawY: Float) -> Unit = { _, _ -> },
-        onLauncherCaptureUp: (rawX: Float, rawY: Float) -> Unit = { _, _ -> }
+        onLauncherCaptureUp: (rawX: Float, rawY: Float) -> Unit = { _, _ -> },
+        inwardSignProvider: () -> Float = { 1f }
     ) {
         this.density = density
         downSwipeShortPx = swipeThresholdPx(settings.floatBallDownSwipeShortPercent, density)
@@ -161,6 +171,7 @@ internal class FloatBallGestureDetector(
         this.onPickPreviewCancel = onPickPreviewCancel
         this.onLauncherCaptureMove = onLauncherCaptureMove
         this.onLauncherCaptureUp = onLauncherCaptureUp
+        this.inwardSignProvider = inwardSignProvider
     }
 
     fun enterLauncherCaptureMode() {
@@ -248,6 +259,7 @@ internal class FloatBallGestureDetector(
                 val totalDist = hypot(dx, dy)
                 val locked = pickDragStarted && isPickCommitLocked()
                 val returnGesture = classifyReturnGesture()
+                val compoundGesture = classifyCompoundGesture()
                 when {
                     launcherCaptureMode -> {
                         onLauncherCaptureUp?.invoke(event.rawX, event.rawY)
@@ -258,6 +270,10 @@ internal class FloatBallGestureDetector(
                     locked -> finishPick()
                     returnGesture != null -> {
                         onGesture?.invoke(returnGesture, event.rawX, event.rawY)
+                        finishGestureOnly()
+                    }
+                    compoundGesture != null -> {
+                        onGesture?.invoke(compoundGesture, event.rawX, event.rawY)
                         finishGestureOnly()
                     }
                     shouldCommitSwipeGesture(dx, dy) -> {
@@ -425,6 +441,14 @@ internal class FloatBallGestureDetector(
         } else if (reboundStartTime == 0L && peakForwardProgressPx - forwardProgress >= REBOUND_THRESHOLD_DP * density) {
             reboundStartTime = SystemClock.uptimeMillis()
         }
+        // 首段（上/下）滑够与短滑阈值后记录拐点，供第二段「向内」判定使用。
+        if (firstSegmentAnchorX == null &&
+            (axis == LockedSwipeAxis.UP || axis == LockedSwipeAxis.DOWN) &&
+            forwardProgress >= shortThresholdForAxis(axis)
+        ) {
+            firstSegmentAnchorX = lastX
+            firstSegmentAnchorY = lastY
+        }
         gestureArmed = retainsGestureCommitment(forwardProgress) &&
             qualifiesAsSwipe(projDx, projDy)
     }
@@ -544,10 +568,39 @@ internal class FloatBallGestureDetector(
         return returnType
     }
 
+    /**
+     * 混合手势：首段上/下滑达标后，第二段朝屏幕内侧滑够 [COMPOUND_TURN_DP] 且以内向为主。
+     * 未配置对应动作、首段未达标、或整体已超出取词时间窗时均不触发（回落为普通滑动）。
+     */
+    internal fun classifyCompoundGesture(): FloatBallGestureType? {
+        if (isPickCommitLocked() || longPressFired) return null
+        val axis = lockedSwipeAxis ?: return null
+        val anchorX = firstSegmentAnchorX ?: return null
+        val anchorY = firstSegmentAnchorY ?: return null
+        val type = when (axis) {
+            LockedSwipeAxis.DOWN -> FloatBallGestureType.SWIPE_DOWN_IN
+            LockedSwipeAxis.UP -> FloatBallGestureType.SWIPE_UP_IN
+            LockedSwipeAxis.SIDE -> return null
+        }
+        val action = configuredActions[type] ?: GestureAction.None
+        if (!action.isEffective()) return null
+        if (peakForwardProgressPx < shortThresholdForAxis(axis)) return null
+        val secondInward = (lastX - anchorX) * inwardSignProvider()
+        if (secondInward < COMPOUND_TURN_DP * density) return null
+        val secondAlong = abs(lastY - anchorY)
+        if (secondAlong > secondInward * COMPOUND_MAX_ALONG_RATIO) return null
+        return type
+    }
+
     private fun emitGestureHint(totalDx: Float, totalDy: Float) {
         val returnGesture = classifyReturnGesture()
         if (returnGesture != null) {
             onGestureHint?.invoke(returnGesture)
+            return
+        }
+        val compoundGesture = classifyCompoundGesture()
+        if (compoundGesture != null) {
+            onGestureHint?.invoke(compoundGesture)
             return
         }
         if (!gestureArmed) {
@@ -606,6 +659,8 @@ internal class FloatBallGestureDetector(
         gestureArmed = false
         peakForwardProgressPx = 0f
         reboundStartTime = 0L
+        firstSegmentAnchorX = null
+        firstSegmentAnchorY = null
     }
 
     private fun swipeThresholdPx(percent: Float, density: Float): Float =

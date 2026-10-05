@@ -721,6 +721,8 @@ private object NoOpMessageOverlayPort : MessageOverlayPort {
 
     override fun dismissAllReminders() = Unit
 
+    override fun replayFloatIconAfterUnlock() = Unit
+
     override fun dismissSameSourceReminders(sourceKey: String) = Unit
 
     override fun snapshotDisplayedKeysForSource(sourceKey: String): Set<String> = emptySet()

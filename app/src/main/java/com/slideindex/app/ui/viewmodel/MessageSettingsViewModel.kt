@@ -51,6 +51,10 @@ class MessageSettingsViewModel @Inject constructor(
         settingsRepository.setMessageOpenLastOnUnlock(enabled)
     }
 
+    fun setMessageKeepFloatIconAfterUnlock(enabled: Boolean) = launchSettingsWrite {
+        settingsRepository.setMessageKeepFloatIconAfterUnlock(enabled)
+    }
+
     fun setMessageUnlockConfirmationAutoDismissSeconds(seconds: Int) = launchSettingsWrite {
         settingsRepository.setMessageUnlockConfirmationAutoDismissSeconds(seconds)
     }

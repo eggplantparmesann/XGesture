@@ -72,6 +72,13 @@ data class MessageSettings(
     val openLastMessageAlwaysPackages: Set<String> = emptySet(),
     /** 解锁确认卡片自动消失时间，0 表示不自动消失。 */
     val unlockConfirmationAutoDismissSeconds: Int = 3,
+    /**
+     * 锁屏期间到达的消息，其悬浮球提醒保留到解锁后再显示（仅悬浮球样式）。
+     *
+     * 开启后熄屏/锁屏不再删除悬浮球提醒，而是冻结其自动关闭计时并隐藏窗口，
+     * 解锁后重新显示并按 [floatIconAutoDismissSeconds] 重新计时。
+     */
+    val keepFloatIconAfterUnlock: Boolean = false,
 ) {
     @Suppress("DEPRECATION")
     val style: MessageStyle get() = MessageStyle.fromId(styleId)

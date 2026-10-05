@@ -293,6 +293,7 @@ data class AppSettings(
     val floatBallPickBottomTransitionFraction get() = floatBall.floatBallPickBottomTransitionFraction
     val floatBallPickTextFirstPanel get() = floatBall.floatBallPickTextFirstPanel
     val floatBallPickPanelStyle get() = floatBall.floatBallPickPanelStyle
+    val floatBallPickPanelPlacement get() = floatBall.floatBallPickPanelPlacement
     val floatBallPickSearchGridDefaultState get() = floatBall.floatBallPickSearchGridDefaultState
     val floatBallPickSearchGridLastExpanded get() = floatBall.floatBallPickSearchGridLastExpanded
     val floatBallPickTextModeDefault get() = floatBall.floatBallPickTextModeDefault

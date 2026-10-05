@@ -19,6 +19,10 @@ enum class FloatBallGestureType(val id: Int) {
     SWIPE_SIDE_RETURN(9),
     SWIPE_UP_RETURN(10),
     SWIPE_DOWN_RETURN(11),
+    /** 首段下滑达标后，第二段再朝屏幕内侧滑出（混合手势）。 */
+    SWIPE_DOWN_IN(12),
+    /** 首段上滑达标后，第二段再朝屏幕内侧滑出（混合手势）。 */
+    SWIPE_UP_IN(13),
     ;
 
     val isReturnGesture: Boolean
@@ -27,14 +31,16 @@ enum class FloatBallGestureType(val id: Int) {
     companion object {
         fun fromId(id: Int): FloatBallGestureType? = entries.firstOrNull { it.id == id }
 
-        /** 设置页展示顺序：方向（下→上→侧）短/长/返回，再点击类。 */
+        /** 设置页展示顺序：方向（下→上→侧）短/长/返回/混合，再点击类。 */
         fun settingsDisplayOrder(): List<FloatBallGestureType> = listOf(
             SWIPE_DOWN_SHORT,
             SWIPE_DOWN_LONG,
             SWIPE_DOWN_RETURN,
+            SWIPE_DOWN_IN,
             SWIPE_UP_SHORT,
             SWIPE_UP_LONG,
             SWIPE_UP_RETURN,
+            SWIPE_UP_IN,
             SWIPE_SIDE_SHORT,
             SWIPE_SIDE_LONG,
             SWIPE_SIDE_RETURN,
@@ -78,6 +84,8 @@ object FloatBallGestureCodec {
         FloatBallGestureType.SWIPE_DOWN_RETURN to GestureAction.None,
         FloatBallGestureType.SWIPE_UP_LONG to GestureAction.StashPanel,
         FloatBallGestureType.SWIPE_UP_RETURN to GestureAction.None,
+        FloatBallGestureType.SWIPE_DOWN_IN to GestureAction.None,
+        FloatBallGestureType.SWIPE_UP_IN to GestureAction.None,
         FloatBallGestureType.SWIPE_SIDE_SHORT to GestureAction.Back,
         FloatBallGestureType.SWIPE_SIDE_LONG to GestureAction.Back,
         FloatBallGestureType.SWIPE_SIDE_RETURN to GestureAction.None,

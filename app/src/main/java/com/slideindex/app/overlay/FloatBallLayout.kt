@@ -33,11 +33,21 @@ internal object FloatBallLayout {
         when (settings.floatBallPositionMode) {
             FloatBallPositionMode.LEFT -> FloatBallSide.LEFT
             FloatBallPositionMode.RIGHT -> FloatBallSide.RIGHT
-            FloatBallPositionMode.BOTH_EDGES -> settings.floatBallActiveSide
+            FloatBallPositionMode.BOTH_EDGES,
+            FloatBallPositionMode.BOTH_LINES -> settings.floatBallActiveSide
             FloatBallPositionMode.CUSTOM -> {
                 if (settings.floatBallCustomCenterXFraction < 0.5f) FloatBallSide.LEFT else FloatBallSide.RIGHT
             }
         }
+
+    /** 两侧都用边缘线呈现的模式（球不再常驻，只有拖动时浮现）。 */
+    fun isBothLines(settings: AppSettings): Boolean =
+        settings.floatBallPositionMode == FloatBallPositionMode.BOTH_LINES
+
+    /** 需要显示对侧边缘线的模式（双贴边 / 两侧都是线）。 */
+    fun usesEdgeLines(settings: AppSettings): Boolean =
+        settings.floatBallPositionMode == FloatBallPositionMode.BOTH_EDGES ||
+            isBothLines(settings)
 
     fun panelSideFor(settings: AppSettings): PanelSide = panelSideFor(FloatBallLayout.resolvedActiveSide(settings))
 
@@ -50,8 +60,7 @@ internal object FloatBallLayout {
         FloatBallSide.RIGHT -> PanelSide.RIGHT
     }
 
-    fun shouldShowLine(settings: AppSettings): Boolean =
-        settings.floatBallPositionMode == FloatBallPositionMode.BOTH_EDGES
+    fun shouldShowLine(settings: AppSettings): Boolean = usesEdgeLines(settings)
 
     fun dockCenterY(settings: AppSettings, screenHeight: Int): Float =
         coercePositionYFraction(settings.floatBallPositionYFraction) * screenHeight
@@ -206,6 +215,7 @@ internal object FloatBallLayout {
             imeTop = KeyboardTriggerImeState.imeTopOrNull(),
             density = metrics.density,
             narrowScale = settings.keyboardTriggerNarrowScale(isLandscape),
+            narrowFromRightEdge = side == FloatBallSide.RIGHT,
         )
     }
 

@@ -156,6 +156,8 @@ class MessageReminderOrchestrator @Inject constructor(
      */
     fun onUserPresent(context: Context) {
         val settings = settingsRepository.readSnapshot().messageReminderSettings
+        // 先补显锁屏期间保留下来的悬浮球提醒，再走「解锁后进入最后一条消息」。
+        overlayPort.replayFloatIconAfterUnlock()
         val pending = pendingUnlockMessage ?: return
         if (!shouldAutoOpenLastMessageOnUnlock(settings, pending)) return
         pendingUnlockMessage = null

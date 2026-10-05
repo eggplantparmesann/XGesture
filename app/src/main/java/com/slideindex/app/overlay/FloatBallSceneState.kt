@@ -107,6 +107,17 @@ internal class FloatBallSceneState(initialSettings: AppSettings) {
         screenHeightPx: Int = metrics.heightPixels,
         isLandscape: Boolean = false,
     ): Rect {
+        if (FloatBallLayout.isBothLines(settings)) {
+            // 「两侧都是线」：球侧空闲时不显示球，触发区与对侧线条同规格。
+            return FloatBallLayout.keyboardAdjustedLineStripBounds(
+                settings = settings,
+                metrics = metrics,
+                side = activeSide,
+                isLandscape = isLandscape,
+                screenWidthPx = screenWidthPx,
+                screenHeightPx = screenHeightPx,
+            )
+        }
         val center = resolveBallCenter(
             settings,
             metrics,

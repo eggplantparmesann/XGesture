@@ -46,9 +46,9 @@ import com.slideindex.app.overlay.FloatBallPickResultPanel
 import com.slideindex.app.overlay.PickResultContentOrigin
 import com.slideindex.app.overlay.PickResultTextSource
 import com.slideindex.app.overlay.ScreenshotLayoutMeta
-import com.slideindex.app.overlay.overlayBottomPanelMaxHeightFraction
-import com.slideindex.app.overlay.overlayBottomPanelMaxWidth
-import com.slideindex.app.overlay.overlayBottomPanelWidth
+import com.slideindex.app.overlay.overlayPickPanelMaxHeightFraction
+import com.slideindex.app.overlay.overlayPickPanelMaxWidth
+import com.slideindex.app.overlay.overlayPickPanelWidth
 import com.slideindex.app.overlay.overlayContainerHeightDp
 import com.slideindex.app.overlay.overlayContainerWidthDp
 import com.slideindex.app.overlay.overlayIsLandscape
@@ -157,13 +157,23 @@ internal fun FloatBallPickResultContent(
         showTextSection &&
         hasImageContent &&
         !isEditMode
-    val maxPanelHeight = overlayContainerHeightDp() * overlayBottomPanelMaxHeightFraction()
+    val maxPanelHeight = overlayContainerHeightDp() *
+        overlayPickPanelMaxHeightFraction(appSettings.floatBallPickPanelPlacement)
+    val centeredPanel = appSettings.floatBallPickPanelPlacement ==
+        com.slideindex.app.settings.PickResultPanelPlacement.CENTER
     val panelMaxImageHeight = pickResultImageMaxHeightDp()
-    val panelLayoutWidth = overlayBottomPanelMaxWidth() ?: overlayContainerWidthDp()
+    val panelLayoutWidth = overlayPickPanelMaxWidth(appSettings.floatBallPickPanelPlacement)
+        ?: overlayContainerWidthDp()
     val imageContentWidth = if (landscapeDualColumn) {
         (panelLayoutWidth * LANDSCAPE_DUAL_COLUMN_AUX_WEIGHT - 40.dp).coerceAtLeast(80.dp)
     } else {
-        pickResultImageContentWidth()
+        // 居中样式两侧有留白，图片区按面板实际宽度收窄，避免超出卡片被裁切。
+        val extraEdgePadding = if (centeredPanel) {
+            (overlayContainerWidthDp() - panelLayoutWidth).coerceAtLeast(0.dp)
+        } else {
+            0.dp
+        }
+        pickResultImageContentWidth(horizontalPadding = 40.dp + extraEdgePadding)
     }
 
     val dismissInteraction = remember { MutableInteractionSource() }
@@ -451,14 +461,22 @@ internal fun FloatBallPickResultContent(
                         onDismiss = onDismiss
                     )
                 },
-            contentAlignment = Alignment.BottomCenter
+            contentAlignment = if (centeredPanel) Alignment.Center else Alignment.BottomCenter
         ) {
-            Box(modifier = Modifier.overlayBottomPanelWidth()) {
+            Box(
+                modifier = Modifier
+                    .overlayPickPanelWidth(appSettings.floatBallPickPanelPlacement)
+                    .then(
+                        // 居中样式：把居中山区域抬到输入法之上，避免被键盘遮住。
+                        if (centeredPanel) Modifier.padding(bottom = overlayImeBottom) else Modifier
+                    )
+            ) {
             PickResultPanelSlideHost(
                 panelRevealed = panelRevealed,
                 panelSlideDistance = panelSlideDistance,
                 panelEnterAnimationMs = appSettings.floatBallPickPanelEnterAnimationMs,
                 panelExitAnimationMs = appSettings.floatBallPickPanelExitAnimationMs,
+                centered = centeredPanel,
                 onPanelBoundsInRoot = { panelBoundsInRoot = it }
             ) { freezeCollapseAnimation ->
                 PickResultCollapsePanelColumn(

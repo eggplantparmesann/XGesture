@@ -77,6 +77,8 @@
     <string name="message_reminder_intercept_notifications_desc">オンにすると通知シェードから非表示にし、下記スタイルで表示します</string>
     <string name="message_reminder_open_last_on_unlock">ロック解除後に最後のメッセージを開く</string>
     <string name="message_reminder_open_last_on_unlock_desc">画面ロック中にメッセージが届いた場合、ロック解除後に自動で開きます</string>
+    <string name="message_reminder_keep_float_icon_after_unlock">ロック解除後もフローティングボール通知を表示</string>
+    <string name="message_reminder_keep_float_icon_after_unlock_desc">画面ロック中に届いたメッセージのフローティングボール通知をロック解除後まで保持し、フローティングボールの自動非表示時間に従って表示します（フローティングボールのみ）</string>
     <string name="message_reminder_open_last_rules_title">ロック解除時に開くルール</string>
     <string name="message_reminder_open_last_rules_desc_page">常に許可に設定されていないアプリは、ロック解除後に開く前に確認を表示します。</string>
     <string name="message_reminder_open_last_rules_always">ロック解除後の起動を常に許可</string>
@@ -1399,6 +1401,7 @@
     <string name="float_ball_position_left">左</string>
     <string name="float_ball_position_right">右</string>
     <string name="float_ball_position_both_edges">両端</string>
+    <string name="float_ball_position_both_lines">両端ともライン</string>
     <string name="float_ball_position_y">縦位置</string>
     <string name="float_ball_visible_fraction">表示量</string>
     <string name="float_ball_position_xy_hint">パーセンテージは、ドック時にボールのどれだけが画面内に残るかを示します</string>
@@ -1421,6 +1424,9 @@
     <string name="float_ball_pick_panel_style_desc">テキスト選択とスクリーンショット結果の表示スタイルを選択します</string>
     <string name="float_ball_pick_panel_style_integrated">同画面デュアルカード</string>
     <string name="float_ball_pick_panel_style_tab_paged">タブページ分割</string>
+    <string name="float_ball_pick_panel_placement">パネル表示位置</string>
+    <string name="float_ball_pick_panel_placement_bottom">画面下部に固定</string>
+    <string name="float_ball_pick_panel_placement_center">画面中央</string>
     <string name="float_ball_pick_search_grid_state_title">検索バーの展開方式</string>
     <string name="float_ball_pick_search_grid_state_desc">パネル表示時の検索エンジンエリアの初期表示状態を制御します</string>
     <string name="float_ball_pick_search_grid_state_remember">前回の状態を記憶（推奨）</string>
@@ -1680,9 +1686,11 @@
     <string name="float_ball_gesture_swipe_up_short">上スワイプ（短）</string>
     <string name="float_ball_gesture_swipe_up_long">上スワイプ（長）</string>
     <string name="float_ball_gesture_swipe_up_return">上スワイプで戻る</string>
+    <string name="float_ball_gesture_swipe_up_in">上スワイプ後に内側へ</string>
     <string name="float_ball_gesture_swipe_down_short">下スワイプ（短）</string>
     <string name="float_ball_gesture_swipe_down_long">下スワイプ（長）</string>
     <string name="float_ball_gesture_swipe_down_return">下スワイプで戻る</string>
+    <string name="float_ball_gesture_swipe_down_in">下スワイプ後に内側へ</string>
     <string name="float_ball_gesture_swipe_side_short">横スワイプ（短）</string>
     <string name="float_ball_gesture_swipe_side_long">横スワイプ（長）</string>
     <string name="float_ball_gesture_swipe_side_return">横スワイプで戻る</string>
