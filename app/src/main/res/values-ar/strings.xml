@@ -1142,6 +1142,7 @@
     <string name="screen_capture_notification_active">التقاط الشاشة جاهز</string>
     <string name="screen_capture_permission_required">يلزم إذن التقاط الشاشة للقطع الجزئي</string>
     <string name="media_notification_listener_name">مراقبة الإشعارات (جلسات الوسائط والسجل)</string>
+    <string name="side_gestures_trigger_mode_section">وضع التشغيل</string>
     <string name="side_gestures_behavior_section">التخطيط والسلوك</string>
     <string name="default_trigger_mode">وضع التشغيل الافتراضي</string>
     <string name="default_trigger_mode_desc">يستخدم عندما لا يتم تعيين الإيماءة الجديدة بشكل منفصل</string>
@@ -1685,6 +1686,10 @@
     <string name="float_ball_gesture_action_settings">إعدادات الإجراء</string>
     <string name="float_ball_gesture_distance_section">مسافة السحب</string>
     <string name="float_ball_gesture_actions_section">إجراءات الإيماءات</string>
+    <string name="float_ball_gesture_group_down_swipe">السحب للأسفل</string>
+    <string name="float_ball_gesture_group_up_swipe">السحب لأعلى</string>
+    <string name="float_ball_gesture_group_side_swipe">السحب للجانب</string>
+    <string name="float_ball_gesture_group_tap">النقر</string>
     <string name="float_ball_gesture_down_swipe_distance">مسافة السحب القصير للأسفل (٪ من ارتفاع الشاشة)</string>
     <string name="float_ball_gesture_side_swipe_distance">مسافة السحب القصير للجانب (٪ من عرض الشاشة)</string>
     <string name="float_ball_gesture_up_swipe_distance">مسافة السحب القصير لأعلى (٪ من ارتفاع الشاشة)</string>

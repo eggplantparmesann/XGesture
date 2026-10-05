@@ -98,20 +98,19 @@ internal fun NotificationRuleConditionEditor(
         Column(
             modifier = Modifier.padding(vertical = 8.dp),
         ) {
-            val appModes = AppMatchMode.entries
-            val appModeLabels = listOf(
-                stringResource(R.string.notification_rule_app_mode_all),
-                stringResource(R.string.notification_rule_app_mode_include),
-                stringResource(R.string.notification_rule_app_mode_exclude),
-            )
+            // Order and labels come from NotificationRuleModeLabels, which pairs each enum
+            // constant with its own label. The previous positional mapping was off by one
+            // (AppMatchMode declares INCLUDE, EXCLUDE, ALL while the labels were listed as
+            // ALL, INCLUDE, EXCLUDE), so every selection applied the wrong rule:
+            // "所有应用" stored INCLUDE, "包含" stored EXCLUDE.
+            val appModeEntries = NotificationRuleModeLabels.appModes
+                .map { (mode, labelRes) -> mode to stringResource(labelRes) }
             OverlayDropdownPreference(
                 title = stringResource(R.string.notification_rule_section_apps),
-                items = appModeLabels,
-                selectedIndex = appModes.indexOf(appMode).coerceAtLeast(0),
+                items = appModeEntries.map { it.second },
+                selectedIndex = appModeEntries.indexOfFirst { it.first == appMode }.coerceAtLeast(0),
                 onSelectedIndexChange = { index ->
-                    if (index in appModes.indices) {
-                        onAppModeChange(appModes[index])
-                    }
+                    appModeEntries.getOrNull(index)?.let { onAppModeChange(it.first) }
                 },
             )
             if (appMode != AppMatchMode.ALL) {
@@ -125,25 +124,14 @@ internal fun NotificationRuleConditionEditor(
                 )
             }
 
-            val textModes = TextMatchMode.entries
-            val textModeLabels = listOf(
-                stringResource(R.string.notification_rule_text_mode_all),
-                stringResource(R.string.notification_rule_text_mode_contain_any),
-                stringResource(R.string.notification_rule_text_mode_not_contain_any),
-                stringResource(R.string.notification_rule_text_mode_contain_all),
-                stringResource(R.string.notification_rule_text_mode_not_contain_all),
-                stringResource(R.string.notification_rule_text_mode_contain_and_not),
-                stringResource(R.string.notification_rule_text_mode_regex),
-                stringResource(R.string.notification_rule_text_mode_advanced),
-            )
+            val textModeEntries = NotificationRuleModeLabels.textModes
+                .map { (mode, labelRes) -> mode to stringResource(labelRes) }
             OverlayDropdownPreference(
                 title = stringResource(R.string.notification_rule_section_text),
-                items = textModeLabels,
-                selectedIndex = textModes.indexOf(textMode).coerceAtLeast(0),
+                items = textModeEntries.map { it.second },
+                selectedIndex = textModeEntries.indexOfFirst { it.first == textMode }.coerceAtLeast(0),
                 onSelectedIndexChange = { index ->
-                    if (index in textModes.indices) {
-                        onTextModeChange(textModes[index])
-                    }
+                    textModeEntries.getOrNull(index)?.let { onTextModeChange(it.first) }
                 },
             )
 
@@ -303,25 +291,6 @@ internal fun NotificationRuleConditionEditor(
             )
         }
     }
-}
-
-@Composable
-private fun appModeLabel(mode: AppMatchMode): String = when (mode) {
-    AppMatchMode.ALL -> stringResource(R.string.notification_rule_app_mode_all)
-    AppMatchMode.INCLUDE -> stringResource(R.string.notification_rule_app_mode_include)
-    AppMatchMode.EXCLUDE -> stringResource(R.string.notification_rule_app_mode_exclude)
-}
-
-@Composable
-private fun textModeLabel(mode: TextMatchMode): String = when (mode) {
-    TextMatchMode.ALL -> stringResource(R.string.notification_rule_text_mode_all)
-    TextMatchMode.CONTAIN_ANY -> stringResource(R.string.notification_rule_text_mode_contain_any)
-    TextMatchMode.NOT_CONTAIN_ANY -> stringResource(R.string.notification_rule_text_mode_not_contain_any)
-    TextMatchMode.CONTAIN_ALL -> stringResource(R.string.notification_rule_text_mode_contain_all)
-    TextMatchMode.NOT_CONTAIN_ALL -> stringResource(R.string.notification_rule_text_mode_not_contain_all)
-    TextMatchMode.CONTAIN_AND_NOT_CONTAIN -> stringResource(R.string.notification_rule_text_mode_contain_and_not)
-    TextMatchMode.REGEX -> stringResource(R.string.notification_rule_text_mode_regex)
-    TextMatchMode.ADVANCED -> stringResource(R.string.notification_rule_text_mode_advanced)
 }
 
 @Composable

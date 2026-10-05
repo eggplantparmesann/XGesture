@@ -1155,6 +1155,7 @@
     <string name="screen_capture_notification_active">画面キャプチャの準備完了</string>
     <string name="screen_capture_permission_required">部分スクリーンショットには画面キャプチャの権限が必要です</string>
     <string name="media_notification_listener_name">通知リスナー（メディアセッションと履歴）</string>
+    <string name="side_gestures_trigger_mode_section">トリガーモード</string>
     <string name="side_gestures_behavior_section">レイアウトと動作</string>
     <string name="default_trigger_mode">デフォルトのトリガーモード</string>
     <string name="default_trigger_mode_desc">ジェスチャーに独自のモードがない場合に使用されます</string>
@@ -1692,6 +1693,10 @@
     <string name="float_ball_gesture_action_settings">アクション設定</string>
     <string name="float_ball_gesture_distance_section">スワイプ距離</string>
     <string name="float_ball_gesture_actions_section">ジェスチャアクション</string>
+    <string name="float_ball_gesture_group_down_swipe">下スワイプ</string>
+    <string name="float_ball_gesture_group_up_swipe">上スワイプ</string>
+    <string name="float_ball_gesture_group_side_swipe">横スワイプ</string>
+    <string name="float_ball_gesture_group_tap">タップ</string>
     <string name="float_ball_gesture_down_swipe_distance">下スワイプ短距離（画面高さ %）</string>
     <string name="float_ball_gesture_side_swipe_distance">横スワイプ短距離（画面幅 %）</string>
     <string name="float_ball_gesture_up_swipe_distance">上スワイプ短距離（画面高さ %）</string>

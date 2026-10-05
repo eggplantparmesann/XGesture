@@ -848,6 +848,10 @@
     <string name="float_ball_gesture_action_settings">Action settings</string>
     <string name="float_ball_gesture_distance_section">Swipe distance</string>
     <string name="float_ball_gesture_actions_section">Gesture actions</string>
+    <string name="float_ball_gesture_group_down_swipe">Down swipe</string>
+    <string name="float_ball_gesture_group_up_swipe">Up swipe</string>
+    <string name="float_ball_gesture_group_side_swipe">Side swipe</string>
+    <string name="float_ball_gesture_group_tap">Taps</string>
     <string name="float_ball_gesture_down_swipe_distance">Down swipe short distance (screen height %)</string>
     <string name="float_ball_gesture_side_swipe_distance">Side swipe short distance (screen width %)</string>
     <string name="float_ball_gesture_up_swipe_distance">Up swipe short distance (screen height %)</string>
@@ -2265,6 +2269,7 @@
     <string name="screen_record_channel_name">Screen recording</string>
     <string name="screen_record_notification_recording">Recording screen…</string>
     <string name="media_notification_listener_name">Notification listener (media sessions &amp; history)</string>
+    <string name="side_gestures_trigger_mode_section">Trigger mode</string>
     <string name="side_gestures_behavior_section">Layout &amp; behavior</string>
     <string name="default_trigger_mode">Default trigger mode</string>
     <string name="default_trigger_mode_desc">Used when a gesture has no mode of its own</string>

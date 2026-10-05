@@ -1168,6 +1168,7 @@
     <string name="screen_capture_notification_active">屏幕捕获已就绪</string>
     <string name="screen_capture_permission_required">需要屏幕捕获权限，请允许后开始使用区域截图</string>
     <string name="media_notification_listener_name">通知监听（媒体会话与历史记录）</string>
+    <string name="side_gestures_trigger_mode_section">触发模式</string>
     <string name="side_gestures_behavior_section">布局与行为</string>
     <string name="default_trigger_mode">默认触发模式</string>
     <string name="default_trigger_mode_desc">新手势未单独设置时使用</string>
@@ -1723,6 +1724,10 @@
     <string name="float_ball_gesture_action_settings">动作设置</string>
     <string name="float_ball_gesture_distance_section">滑动距离</string>
     <string name="float_ball_gesture_actions_section">手势动作</string>
+    <string name="float_ball_gesture_group_down_swipe">下滑</string>
+    <string name="float_ball_gesture_group_up_swipe">上滑</string>
+    <string name="float_ball_gesture_group_side_swipe">侧滑</string>
+    <string name="float_ball_gesture_group_tap">点击</string>
     <string name="float_ball_gesture_down_swipe_distance">下滑短滑距离（屏高%）</string>
     <string name="float_ball_gesture_side_swipe_distance">侧滑短滑距离（屏宽%）</string>
     <string name="float_ball_gesture_up_swipe_distance">上滑短滑距离（屏高%）</string>
