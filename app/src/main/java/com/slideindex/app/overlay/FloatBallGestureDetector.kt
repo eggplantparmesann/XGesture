@@ -42,8 +42,6 @@ internal class FloatBallGestureDetector(
         const val REBOUND_THRESHOLD_DP = 28f
         /** 混合手势第二段「向内」位移门槛（与边缘触钮 TURN_SLOP_DP 一致）。 */
         const val COMPOUND_TURN_DP = 32f
-        /** 混合手势首段为「向内」时的位移门槛（低于侧滑短滑门槛，避免两段手势过累）。 */
-        const val COMPOUND_INWARD_ANCHOR_DP = 40f
         /** 混合手势第二段沿边分量相对向内分量的上限（与边缘触钮同容差，防斜滑误判）。 */
         const val COMPOUND_MAX_ALONG_RATIO = 0.8f
         /** 拉回原点停顿超时判定为取消（ms）。 */
@@ -445,13 +443,13 @@ internal class FloatBallGestureDetector(
         }
         // 首段达标后记录拐点，供第二段判定使用：
         // - 上/下轴：滑够该轴短滑阈值（先上/下滑，再向内）；
-        // - 侧轴且锁定方向朝屏幕内侧：滑够较小的向内门槛（先向内，再上/下滑）。
+        // - 侧轴且锁定方向朝屏幕内侧：滑够侧滑短滑阈值（先向内，再上/下滑，沿用侧滑老标准）。
         if (firstSegmentAnchorX == null) {
             val anchorReached = when {
                 axis == LockedSwipeAxis.UP || axis == LockedSwipeAxis.DOWN ->
                     forwardProgress >= shortThresholdForAxis(axis)
                 axis == LockedSwipeAxis.SIDE && lockedAxisForwardSign * inwardSignProvider() > 0f ->
-                    forwardProgress >= COMPOUND_INWARD_ANCHOR_DP * density
+                    forwardProgress >= shortThresholdForAxis(axis)
                 else -> false
             }
             if (anchorReached) {
@@ -579,9 +577,9 @@ internal class FloatBallGestureDetector(
     }
 
     /**
-     * 混合手势，两类方向相反的两段式：
+     * 混合手势，两类方向相反的两段式（首段均沿用对应轴的短滑阈值）：
      * - 先上/下滑再向内：首段滑够该轴短滑阈值，第二段向内滑够 [COMPOUND_TURN_DP] 且以内向为主；
-     * - 先向内再上/下滑：首段向内滑够 [COMPOUND_INWARD_ANCHOR_DP]，第二段以纵向为主且滑够 [COMPOUND_TURN_DP]。
+     * - 先向内再上/下滑：首段向内滑够侧滑短滑阈值，第二段以纵向为主且滑够 [COMPOUND_TURN_DP]。
      *
      * 未配置对应动作、首段未达标、或整体已超出取词时间窗时均不触发（回落为普通滑动）。
      */
@@ -595,7 +593,7 @@ internal class FloatBallGestureDetector(
         if (axis == LockedSwipeAxis.SIDE) {
             // 「先向内再上/下滑」：第二段必须是纵向上/下滑为主。
             val inwardFirst = lockedAxisForwardSign * inwardSign > 0f
-            if (!inwardFirst || peakForwardProgressPx < COMPOUND_INWARD_ANCHOR_DP * density) return null
+            if (!inwardFirst || peakForwardProgressPx < shortThresholdForAxis(axis)) return null
             val secondAlong = lastY - anchorY
             val dominant = abs(secondAlong)
             if (dominant < COMPOUND_TURN_DP * density) return null
