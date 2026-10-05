@@ -8,8 +8,7 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.PowerManager
 import android.service.notification.StatusBarNotification
-import org.json.JSONArray
-import org.json.JSONObject
+import android.util.Log
 import java.util.Calendar
 import java.util.TimeZone
 import java.util.concurrent.ConcurrentHashMap
@@ -29,18 +28,21 @@ internal object NotificationRuleFieldExtractor {
         val subText = extras.getCharSequence(Notification.EXTRA_SUB_TEXT)?.toString().orEmpty()
         val content = text.ifBlank { bigText }
         return mapOf(
-            "packageName" to sbn.packageName,
-            "title" to title,
-            "text" to content,
-            "subText" to subText,
-            "channelId" to (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) notification.channelId else ""),
-            "category" to (notification.category.orEmpty()),
-            "key" to sbn.key,
+            NotificationRuleFieldNames.PACKAGE_NAME to sbn.packageName,
+            NotificationRuleFieldNames.TITLE to title,
+            NotificationRuleFieldNames.TEXT to content,
+            NotificationRuleFieldNames.SUB_TEXT to subText,
+            NotificationRuleFieldNames.CHANNEL_ID to
+                (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) notification.channelId else ""),
+            NotificationRuleFieldNames.CATEGORY to (notification.category.orEmpty()),
+            NotificationRuleFieldNames.KEY to sbn.key,
         )
     }
 }
 
 internal object NotificationRuleTextMatcher {
+    private const val TAG = "NotificationRule"
+
     private val regexCache = ConcurrentHashMap<String, Regex>()
     private val patternCache = ConcurrentHashMap<String, Pattern>()
 
@@ -48,6 +50,9 @@ internal object NotificationRuleTextMatcher {
         rule: NotificationFilterRule,
         combinedText: String,
         sbn: StatusBarNotification?,
+        titleField: String = "",
+        textField: String = combinedText,
+        subTextField: String = "",
     ): Boolean {
         val normalized = rule.normalized()
         val text = combinedText
@@ -71,7 +76,13 @@ internal object NotificationRuleTextMatcher {
                     cachedRegex(pattern, ignoreCase).containsMatchIn(text)
                 }.getOrDefault(false)
             }
-            TextMatchMode.ADVANCED -> matchesAdvanced(normalized.advancedFilterJson, sbn)
+            TextMatchMode.ADVANCED -> matchesAdvanced(
+                json = normalized.advancedFilterJson,
+                sbn = sbn,
+                titleField = titleField,
+                textField = textField,
+                subTextField = subTextField,
+            )
         }
     }
 
@@ -81,35 +92,44 @@ internal object NotificationRuleTextMatcher {
         return text.contains(keyword, ignoreCase = ignoreCase)
     }
 
-    private fun matchesAdvanced(json: String?, sbn: StatusBarNotification?): Boolean {
-        if (json.isNullOrBlank() || sbn == null) return false
-        val filter = runCatching {
-            val obj = JSONObject(json)
-            val matchType = obj.optString("match", "ALL").ifBlank { "ALL" }
-            val nodesArray = obj.optJSONArray("node") ?: JSONArray()
-            val nodes = buildList(nodesArray.length()) {
-                for (i in 0 until nodesArray.length()) {
-                    val node = nodesArray.optJSONObject(i) ?: continue
-                    val field = node.optString("field")
-                    val regex = node.optString("regex")
-                    if (field.isNotBlank() && regex.isNotBlank()) {
-                        add(AdvancedFilterNode(field, regex))
-                    }
-                }
+    private fun matchesAdvanced(
+        json: String?,
+        sbn: StatusBarNotification?,
+        titleField: String,
+        textField: String,
+        subTextField: String,
+    ): Boolean {
+        val filter = when (val parsed = NotificationAdvancedFilterJsonParser.parse(json)) {
+            is NotificationAdvancedFilterValidation.Invalid -> {
+                Log.w(TAG, "advanced filter JSON rejected: ${parsed.violation.error} " +
+                    "detail='${parsed.violation.detail}' node=${parsed.violation.nodeIndex}")
+                return false
             }
-            AdvancedFilter(matchType, nodes)
-        }.getOrNull() ?: return false
-        if (filter.nodes.isEmpty()) return false
-        val fields = NotificationRuleFieldExtractor.fromSbn(sbn)
+            is NotificationAdvancedFilterValidation.Valid -> parsed.filter
+        }
+
+        val fields = if (sbn != null) {
+            NotificationRuleFieldExtractor.fromSbn(sbn)
+        } else {
+            // History items and previews have no StatusBarNotification; locate fields from
+            // the already extracted values so ADVANCED behaves the same on both paths.
+            mapOf(
+                NotificationRuleFieldNames.TITLE to titleField,
+                NotificationRuleFieldNames.TEXT to textField,
+                NotificationRuleFieldNames.SUB_TEXT to subTextField,
+            )
+        }
+
         val results = filter.nodes.map { node ->
             val value = fields[node.field].orEmpty()
-            runCatching {
+            val matched = runCatching {
                 cachedPattern(node.regex).matcher(value).find()
             }.getOrDefault(false)
+            if (node.invert) !matched else matched
         }
         return when (filter.matchType.uppercase()) {
-            "ANY" -> results.any { it }
-            "NONE" -> results.none { it }
+            NotificationRuleAdvancedMatchTypes.ANY -> results.any { it }
+            NotificationRuleAdvancedMatchTypes.NONE -> results.none { it }
             else -> results.all { it }
         }
     }

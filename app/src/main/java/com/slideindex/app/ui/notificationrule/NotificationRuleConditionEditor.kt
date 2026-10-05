@@ -19,6 +19,10 @@ import androidx.compose.ui.unit.dp
 import com.slideindex.app.R
 import com.slideindex.app.notification.AppMatchMode
 import com.slideindex.app.notification.AppTarget
+import com.slideindex.app.notification.NotificationAdvancedFilterError
+import com.slideindex.app.notification.NotificationAdvancedFilterJsonParser
+import com.slideindex.app.notification.NotificationAdvancedFilterValidation
+import com.slideindex.app.notification.NotificationAdvancedFilterViolation
 import com.slideindex.app.notification.NotificationRuleChargeMask
 import com.slideindex.app.notification.ScreenMode
 import com.slideindex.app.notification.TextMatchMode
@@ -200,6 +204,20 @@ internal fun NotificationRuleConditionEditor(
                             minLines = 4,
                             maxLines = 8,
                         )
+                        Text(
+                            text = stringResource(R.string.notification_rule_advanced_schema),
+                            style = MiuixTheme.textStyles.footnote1,
+                            color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                        advancedFilterErrorMessage(advancedJson)?.let { message ->
+                            Text(
+                                text = message,
+                                style = MiuixTheme.textStyles.footnote1,
+                                color = MiuixTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = 8.dp),
+                            )
+                        }
                     }
                 }
                 TextMatchMode.ALL -> Unit
@@ -304,6 +322,42 @@ private fun textModeLabel(mode: TextMatchMode): String = when (mode) {
     TextMatchMode.CONTAIN_AND_NOT_CONTAIN -> stringResource(R.string.notification_rule_text_mode_contain_and_not)
     TextMatchMode.REGEX -> stringResource(R.string.notification_rule_text_mode_regex)
     TextMatchMode.ADVANCED -> stringResource(R.string.notification_rule_text_mode_advanced)
+}
+
+@Composable
+internal fun advancedFilterViolationMessage(violation: NotificationAdvancedFilterViolation): String {
+    val detail = violation.detail
+    return when (violation.error) {
+        NotificationAdvancedFilterError.INVALID_JSON ->
+            stringResource(R.string.notification_rule_advanced_error_invalid_json)
+        NotificationAdvancedFilterError.EMPTY_NODES ->
+            stringResource(R.string.notification_rule_advanced_error_empty_nodes)
+        NotificationAdvancedFilterError.INVALID_MATCH_TYPE ->
+            stringResource(R.string.notification_rule_advanced_error_invalid_match_type, detail)
+        NotificationAdvancedFilterError.UNKNOWN_KEY ->
+            stringResource(R.string.notification_rule_advanced_error_unknown_key, detail)
+        NotificationAdvancedFilterError.UNSUPPORTED_FIELD ->
+            stringResource(R.string.notification_rule_advanced_error_unsupported_field, detail)
+        NotificationAdvancedFilterError.EMPTY_REGEX ->
+            stringResource(R.string.notification_rule_advanced_error_empty_regex)
+        NotificationAdvancedFilterError.INVALID_REGEX ->
+            stringResource(R.string.notification_rule_advanced_error_invalid_regex, detail)
+    }
+}
+
+/**
+ * Returns the reason [json] cannot be used as an advanced filter, or null when it is accepted.
+ * Shared by the inline hint and the save-time guard so both stay in step.
+ */
+internal fun advancedFilterViolation(json: String): NotificationAdvancedFilterViolation? {
+    val parsed = NotificationAdvancedFilterJsonParser.parse(json)
+    return (parsed as? NotificationAdvancedFilterValidation.Invalid)?.violation
+}
+
+@Composable
+private fun advancedFilterErrorMessage(json: String): String? {
+    val violation = advancedFilterViolation(json) ?: return null
+    return advancedFilterViolationMessage(violation)
 }
 
 @Composable

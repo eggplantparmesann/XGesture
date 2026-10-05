@@ -1710,6 +1710,8 @@
     <string name="float_ball_gesture_swipe_side_short">横スワイプ（短）</string>
     <string name="float_ball_gesture_swipe_side_long">横スワイプ（長）</string>
     <string name="float_ball_gesture_swipe_side_return">横スワイプで戻る</string>
+    <string name="float_ball_gesture_swipe_in_down">内側へスワイプ後に下へ</string>
+    <string name="float_ball_gesture_swipe_in_up">内側へスワイプ後に上へ</string>
     <string name="float_ball_gesture_single_tap">シングルタップ</string>
     <string name="float_ball_gesture_double_tap">ダブルタップ</string>
     <string name="float_ball_gesture_long_press">長押し</string>
@@ -2198,6 +2200,14 @@
     <string name="notification_rule_keywords_exclude_hint">除外キーワード（1 行に 1 つ）</string>
     <string name="notification_rule_regex_hint">正規表現</string>
     <string name="notification_rule_advanced_hint">詳細フィルター JSON</string>
+    <string name="notification_rule_advanced_schema">{"match":"ANY|ALL|NONE","node":[{"field":"title","regex":"…","invert":false}]}\nfield: packageName, title, text, subText, channelId, category, key\nmatch は ANY（いずれかのノードが成立）、ALL（すべて成立）、NONE（すべて不成立）。invert は1つのノードを反転します。正規表現は部分一致・大文字小文字無視・DOTALL です。全体一致には ^…$ を付けてください。</string>
+    <string name="notification_rule_advanced_error_invalid_json">有効な JSON ではないか、JSON オブジェクトではありません</string>
+    <string name="notification_rule_advanced_error_empty_nodes">node は空でない配列である必要があります</string>
+    <string name="notification_rule_advanced_error_invalid_match_type">match は ANY または NONE のみ対応（現在“%1$s”）</string>
+    <string name="notification_rule_advanced_error_unknown_key">不明なキー“%1$s”</string>
+    <string name="notification_rule_advanced_error_unsupported_field">未対応の通知フィールド“%1$s”</string>
+    <string name="notification_rule_advanced_error_empty_regex">regex を空にできません</string>
+    <string name="notification_rule_advanced_error_invalid_regex">正規表現が不正です“%1$s”</string>
     <string name="notification_rule_time_start">開始（HH:mm）</string>
     <string name="notification_rule_time_end">終了（HH:mm）</string>
     <string name="notification_rule_time_all_day">終日</string>

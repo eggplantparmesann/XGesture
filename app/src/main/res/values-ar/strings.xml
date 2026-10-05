@@ -1703,6 +1703,8 @@
     <string name="float_ball_gesture_swipe_side_short">السحب للجانب (قصير)</string>
     <string name="float_ball_gesture_swipe_side_long">السحب للجانب (طويل)</string>
     <string name="float_ball_gesture_swipe_side_return">السحب للجانب ثم الرجوع</string>
+    <string name="float_ball_gesture_swipe_in_down">السحب للداخل ثم للأسفل</string>
+    <string name="float_ball_gesture_swipe_in_up">السحب للداخل ثم لأعلى</string>
     <string name="float_ball_gesture_single_tap">النقر المفرد</string>
     <string name="float_ball_gesture_double_tap">النقر المزدوج</string>
     <string name="float_ball_gesture_long_press">الضغط المطول</string>
@@ -2191,6 +2193,14 @@
     <string name="notification_rule_keywords_exclude_hint">كلمات استبعاد، كل كلمة في سطر مستقل</string>
     <string name="notification_rule_regex_hint">تعبير نمطي</string>
     <string name="notification_rule_advanced_hint">تصفية متقدمة بصيغة JSON</string>
+    <string name="notification_rule_advanced_schema">{"match":"ANY|ALL|NONE","node":[{"field":"title","regex":"…","invert":false}]}\nfield: packageName، title، text، subText، channelId، category، key\nmatch هو ANY (يكفي تحقق عقدة واحدة) أو ALL (تحقق كل العقد) أو NONE (ألا تتحقق أي عقدة). وinvert يعكس عقدة واحدة. التعبير النمطي يطابق جزءًا من النص ويتجاهل حالة الأحرف وDOTALL؛ استخدم ^…$ للمطابقة الكاملة.</string>
+    <string name="notification_rule_advanced_error_invalid_json">ليس JSON صالحًا أو ليس كائن JSON</string>
+    <string name="notification_rule_advanced_error_empty_nodes">يجب أن تكون node مصفوفة غير فارغة</string>
+    <string name="notification_rule_advanced_error_invalid_match_type">match يقبل ANY أو NONE فقط (القيمة الحالية “%1$s”)</string>
+    <string name="notification_rule_advanced_error_unknown_key">مفتاح غير معروف “%1$s”</string>
+    <string name="notification_rule_advanced_error_unsupported_field">حقل إشعار غير مدعوم “%1$s”</string>
+    <string name="notification_rule_advanced_error_empty_regex">لا يمكن أن يكون regex فارغًا</string>
+    <string name="notification_rule_advanced_error_invalid_regex">تعبير نمطي غير صالح “%1$s”</string>
     <string name="notification_rule_time_start">وقت البدء (ساعة:دقيقة)</string>
     <string name="notification_rule_time_end">وقت الانتهاء (ساعة:دقيقة)</string>
     <string name="notification_rule_time_all_day">طوال اليوم</string>

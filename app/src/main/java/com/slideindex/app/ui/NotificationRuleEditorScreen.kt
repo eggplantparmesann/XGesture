@@ -19,9 +19,12 @@ import com.slideindex.app.notification.AppTarget
 import com.slideindex.app.notification.NotificationFilterRule
 import com.slideindex.app.notification.NotificationRuleChargeMask
 import com.slideindex.app.notification.ScreenMode
+import com.slideindex.app.notification.TextMatchMode
 import com.slideindex.app.ui.notificationrule.NotificationRuleActionPicker
 import com.slideindex.app.ui.notificationrule.NotificationRuleAppPickerDialog
 import com.slideindex.app.ui.notificationrule.NotificationRuleConditionEditor
+import com.slideindex.app.ui.notificationrule.advancedFilterViolation
+import com.slideindex.app.ui.notificationrule.advancedFilterViolationMessage
 import com.slideindex.app.ui.notificationrule.msToTimeString
 import com.slideindex.app.ui.notificationrule.parseLines
 import com.slideindex.app.ui.notificationrule.parseTimeMs
@@ -76,9 +79,15 @@ fun NotificationRuleEditorScreen(
         stringResource(R.string.notification_rule_edit)
     }
 
+    val advancedViolation = advancedFilterViolation(advancedJson)
+    val advancedErrorMessage = advancedViolation?.let { advancedFilterViolationMessage(it) }
+
     val saveRule: () -> Unit = {
         if (actionEntries.isEmpty()) {
             Toast.makeText(context, R.string.notification_rule_invalid, Toast.LENGTH_SHORT).show()
+        } else if (textMode == TextMatchMode.ADVANCED && advancedErrorMessage != null) {
+            // An unusable document would make the rule silently match nothing, so refuse to save.
+            Toast.makeText(context, advancedErrorMessage, Toast.LENGTH_LONG).show()
         } else {
             onSave(
                 NotificationFilterRule(

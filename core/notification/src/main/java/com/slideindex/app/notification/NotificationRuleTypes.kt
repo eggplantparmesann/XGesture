@@ -44,12 +44,58 @@ data class AppTarget(
 data class AdvancedFilterNode(
     val field: String,
     val regex: String,
+    /** When true the node is satisfied by the regex NOT matching the field value. */
+    val invert: Boolean = false,
 )
 
 data class AdvancedFilter(
     val matchType: String = "ALL",
     val nodes: List<AdvancedFilterNode> = emptyList(),
 )
+
+/**
+ * The single source of truth for the `field` values accepted by advanced filter JSON.
+ * [NotificationRuleFieldExtractor.fromSbn] must be able to produce every key listed here,
+ * otherwise the editor would accept a field the matcher can never resolve.
+ */
+object NotificationRuleFieldNames {
+    const val PACKAGE_NAME = "packageName"
+    const val TITLE = "title"
+    const val TEXT = "text"
+    const val SUB_TEXT = "subText"
+    const val CHANNEL_ID = "channelId"
+    const val CATEGORY = "category"
+    const val KEY = "key"
+
+    val ALL: List<String> = listOf(
+        PACKAGE_NAME,
+        TITLE,
+        TEXT,
+        SUB_TEXT,
+        CHANNEL_ID,
+        CATEGORY,
+        KEY,
+    )
+
+    fun isSupported(field: String): Boolean = field in ALL
+}
+
+/**
+ * `match` values accepted by advanced filter JSON.
+ *
+ * `ALL` is kept as an explicit value for backward compatibility: the original matcher treated
+ * any value other than `ANY`/`NONE` as "every node must hold" and shipped a default of `ALL`,
+ * so saved rules use it.
+ */
+object NotificationRuleAdvancedMatchTypes {
+    const val ALL = "ALL"
+    const val ANY = "ANY"
+    const val NONE = "NONE"
+
+    val ALL_VALUES: List<String> = listOf(ANY, ALL, NONE)
+
+    fun isSupported(matchType: String): Boolean = matchType in ALL_VALUES
+}
 
 data class RuleActionEntry(
     val type: NotificationRuleActionType,

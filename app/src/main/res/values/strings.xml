@@ -866,6 +866,8 @@
     <string name="float_ball_gesture_swipe_side_short">Side swipe (short)</string>
     <string name="float_ball_gesture_swipe_side_long">Side swipe (long)</string>
     <string name="float_ball_gesture_swipe_side_return">Side swipe to return</string>
+    <string name="float_ball_gesture_swipe_in_down">Swipe inward then down</string>
+    <string name="float_ball_gesture_swipe_in_up">Swipe inward then up</string>
     <string name="float_ball_gesture_single_tap">Single tap</string>
     <string name="float_ball_gesture_double_tap">Double tap</string>
     <string name="float_ball_gesture_long_press">Long press</string>
@@ -1370,6 +1372,14 @@
     <string name="notification_rule_keywords_exclude_hint">Exclude keywords, one per line</string>
     <string name="notification_rule_regex_hint">Regular expression</string>
     <string name="notification_rule_advanced_hint">Advanced filter JSON</string>
+    <string name="notification_rule_advanced_schema">{"match":"ANY|ALL|NONE","node":[{"field":"title","regex":"…","invert":false}]}\nfield: packageName, title, text, subText, channelId, category, key\nmatch ANY = at least one node, ALL = every node, NONE = no node. invert negates one node. Regex is substring-based, case-insensitive, DOTALL — anchor with ^…$ yourself.</string>
+    <string name="notification_rule_advanced_error_invalid_json">Not valid JSON, or not a JSON object</string>
+    <string name="notification_rule_advanced_error_empty_nodes">node must be a non-empty array</string>
+    <string name="notification_rule_advanced_error_invalid_match_type">match only accepts ANY or NONE (got “%1$s”)</string>
+    <string name="notification_rule_advanced_error_unknown_key">Unknown key “%1$s”</string>
+    <string name="notification_rule_advanced_error_unsupported_field">Unknown field “%1$s”</string>
+    <string name="notification_rule_advanced_error_empty_regex">regex must not be empty</string>
+    <string name="notification_rule_advanced_error_invalid_regex">Invalid regular expression “%1$s”</string>
     <string name="notification_rule_time_start">Start (HH:mm)</string>
     <string name="notification_rule_time_end">End (HH:mm)</string>
     <string name="notification_rule_time_all_day">All day</string>

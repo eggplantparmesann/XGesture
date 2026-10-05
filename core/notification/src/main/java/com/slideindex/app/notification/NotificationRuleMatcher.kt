@@ -71,6 +71,7 @@ object NotificationRuleMatcher {
         channelId: String?,
         title: String,
         text: String,
+        subText: String = "",
     ): Boolean {
         return matches(
             rule = rule,
@@ -81,7 +82,7 @@ object NotificationRuleMatcher {
             channelId = channelId,
             title = title,
             text = text,
-            subText = "",
+            subText = subText,
             timestampMs = System.currentTimeMillis(),
         )
     }
@@ -120,7 +121,17 @@ object NotificationRuleMatcher {
         if (!NotificationRuleAppMatcher.matches(normalized, packageName, userId)) return false
         if (!normalized.channelId.isNullOrBlank() && normalized.channelId != channelId) return false
         val combined = NotificationRuleFieldExtractor.combinedText(title, text, subText)
-        if (!NotificationRuleTextMatcher.matches(normalized, combined, sbn)) return false
+        if (!NotificationRuleTextMatcher.matches(
+                rule = normalized,
+                combinedText = combined,
+                sbn = sbn,
+                titleField = title,
+                textField = text,
+                subTextField = subText,
+            )
+        ) {
+            return false
+        }
         if (!NotificationRuleDeviceMatcher.matchesTime(normalized, timestampMs)) return false
         if (context != null) {
             if (!NotificationRuleDeviceMatcher.matchesScreen(context, normalized)) return false

@@ -1741,6 +1741,8 @@
     <string name="float_ball_gesture_swipe_side_short">侧滑（短）</string>
     <string name="float_ball_gesture_swipe_side_long">侧滑（长）</string>
     <string name="float_ball_gesture_swipe_side_return">侧滑后返回</string>
+    <string name="float_ball_gesture_swipe_in_down">向内滑再向下滑</string>
+    <string name="float_ball_gesture_swipe_in_up">向内滑再向上滑</string>
     <string name="float_ball_gesture_single_tap">单击</string>
     <string name="float_ball_gesture_double_tap">双击</string>
     <string name="float_ball_gesture_long_press">长按</string>
@@ -2234,6 +2236,14 @@
     <string name="notification_rule_keywords_exclude_hint">排除关键字，每行一个</string>
     <string name="notification_rule_regex_hint">正则表达式</string>
     <string name="notification_rule_advanced_hint">高级过滤 JSON</string>
+    <string name="notification_rule_advanced_schema">{"match":"ANY|ALL|NONE","node":[{"field":"title","regex":"…","invert":false}]}\nfield 可选：packageName、title、text、subText、channelId、category、key\nmatch 为 ANY（任一节点成立）、ALL（每个节点都成立）或 NONE（所有节点都不成立）；invert 取反单个节点。正则按子串匹配，忽略大小写且 DOTALL，需要整体匹配请自己加 ^…$。</string>
+    <string name="notification_rule_advanced_error_invalid_json">不是合法 JSON，或不是 JSON 对象</string>
+    <string name="notification_rule_advanced_error_empty_nodes">node 必须是非空数组</string>
+    <string name="notification_rule_advanced_error_invalid_match_type">match 只支持 ANY 或 NONE（当前为“%1$s”）</string>
+    <string name="notification_rule_advanced_error_unknown_key">存在未知字段名“%1$s”</string>
+    <string name="notification_rule_advanced_error_unsupported_field">不支持的通知字段“%1$s”</string>
+    <string name="notification_rule_advanced_error_empty_regex">regex 不能为空</string>
+    <string name="notification_rule_advanced_error_invalid_regex">正则表达式非法“%1$s”</string>
     <string name="notification_rule_time_start">开始时间 (HH:mm)</string>
     <string name="notification_rule_time_end">结束时间 (HH:mm)</string>
     <string name="notification_rule_time_all_day">整天</string>

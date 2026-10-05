@@ -215,7 +215,7 @@ class NotificationFilterRepository @Inject constructor(
             return NotificationRuleMatcher.matches(
                 rule = this.normalized(),
                 packageName = item.packageName,
-                channelId = null,
+                channelId = NotificationChannelSupport.resolveChannelId(item),
                 title = item.title,
                 text = item.text,
             )
