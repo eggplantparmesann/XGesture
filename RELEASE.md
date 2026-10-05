@@ -59,6 +59,18 @@ git diff ${last_tag}..HEAD --name-only --diff-filter=A
 
 ---
 
+### 2.5 多语言文案（CI 已硬性拦截）
+
+`app/build.gradle.kts` 关闭了 `MissingTranslation` / `ExtraTranslation`，**Lint 不会报缺翻译**——历史上 1.31.0 / 1.33.0 / 1.35.0 都曾漏译日文与阿拉伯文而 CI 全绿。现由独立的 `Translation Check` job 兜底（`scripts/check-translations.py`，纯 Python、不跑 Gradle）：
+
+- 任何 `values-<语言>/` 缺少默认语言（`values/`）里的可翻译条目，或 `values` XML 结构非法（例如资源元素互相嵌套），CI 直接失败；主分支绿了才能打 Tag。
+- 标了 `translatable="false"` 的条目不计入，`values-night`、`values-v31` 这类配置限定符不会被误判成语言。
+- 本地自查：`python scripts/check-translations.py`；`--warn-only` 只报告不失败，`--quiet` 只打印问题。
+
+**新增英文文案时请同时补 `values-zh` / `values-ja` / `values-ar`**，否则过不了 CI。
+
+---
+
 ### 3. 提交并推送 Tag
 
 ```bash
@@ -179,5 +191,6 @@ gh release view v{版本号}
 | `.github/workflows/ci.yml` | 日常 Push / PR 的持续集成与 Lint 检查 |
 | `update.json` | 应用内检查更新清单（由 CI 全自动生成与维护） |
 | `scripts/extract-changelog-section.py` | 跨平台提取并 Lint 当版 CHANGELOG 段落 |
+| `scripts/check-translations.py` | 校验各语言文案完整性与 `values` 结构（CI 的 Translation Check 调用） |
 | `scripts/update-release-manifest.py` | 跨平台生成 `update.json` + CDN Purge + 远端校验 |
 | `scripts/verify-release-apk.sh` | 校验 Release APK 版本号与 Native 引擎打包完整性 |

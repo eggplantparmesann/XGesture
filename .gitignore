@@ -69,3 +69,7 @@ release-notes-*.md
 
 # --- 构建时复制进 APK 的引擎 zip（勿提交） ---
 app/src/main/assets/bundled-native-engine/*.zip
+
+# --- Python 字节码缓存（scripts/ 下多个 py 工具） ---
+__pycache__/
+*.pyc

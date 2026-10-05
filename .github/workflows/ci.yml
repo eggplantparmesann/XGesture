@@ -93,6 +93,24 @@ jobs:
           path: ${{ matrix.apk_path }}
           if-no-files-found: error
 
+  translations:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
+    name: Translation Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14.7"
+
+      # No Gradle here on purpose: `lint` cannot cover this, because
+      # app/build.gradle.kts disables MissingTranslation / ExtraTranslation.
+      - name: Check locale completeness & values structure
+        run: python scripts/check-translations.py
+
   lint:
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     name: Lint Check
