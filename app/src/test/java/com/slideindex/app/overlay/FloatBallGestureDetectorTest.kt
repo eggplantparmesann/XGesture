@@ -318,7 +318,45 @@ class FloatBallGestureDetectorTest {
     }
 
     @Test
-    fun `inward below threshold without vertical turn stays short side swipe`() {
+    fun `short inward then down fires compound without long inward travel`() {
+        var fired: FloatBallGestureType? = null
+        val detector = newDetector(
+            settings = compoundSettings(
+                FloatBallGestureType.SWIPE_IN_DOWN to com.slideindex.app.gesture.GestureAction.Back,
+            ),
+            onGesture = { type, _, _ -> fired = type },
+        )
+        // 首段只需 40dp(120px)：向内 150px 即记录拐点，远低于侧滑短滑阈值 384px。
+        val down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 1200f, 0)
+        val moveInward = MotionEvent.obtain(0, 50, MotionEvent.ACTION_MOVE, 250f, 1200f, 0)
+        val moveDown = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 250f, 1400f, 0)
+        val up = MotionEvent.obtain(0, 150, MotionEvent.ACTION_UP, 250f, 1400f, 0)
+        listOf(down, moveInward, moveDown, up).forEach { detector.onTouchEvent(it) }
+        assertEquals(FloatBallGestureType.SWIPE_IN_DOWN, fired)
+        listOf(down, moveInward, moveDown, up).forEach { it.recycle() }
+    }
+
+    @Test
+    fun `short down then inward fires compound below plain swipe threshold`() {
+        var fired: FloatBallGestureType? = null
+        val detector = newDetector(
+            settings = compoundSettings(
+                FloatBallGestureType.SWIPE_DOWN_IN to com.slideindex.app.gesture.GestureAction.Back,
+            ),
+            onGesture = { type, _, _ -> fired = type },
+        )
+        // 首段 150px < 下滑短滑阈值(240px)，但已够混合手势首段 40dp(120px)。
+        val down = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100f, 1200f, 0)
+        val moveDown = MotionEvent.obtain(0, 50, MotionEvent.ACTION_MOVE, 100f, 1350f, 0)
+        val moveInward = MotionEvent.obtain(0, 100, MotionEvent.ACTION_MOVE, 300f, 1350f, 0)
+        val up = MotionEvent.obtain(0, 150, MotionEvent.ACTION_UP, 300f, 1350f, 0)
+        listOf(down, moveDown, moveInward, up).forEach { detector.onTouchEvent(it) }
+        assertEquals(FloatBallGestureType.SWIPE_DOWN_IN, fired)
+        listOf(down, moveDown, moveInward, up).forEach { it.recycle() }
+    }
+
+    @Test
+    fun `inward without vertical turn stays short side swipe`() {
         var fired: FloatBallGestureType? = null
         val detector = newDetector(
             settings = compoundSettings(

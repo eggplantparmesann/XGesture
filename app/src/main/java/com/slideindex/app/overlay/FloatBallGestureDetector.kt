@@ -42,6 +42,11 @@ internal class FloatBallGestureDetector(
         const val REBOUND_THRESHOLD_DP = 28f
         /** 混合手势第二段「向内」位移门槛（与边缘触钮 TURN_SLOP_DP 一致）。 */
         const val COMPOUND_TURN_DP = 32f
+        /**
+         * 混合手势首段统一门槛：不再要求滑够该轴短滑阈值（那样要 8~13dp 起步、向内甚至 128dp），
+         * 只要滑出一小段即可进入第二段判定——区分两段式与普通滑动的关键是第二段的转向。
+         */
+        const val COMPOUND_FIRST_DP = 40f
         /** 混合手势第二段沿边分量相对向内分量的上限（与边缘触钮同容差，防斜滑误判）。 */
         const val COMPOUND_MAX_ALONG_RATIO = 0.8f
         /** 拉回原点停顿超时判定为取消（ms）。 */
@@ -442,17 +447,13 @@ internal class FloatBallGestureDetector(
             reboundStartTime = SystemClock.uptimeMillis()
         }
         // 首段达标后记录拐点，供第二段判定使用：
-        // - 上/下轴：滑够该轴短滑阈值（先上/下滑，再向内）；
-        // - 侧轴且锁定方向朝屏幕内侧：滑够侧滑短滑阈值（先向内，再上/下滑，沿用侧滑老标准）。
+        // - 上/下轴：向下/上滑出一小段即可；
+        // - 侧轴且锁定方向朝屏幕内侧：向屏幕内侧滑出一小段即可（同样用统一短门槛）。
         if (firstSegmentAnchorX == null) {
-            val anchorReached = when {
-                axis == LockedSwipeAxis.UP || axis == LockedSwipeAxis.DOWN ->
-                    forwardProgress >= shortThresholdForAxis(axis)
-                axis == LockedSwipeAxis.SIDE && lockedAxisForwardSign * inwardSignProvider() > 0f ->
-                    forwardProgress >= shortThresholdForAxis(axis)
-                else -> false
-            }
-            if (anchorReached) {
+            val candidateAxis = axis == LockedSwipeAxis.UP ||
+                axis == LockedSwipeAxis.DOWN ||
+                (axis == LockedSwipeAxis.SIDE && lockedAxisForwardSign * inwardSignProvider() > 0f)
+            if (candidateAxis && forwardProgress >= COMPOUND_FIRST_DP * density) {
                 firstSegmentAnchorX = lastX
                 firstSegmentAnchorY = lastY
             }
@@ -577,9 +578,9 @@ internal class FloatBallGestureDetector(
     }
 
     /**
-     * 混合手势，两类方向相反的两段式（首段均沿用对应轴的短滑阈值）：
-     * - 先上/下滑再向内：首段滑够该轴短滑阈值，第二段向内滑够 [COMPOUND_TURN_DP] 且以内向为主；
-     * - 先向内再上/下滑：首段向内滑够侧滑短滑阈值，第二段以纵向为主且滑够 [COMPOUND_TURN_DP]。
+     * 混合手势，两类方向相反的两段式（首段都只需滑出一小段 [COMPOUND_FIRST_DP]）：
+     * - 先上/下滑再向内：第二段向内滑够 [COMPOUND_TURN_DP] 且以内向为主；
+     * - 先向内再上/下滑：第二段以纵向为主且滑够 [COMPOUND_TURN_DP]。
      *
      * 未配置对应动作、首段未达标、或整体已超出取词时间窗时均不触发（回落为普通滑动）。
      */
@@ -593,7 +594,7 @@ internal class FloatBallGestureDetector(
         if (axis == LockedSwipeAxis.SIDE) {
             // 「先向内再上/下滑」：第二段必须是纵向上/下滑为主。
             val inwardFirst = lockedAxisForwardSign * inwardSign > 0f
-            if (!inwardFirst || peakForwardProgressPx < shortThresholdForAxis(axis)) return null
+            if (!inwardFirst || peakForwardProgressPx < COMPOUND_FIRST_DP * density) return null
             val secondAlong = lastY - anchorY
             val dominant = abs(secondAlong)
             if (dominant < COMPOUND_TURN_DP * density) return null
@@ -611,7 +612,7 @@ internal class FloatBallGestureDetector(
                 LockedSwipeAxis.UP -> FloatBallGestureType.SWIPE_UP_IN
                 LockedSwipeAxis.SIDE -> return null
             }
-            if (peakForwardProgressPx < shortThresholdForAxis(axis)) return null
+            if (peakForwardProgressPx < COMPOUND_FIRST_DP * density) return null
             val secondInward = (lastX - anchorX) * inwardSign
             if (secondInward < COMPOUND_TURN_DP * density) return null
             val secondAlong = abs(lastY - anchorY)
