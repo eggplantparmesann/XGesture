@@ -17,6 +17,8 @@ import com.slideindex.app.launcher.QuickLauncherItemCodec
 import com.slideindex.app.launcher.QuickLauncherItemType
 import com.slideindex.app.overlay.TaskSwitcherMenuItem
 import com.slideindex.app.settings.AppSettings
+import com.slideindex.app.settings.FreeWindowMode
+import com.slideindex.app.settings.resolvedFreeWindowMode
 import com.slideindex.app.settings.shouldLaunchFullscreen
 import com.slideindex.app.shell.ShellCommand
 import com.slideindex.app.util.AppShortcutLoader
@@ -134,14 +136,58 @@ internal class ActionExecutorLaunch(
     }
 
     /**
-     * 小窗化当前应用：照搬 SideGesture「应用小窗(7.0+)」——
-     * 取前台包 → 解析它的 launcher Activity → 一次 `startActivity` + ActivityOptions。
-     * 不搬移已有任务、不校验、不重试，也不叠加 MULTIPLE_TASK。
+     * 小窗化当前应用。
+     *
+     * 魅族模式：先试"把已有任务搬进小窗"（Shizuku/root 原地搬移 + 读回校验），搬不动就直接走下面的
+     * 一次 ActivityOptions 启动 —— 不另开小窗。
+     * 其余模式照搬 SideGesture「应用小窗(7.0+)」：取前台包 → 解析它的 launcher Activity →
+     * 一次 `startActivity` + ActivityOptions；不搬移已有任务、不校验、不重试，也不叠加 MULTIPLE_TASK。
      */
     fun freeWindowForegroundApp(settings: AppSettings) {
         val effectiveSettings = settings.copy(freeWindow = settings.freeWindow.copy(freeWindowEnabled = true))
+        if (effectiveSettings.resolvedFreeWindowMode() == FreeWindowMode.FLYME) {
+            freeWindowForegroundAppViaTaskMove(effectiveSettings)
+            return
+        }
+        launchCurrentAppInFreeWindow(effectiveSettings)
+    }
+
+    /** 魅族模式：先试原地搬移，搬不动退回同一个"一次启动"路径。 */
+    private fun freeWindowForegroundAppViaTaskMove(settings: AppSettings) {
+        val runMove = Runnable {
+            val targetPackage = ForegroundHostPackageResolver.resolveForFreeWindow(context)
+            if (targetPackage == null) {
+                launchCurrentAppInFreeWindow(settings)
+                return@Runnable
+            }
+            if (!TaskManagerUtil.hasPermission()) {
+                mainHandler.post { launchCurrentAppInFreeWindow(settings) }
+                return@Runnable
+            }
+            Thread {
+                val moved = try {
+                    TaskManagerUtil.ensureServiceBound()
+                    var inPlace = TaskManagerUtil.movePackageToFreeWindow(targetPackage, settings)
+                    if (!inPlace) {
+                        inPlace = TaskManagerUtil.moveFrontTaskToFreeWindow(settings)
+                    }
+                    inPlace
+                } catch (error: Exception) {
+                    Log.e(ActionExecutor.TAG, "freeWindowForegroundApp failed", error)
+                    false
+                }
+                if (!moved) {
+                    mainHandler.post { launchCurrentAppInFreeWindow(settings) }
+                }
+            }.start()
+        }
+        mainHandler.postDelayed(runMove, 120L)
+    }
+
+    /** 取前台包，一次 ActivityOptions 启动成小窗（与其余模式共用）。 */
+    private fun launchCurrentAppInFreeWindow(settings: AppSettings) {
         val targetPackage = ForegroundHostPackageResolver.resolveForFreeWindow(context) ?: return
-        FreeWindowLauncher.launchPackageInFreeWindow(context, targetPackage, effectiveSettings)
+        FreeWindowLauncher.launchPackageInFreeWindow(context, targetPackage, settings)
     }
 
     private fun launchRecentTaskFallback(
