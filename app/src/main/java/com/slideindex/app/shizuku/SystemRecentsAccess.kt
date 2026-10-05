@@ -10,6 +10,18 @@ import android.util.Log
 import com.slideindex.app.util.TaskExclusions
 
 /**
+ * Outcome of a "move this task into a free window" attempt.
+ *
+ * [UNKNOWN] means the platform did not expose the task's windowingMode, so the move
+ * cannot be judged either way; callers must not treat it as a confirmed failure.
+ */
+internal enum class FreeWindowMoveStatus {
+    MOVED,
+    NOT_MOVED,
+    UNKNOWN,
+}
+
+/**
  * Generic system recents access through IActivityTaskManager / IActivityManager.
  * Intended to run inside the Shizuku UserService (adb/shell uid).
  */
@@ -27,12 +39,56 @@ internal object SystemRecentsAccess {
     private const val START_SUCCESS = 0
     private const val START_DELIVERED_TO_TOP = 3
 
+    /** Window modes that mean "this task already is a free/small window". */
+    private val FREE_WINDOW_MODES = setOf(5, 11, 100, 102, 106)
+
     data class Task(
         val taskId: Int,
         val packageName: String,
         val component: String,
-        val title: String?
+        val title: String?,
+        val windowingMode: Int? = null
     )
+
+    /**
+     * Reads the live windowingMode of one task without shelling out. Returns null when the
+     * platform does not expose the field, so callers can tell "not a free window" from "unknown".
+     */
+    fun windowingModeOf(taskId: Int): Int? {
+        if (taskId <= 0) return null
+        val queries = listOf(
+            { primaryTaskManager()?.let { getTasks3(it, MAX_TASKS, false, true) } },
+            { primaryTaskManager()?.let { getTasks3(it, MAX_TASKS, false, false) } },
+            { primaryTaskManager()?.let { getTasks2(it, MAX_TASKS, 1) } }
+        )
+        for (query in queries) {
+            val raw = runCatching { query() }.getOrNull() ?: continue
+            for (item in raw) {
+                val id = SystemReflect.readInt(item, "getTaskId", "taskId", "id") ?: continue
+                if (id != taskId) continue
+                val mode = readWindowingMode(item) ?: continue
+                Log.i(TAG, "windowingModeOf($taskId) -> $mode")
+                return mode
+            }
+        }
+        return null
+    }
+
+    fun isFreeWindowMode(mode: Int?): Boolean = mode != null && mode in FREE_WINDOW_MODES
+
+    /** True only when the task really reports a free window mode; unknown counts as not moved. */
+    fun isTaskInFreeWindow(taskId: Int): Boolean = isFreeWindowMode(windowingModeOf(taskId))
+
+    /** Tri-state check used to verify a free window move without guessing. */
+    fun freeWindowMoveStatus(taskId: Int): FreeWindowMoveStatus =
+        when (val mode = windowingModeOf(taskId)) {
+            null -> FreeWindowMoveStatus.UNKNOWN
+            else -> if (isFreeWindowMode(mode)) {
+                FreeWindowMoveStatus.MOVED
+            } else {
+                FreeWindowMoveStatus.NOT_MOVED
+            }
+        }
 
     fun listTasks(): List<Task> {
         val merged = LinkedHashMap<Int, Task>()
@@ -156,8 +212,11 @@ internal object SystemRecentsAccess {
 
         val componentName = component?.flattenToShortString() ?: packageName
         val title = readTitle(raw)
-        return Task(taskId, packageName, componentName, title)
+        return Task(taskId, packageName, componentName, title, readWindowingMode(raw))
     }
+
+    private fun readWindowingMode(raw: Any): Int? =
+        SystemReflect.readInt(raw, "windowingMode", "getWindowingMode")
 
     private fun readTitle(raw: Any): String? {
         val description = SystemReflect.invoke(raw, "getTaskDescription")

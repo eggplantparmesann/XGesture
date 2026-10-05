@@ -4,7 +4,9 @@ import android.content.Context
 import android.util.Log
 import com.slideindex.app.settings.AppSettings
 import com.slideindex.app.settings.resolvedFreeWindowMode
+import com.slideindex.app.shizuku.FreeWindowMoveStatus
 import com.slideindex.app.shizuku.ITaskManagerService
+import com.slideindex.app.shizuku.SystemRecentsAccess
 
 internal object TaskManagerUtilFreeWindow {
     private const val TAG = "TaskManagerUtil"
@@ -95,13 +97,37 @@ internal object TaskManagerUtilFreeWindow {
     ): Boolean {
         var service = taskService
         var moved = invokeMoveTaskToFreeWindow(service, taskId, settings, appContext)
-        if (!moved) {
+        if (!moved && !freeWindowMoveState(taskId).isConfirmed) {
+            // Only an inconclusive result is worth a service restart: a confirmed
+            // "still not a free window" cannot be fixed by rebinding the service.
             forceRestartUserService(appContext)
             service = bindFreshService(MIN_FREE_WINDOW_API) ?: return false
             moved = invokeMoveTaskToFreeWindow(service, taskId, settings, appContext)
         }
         Log.i(TAG, "moveFrontTaskToFreeWindow: taskId=$taskId package=$logPackage moved=$moved")
         return moved
+    }
+
+    /**
+     * Reads the task's live windowingMode. A confirmed result (moved or not) means a service
+     * restart cannot change anything; [FreeWindowMoveState.UNKNOWN] means the read itself failed.
+     */
+    private fun freeWindowMoveState(taskId: String): FreeWindowMoveState {
+        val id = taskId.toIntOrNull() ?: return FreeWindowMoveState.UNKNOWN
+        return when (SystemRecentsAccess.freeWindowMoveStatus(id)) {
+            FreeWindowMoveStatus.MOVED -> FreeWindowMoveState.MOVED
+            FreeWindowMoveStatus.NOT_MOVED -> FreeWindowMoveState.NOT_MOVED
+            FreeWindowMoveStatus.UNKNOWN -> FreeWindowMoveState.UNKNOWN
+        }
+    }
+
+    private enum class FreeWindowMoveState {
+        MOVED,
+        NOT_MOVED,
+        UNKNOWN,
+        ;
+
+        val isConfirmed: Boolean get() = this != UNKNOWN
     }
 
     private fun invokeMoveTaskToFreeWindow(

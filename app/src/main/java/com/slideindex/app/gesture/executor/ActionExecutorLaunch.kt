@@ -386,7 +386,18 @@ internal class ActionExecutorLaunch(
         }
     }
 
+    /**
+     * Last resort for "free-window the current app": open a small window on top instead of
+     * moving the existing task. The existing fullscreen task is left untouched, so the page the
+     * user was on is never cleared; the trade-off is a second window for that app.
+     */
     private fun launchFreeWindowFallback(packageName: String, settings: AppSettings) {
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+        if (launchIntent != null) {
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+            FreeWindowLauncher.launch(context, launchIntent, settings, fullscreen = false)
+            return
+        }
         val app = appRepository.getCachedApps().firstOrNull { it.packageName == packageName }
             ?: appRepository.lookupApp(packageName)
             ?: return

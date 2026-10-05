@@ -3,6 +3,7 @@ package com.slideindex.app.privilege
 import com.slideindex.app.settings.AppSettings
 import com.slideindex.app.shizuku.ShellRecentsReader
 import com.slideindex.app.shizuku.ShellCommandRunner
+import com.slideindex.app.shizuku.SystemRecentsAccess
 import com.slideindex.app.shizuku.TaskManagerFreeWindowOperations
 import com.slideindex.app.shizuku.TaskManagerShellExecutor
 import com.slideindex.app.shizuku.TaskManagerShortcutResolver
@@ -21,7 +22,11 @@ internal object RootPrivilegedOperations {
         shell = shellRunner,
         recents = ShellRecentsReader(shellPort)
     )
-    private val freeWindow = TaskManagerFreeWindowOperations(shell = shellPort, tasks = tasks)
+    private val freeWindow = TaskManagerFreeWindowOperations(
+        shell = shellPort,
+        tasks = tasks,
+        verifier = SystemRecentsAccess::freeWindowMoveStatus,
+    )
 
     fun probeRootAvailable(): Boolean = TaskManagerShellExecutor.probeRootAvailable()
 
