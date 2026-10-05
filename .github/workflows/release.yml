@@ -108,11 +108,12 @@ jobs:
           name: release-apk-lite
           path: release-apk-lite
 
-      - name: Extract and Lint Changelog Section
+      - name: Extract and Lint Changelog Section (English first, then Chinese)
         run: |
           python scripts/extract-changelog-section.py \
             --version "${{ github.ref_name }}" \
             --lint \
+            --prepend-changelog CHANGELOG.en.md \
             --out-file release-notes.md
 
       - name: Publish GitHub Release
@@ -130,7 +131,8 @@ jobs:
           LITE_APK=$(find release-apk-lite -name "xgesture-*-lite.apk" | head -n 1)
           python scripts/update-release-manifest.py \
             --version "${{ github.ref_name }}" \
-            --apk-file "$LITE_APK"
+            --apk-file "$LITE_APK" \
+            --require-notes-en
 
       - name: Commit & Push update.json to main
         run: |

@@ -38,6 +38,7 @@ git diff ${last_tag}..HEAD --name-only --diff-filter=A
 **审计铁律：** 
 - 凡在两次 Release 之间**新增了 ViewModel/Enum/配置类/组件**，代表引入了全新的功能或模式，**100% 必须作为 `Added` 新功能列出**，绝不可仅作为 Bug 修复简写。
 - 汇总审计所有 Commit 与新增文件后，归纳整理出当版完整的 `Added` / `Changed` / `Fixed` 清单，写入 `CHANGELOG.md` 的 `## [{版本号}] - YYYY-MM-DD` 章节中。
+- **同一版必须再写一份英文段落，放进 `CHANGELOG.en.md`**：版本标题与 `### Added` / `### Changed` / `### Fixed` 分组名与中文文件逐字对应，条目一一对应（见下方「1.5 双语更新日志」）。
 
 **文风（硬要求）：** 日志是给用户看的差异清单，不是调试记录，也不是 Commit message 的压缩版。
 
@@ -46,6 +47,29 @@ git diff ${last_tag}..HEAD --name-only --diff-filter=A
 - `Fixed` 只写症状 + 结论，例：「修复侧边默认设为「即时触发」时双击手势无效」。
 - **当仓库历史条目的文风与本规则冲突时，以本规则为准，不要对齐历史。**
 - **定稿前必须先把该版段落贴给维护者确认，确认后才提交与打 Tag。** `update.json` 的 `notes` 与 GitHub Release 正文都由本段落派生（见 `scripts/update-release-manifest.py`），同样受本规则约束，需一并同步。
+
+---
+
+### 1.5 双语更新日志（英文在前）
+
+英文用户此前只能看到中文日志（GitHub Issue 反馈）。现在同一版内容维护两份文件：
+
+| 文件 | 用途 | 谁读 |
+|------|------|------|
+| `CHANGELOG.md` | 中文正本，`update.json` 的 `notes` 由它派生 | 中文用户 |
+| `CHANGELOG.en.md` | 英文版，GitHub Release 正文在前段、`update.json` 的 `notesEn` 由它派生 | 英文及其他非中文用户 |
+
+- **GitHub Release 正文顺序：英文段落在前，空行，中文段落在后**（`release.yml` 用 `--prepend-changelog CHANGELOG.en.md` 实现，无需手工拼接）。
+- **App 内更新弹窗按系统语言选文案**：`zh` 读 `notes`，其他语言读 `notesEn`；任一缺失时自动回落另一份（老 `update.json` 只有 `notes`，不会崩也不会空白）。
+- **发版时英文段落缺失会直接失败**：`release.yml` 调 `update-release-manifest.py` 时带了 `--require-notes-en`，逼着每版都补英文，避免又悄悄退回「只有中文」。
+- 只补了中文、还没来得及写英文时，可临时本地跳过：`--changelog-en=`（显式置空即不生成 `notesEn`），但**不要**把这个开关写进 CI。
+- 英文文风与中文一致：每条一行、动词开头、只写现在的行为，不出现类名/常量名/分支名。
+- 本地预览双语 Release 正文：
+
+```bash
+python scripts/extract-changelog-section.py -v {版本号} \
+  --lint --prepend-changelog CHANGELOG.en.md
+```
 
 ---
 
@@ -74,7 +98,7 @@ git diff ${last_tag}..HEAD --name-only --diff-filter=A
 ### 3. 提交并推送 Tag
 
 ```bash
-git add app/build.gradle.kts README.md CHANGELOG.md
+git add app/build.gradle.kts README.md CHANGELOG.md CHANGELOG.en.md
 git commit -m "chore(release): v{版本号} - {简述}"
 git tag -a v{版本号} -m "v{版本号}"
 git push origin main

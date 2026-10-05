@@ -12,6 +12,20 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+# Group headers of CHANGELOG.md -> in-app `notes` headings.
+ZH_HEADER_TITLES = {
+    "added": "新增",
+    "changed": "变更",
+    "fixed": "修复",
+}
+
+# Group headers of CHANGELOG.en.md -> in-app `notesEn` headings.
+EN_HEADER_TITLES = {
+    "added": "Added",
+    "changed": "Changed",
+    "fixed": "Fixed",
+}
+
 
 def parse_version_code_from_gradle(gradle_path: Path) -> int:
     content = gradle_path.read_text(encoding="utf-8")
@@ -22,7 +36,10 @@ def parse_version_code_from_gradle(gradle_path: Path) -> int:
 
 
 def get_changelog_bullet_notes(
-    version: str, changelog_path: Path, max_items_per_group: int = 8
+    version: str,
+    changelog_path: Path,
+    max_items_per_group: int = 8,
+    header_to_title: dict[str, str] | None = None,
 ) -> str:
     v = version.lstrip("v")
     content = changelog_path.read_text(encoding="utf-8")
@@ -40,7 +57,7 @@ def get_changelog_bullet_notes(
     else:
         section = content[start:].rstrip()
 
-    header_to_title = {
+    header_to_title = header_to_title or {
         "added": "新增",
         "changed": "变更",
         "fixed": "修复",
@@ -51,10 +68,16 @@ def get_changelog_bullet_notes(
     current_items = []
     plain_bullets = []
     saw_group_header = False
+    last_item = None  # list currently being appended to, for wrapped bullet lines
+
+    def close_item():
+        """Markdown bullets may be wrapped across lines; append to the open item."""
+        nonlocal last_item
+        last_item = None
 
     for line in section.splitlines():
-        trimmed = line.strip()
-        m_group = re.match(r"^###\s+(.+)$", trimmed)
+        stripped = line.strip()
+        m_group = re.match(r"^###\s+(.+)$", stripped)
         if m_group:
             hdr = m_group.group(1).strip().lower()
             title = header_to_title.get(hdr)
@@ -64,15 +87,25 @@ def get_changelog_bullet_notes(
                     groups.append({"title": current_title, "items": list(current_items)})
                 current_title = title
                 current_items = []
+                close_item()
             continue
 
-        if trimmed.startswith("- "):
-            item = trimmed[2:].strip().replace("**", "").replace("`", "")
+        if stripped.startswith("- "):
+            item = stripped[2:].strip().replace("**", "").replace("`", "")
             if current_title:
                 if max_items_per_group <= 0 or len(current_items) < max_items_per_group:
                     current_items.append(item)
+                    last_item = current_items
+                else:
+                    close_item()
             else:
                 plain_bullets.append(item)
+                last_item = plain_bullets
+            continue
+
+        # Continuation of a wrapped bullet: same line, no list marker.
+        if last_item is not None and stripped and not stripped.startswith("#"):
+            last_item[-1] = f"{last_item[-1]} {stripped}".strip()
 
     if current_items:
         groups.append({"title": current_title, "items": list(current_items)})
@@ -173,9 +206,23 @@ def main():
     parser.add_argument("--apk-file-name", default="", help="Custom APK file name in release URL")
     parser.add_argument("--notes", default="", help="Custom update notes text")
     parser.add_argument("--notes-file", default="", help="File containing update notes text")
+    parser.add_argument("--notes-en", default="", help="Custom English update notes text (notesEn)")
+    parser.add_argument("--notes-en-file", default="", help="File containing English update notes text")
     parser.add_argument("--from-changelog", action="store_true", default=True, help="Generate notes from CHANGELOG.md")
     parser.add_argument("--max-items-per-group", type=int, default=8, help="Max items per changelog group")
     parser.add_argument("--changelog", default="CHANGELOG.md", help="Path to CHANGELOG.md")
+    parser.add_argument(
+        "--changelog-en",
+        nargs="?",
+        const="",
+        default="CHANGELOG.en.md",
+        help="Path to CHANGELOG.en.md for notesEn (use --changelog-en= to omit English notes)",
+    )
+    parser.add_argument(
+        "--require-notes-en",
+        action="store_true",
+        help="Fail when no English notes can be resolved (use on releases)",
+    )
     parser.add_argument("--manifest", default="update.json", help="Path to update.json")
     parser.add_argument("--gradle-file", default="app/build.gradle.kts", help="Path to build.gradle.kts")
     parser.add_argument("--repo", default="qpst4/XGesture", help="GitHub repo in owner/name format")
@@ -224,20 +271,57 @@ def main():
     if version_code is None:
         version_code = parse_version_code_from_gradle(Path(args.gradle_file))
 
-    # Resolve notes
+    # Resolve notes (Chinese; the in-app dialog shows these to zh locales)
     if args.notes_file:
         resolved_notes = Path(args.notes_file).read_text(encoding="utf-8").strip()
     elif args.notes:
         resolved_notes = args.notes.replace("；", "\n").strip()
     else:
-        resolved_notes = get_changelog_bullet_notes(
-            version=v,
-            changelog_path=Path(args.changelog),
-            max_items_per_group=args.max_items_per_group,
-        )
+        try:
+            resolved_notes = get_changelog_bullet_notes(
+                version=v,
+                changelog_path=Path(args.changelog),
+                max_items_per_group=args.max_items_per_group,
+                header_to_title=ZH_HEADER_TITLES,
+            )
+        except (ValueError, OSError) as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            sys.exit(1)
 
     if not resolved_notes:
         print("ERROR: Resolved update notes are empty.", file=sys.stderr)
+        sys.exit(1)
+
+    # Resolve English notes (notesEn). Non-Chinese locales prefer these and fall back to
+    # `notes`, so a missing English section degrades gracefully instead of breaking the release.
+    resolved_notes_en = ""
+    if args.notes_en_file:
+        resolved_notes_en = Path(args.notes_en_file).read_text(encoding="utf-8").strip()
+    elif args.notes_en:
+        resolved_notes_en = args.notes_en.replace(";", "\n").strip()
+    elif args.changelog_en:
+        changelog_en_path = Path(args.changelog_en)
+        if changelog_en_path.is_file():
+            try:
+                resolved_notes_en = get_changelog_bullet_notes(
+                    version=v,
+                    changelog_path=changelog_en_path,
+                    max_items_per_group=args.max_items_per_group,
+                    header_to_title=EN_HEADER_TITLES,
+                )
+            except ValueError as e:
+                # Missing/unreadable English section is not fatal on its own; --require-notes-en
+                # below turns it into a hard failure with a readable message.
+                print(f"WARNING: {e}", file=sys.stderr)
+        else:
+            print(f"WARNING: {changelog_en_path} not found; notesEn will be omitted.", file=sys.stderr)
+
+    if args.require_notes_en and not resolved_notes_en:
+        print(
+            f"ERROR: No English notes for {v}. Add a '## [{v}]' section to {args.changelog_en} "
+            f"or pass --notes-en-file.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     apk_file_name = args.apk_file_name or f"xgesture-{v}-lite.apk"
@@ -250,6 +334,8 @@ def main():
         "apkSize": apk_size,
         "notes": resolved_notes,
     }
+    if resolved_notes_en:
+        manifest_data["notesEn"] = resolved_notes_en
 
     manifest_path = Path(args.manifest)
     manifest_path.write_text(
