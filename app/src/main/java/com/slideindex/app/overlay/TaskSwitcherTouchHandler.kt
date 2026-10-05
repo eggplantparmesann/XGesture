@@ -257,7 +257,6 @@ internal class TaskSwitcherTouchHandler(
                             host.context,
                             app.packageName,
                             host.settings(),
-                            host.appRepository(),
                             app = app
                         )
                     }

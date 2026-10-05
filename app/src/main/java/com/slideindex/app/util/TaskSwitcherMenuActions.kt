@@ -3,12 +3,9 @@ package com.slideindex.app.util
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import com.slideindex.app.data.AppInfo
-import com.slideindex.app.data.AppRepository
 import com.slideindex.app.overlay.TaskSwitcherMenuItem
 import com.slideindex.app.overlay.TaskSwitcherMenuItemType
 import com.slideindex.app.settings.AppSettings
@@ -16,7 +13,6 @@ import com.slideindex.app.R
 
 object TaskSwitcherMenuActions {
     private const val TAG = "TaskSwitcherMenuActions"
-    private val mainHandler = Handler(Looper.getMainLooper())
 
     fun buildMenuItems(context: Context): List<TaskSwitcherMenuItem> {
         return listOf(
@@ -40,7 +36,6 @@ object TaskSwitcherMenuActions {
         item: TaskSwitcherMenuItem,
         packageName: String,
         settings: AppSettings,
-        appRepository: AppRepository,
         onSessionEnd: (() -> Unit)? = null,
     ) {
         when (item.type) {
@@ -52,7 +47,6 @@ object TaskSwitcherMenuActions {
                     context,
                     packageName,
                     settings,
-                    appRepository,
                     app = null,
                     onSessionEnd = onSessionEnd,
                 )
@@ -68,34 +62,24 @@ object TaskSwitcherMenuActions {
         }
     }
 
+    /**
+     * 小窗打开：照搬 SideGesture「应用小窗(7.0+)」——解析该包 launcher Activity，
+     * 一次 `startActivity` + ActivityOptions；不搬移已有任务，不校验、不重试。
+     */
     fun launchFreeWindow(
         context: Context,
         packageName: String,
         settings: AppSettings,
-        appRepository: AppRepository,
         app: AppInfo? = null,
         onSessionEnd: (() -> Unit)? = null,
     ) {
         val effective = settings.copy(freeWindow = settings.freeWindow.copy(freeWindowEnabled = true))
-        val target = app ?: appRepository.lookupApp(packageName)
-        if (target != null) {
-            appRepository.launchApp(target, effective, fullscreen = false)
-            onSessionEnd?.invoke()
-            return
-        }
-        Thread {
-            val moved = runCatching {
-                TaskManagerUtil.movePackageToFreeWindow(packageName, effective)
-            }.getOrDefault(false)
-            mainHandler.post {
-                if (!moved) {
-                    appRepository.lookupApp(packageName)?.let {
-                        appRepository.launchApp(it, effective, fullscreen = false)
-                    }
-                }
-                onSessionEnd?.invoke()
-            }
-        }.start()
+        FreeWindowLauncher.launchPackageInFreeWindow(
+            context = context,
+            packageName = app?.packageName ?: packageName,
+            settings = effective,
+        )
+        onSessionEnd?.invoke()
     }
 
     private fun openAppInfo(context: Context, packageName: String) {

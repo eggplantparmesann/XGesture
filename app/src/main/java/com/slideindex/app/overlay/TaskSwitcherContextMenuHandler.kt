@@ -219,7 +219,6 @@ internal class TaskSwitcherContextMenuHandler(
             item = item,
             packageName = packageName,
             settings = host.settings(),
-            appRepository = host.appRepository(),
             onSessionEnd = if (endSessionOnFreeWindow) {
                 { ctrl.endTaskSwitcherSession() }
             } else {

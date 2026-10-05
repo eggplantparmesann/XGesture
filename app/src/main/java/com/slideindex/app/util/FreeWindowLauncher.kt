@@ -13,6 +13,7 @@ import com.slideindex.app.settings.resolvedFreeWindowMode
 import com.slideindex.app.settings.usesNubiaFreeformIdentifier
 
 import android.content.ComponentName
+import android.content.pm.PackageManager
 import com.slideindex.app.service.FreeWindowShareProxyActivity
 import com.slideindex.app.settings.FreeWindowMode
 import kotlin.math.roundToInt
@@ -52,6 +53,63 @@ object FreeWindowLauncher {
         }.onFailure { error ->
             android.util.Log.e("FreeWindowLauncher", "startActivity failed", error)
         }
+    }
+
+    /**
+     * 以小窗启动某个应用（照搬 SideGesture「应用小窗(7.0+)」的做法）：
+     * 解析该包的 launcher Activity → `Intent(ACTION_MAIN + CATEGORY_LAUNCHER)` → 一次
+     * `startActivity(intent, ActivityOptions)`。
+     *
+     * 与 [launch] 的差别只有 flags：这里只带 NEW_TASK，不叠加
+     * REORDER_TO_FRONT / SINGLE_TOP，也不叠加 MULTIPLE_TASK —— 复用还是新建任务交给系统；
+     * 不校验、不重试、不搬移已有任务。
+     */
+    fun launchPackageInFreeWindow(
+        context: Context,
+        packageName: String,
+        settings: AppSettings,
+    ): Boolean {
+        if (packageName.isBlank()) return false
+        val component = resolveLauncherComponent(context, packageName) ?: return false
+        val intent = Intent(Intent.ACTION_MAIN).apply {
+            addCategory(Intent.CATEGORY_LAUNCHER)
+            this.component = component
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        val mode = settings.resolvedFreeWindowMode()
+        if (mode.usesNubiaFreeformIdentifier()) {
+            launchNubiaFreeform(context, intent)
+            return true
+        }
+        if (mode == FreeWindowMode.ORIGINOS && launchOriginOsShareProxy(context, intent)) {
+            return true
+        }
+
+        val bundle = launchOptionsBundle(context, settings) ?: return false
+        return runCatching {
+            context.startActivity(intent, bundle)
+        }.onFailure { error ->
+            android.util.Log.e("FreeWindowLauncher", "launchPackageInFreeWindow($packageName) failed", error)
+        }.isSuccess
+    }
+
+    /** ACTION_MAIN + CATEGORY_LAUNCHER 查询该包的 launcher Activity（对齐 SideGesture）。 */
+    private fun resolveLauncherComponent(context: Context, packageName: String): ComponentName? {
+        val query = Intent(Intent.ACTION_MAIN).apply {
+            setPackage(packageName)
+            addCategory(Intent.CATEGORY_LAUNCHER)
+        }
+        val className = runCatching {
+            context.packageManager
+                .queryIntentActivitiesCompat(query, PackageManager.MATCH_ALL)
+                .firstOrNull()
+                ?.activityInfo
+                ?.name
+        }.getOrNull()
+        return className
+            ?.takeIf { it.isNotBlank() }
+            ?.let { ComponentName.createRelative(packageName, it) }
     }
 
     private fun launchOriginOsShareProxy(context: Context, targetIntent: Intent): Boolean {

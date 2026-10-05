@@ -133,39 +133,15 @@ internal class ActionExecutorLaunch(
         Thread { TaskManagerUtil.removeCurrentFrontAppTask() }.start()
     }
 
+    /**
+     * 小窗化当前应用：照搬 SideGesture「应用小窗(7.0+)」——
+     * 取前台包 → 解析它的 launcher Activity → 一次 `startActivity` + ActivityOptions。
+     * 不搬移已有任务、不校验、不重试，也不叠加 MULTIPLE_TASK。
+     */
     fun freeWindowForegroundApp(settings: AppSettings) {
         val effectiveSettings = settings.copy(freeWindow = settings.freeWindow.copy(freeWindowEnabled = true))
-        val runMove = Runnable {
-            val targetPackage = ForegroundHostPackageResolver.resolveForFreeWindow(context)
-            Thread {
-                try {
-                    if (!TaskManagerUtil.hasPermission()) {
-                        if (targetPackage != null) {
-                            mainHandler.post {
-                                launchFreeWindowFallback(targetPackage, effectiveSettings)
-                            }
-                        }
-                        return@Thread
-                    }
-                    TaskManagerUtil.ensureServiceBound()
-                    var moved = false
-                    if (targetPackage != null) {
-                        moved = TaskManagerUtil.movePackageToFreeWindow(targetPackage, effectiveSettings)
-                    }
-                    if (!moved) {
-                        moved = TaskManagerUtil.moveFrontTaskToFreeWindow(effectiveSettings)
-                    }
-                    if (!moved && targetPackage != null) {
-                        mainHandler.post {
-                            launchFreeWindowFallback(targetPackage, effectiveSettings)
-                        }
-                    }
-                } catch (error: Exception) {
-                    Log.e(ActionExecutor.TAG, "freeWindowForegroundApp failed", error)
-                }
-            }.start()
-        }
-        mainHandler.postDelayed(runMove, 120L)
+        val targetPackage = ForegroundHostPackageResolver.resolveForFreeWindow(context) ?: return
+        FreeWindowLauncher.launchPackageInFreeWindow(context, targetPackage, effectiveSettings)
     }
 
     private fun launchRecentTaskFallback(
@@ -384,23 +360,5 @@ internal class ActionExecutorLaunch(
         } else {
             FreeWindowLauncher.launch(context, intent, settings, fullscreen = false)
         }
-    }
-
-    /**
-     * Last resort for "free-window the current app": open a small window on top instead of
-     * moving the existing task. The existing fullscreen task is left untouched, so the page the
-     * user was on is never cleared; the trade-off is a second window for that app.
-     */
-    private fun launchFreeWindowFallback(packageName: String, settings: AppSettings) {
-        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
-        if (launchIntent != null) {
-            launchIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-            FreeWindowLauncher.launch(context, launchIntent, settings, fullscreen = false)
-            return
-        }
-        val app = appRepository.getCachedApps().firstOrNull { it.packageName == packageName }
-            ?: appRepository.lookupApp(packageName)
-            ?: return
-        appRepository.launchApp(app, settings, fullscreen = false)
     }
 }
