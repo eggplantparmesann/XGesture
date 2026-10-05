@@ -2,6 +2,7 @@ package com.slideindex.app.update
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.util.Locale
 
 class UpdateCheckerTest {
     @Test
@@ -82,6 +83,41 @@ class UpdateCheckerTest {
         assertEquals("九十九", UpdateChecker.chineseOrdinal(99))
     }
 
+    @Test
+    fun selectNotes_chineseLocalePrefersChineseNotes() {
+        val state = state(notes = "中文说明", notesEn = "English notes")
+        assertEquals("中文说明", UpdateChecker.selectNotes(state, Locale.SIMPLIFIED_CHINESE))
+    }
+
+    @Test
+    fun selectNotes_otherLocalesPreferEnglishNotes() {
+        val state = state(notes = "中文说明", notesEn = "English notes")
+        assertEquals("English notes", UpdateChecker.selectNotes(state, Locale.US))
+        assertEquals("English notes", UpdateChecker.selectNotes(state, Locale.JAPAN))
+    }
+
+    @Test
+    fun selectNotes_fallsBackWhenPreferredLanguageIsMissing() {
+        val englishOnly = state(notes = "", notesEn = "English notes")
+        assertEquals("English notes", UpdateChecker.selectNotes(englishOnly, Locale.SIMPLIFIED_CHINESE))
+
+        // Legacy manifest written before notesEn existed: Chinese only.
+        val chineseOnly = state(notes = "中文说明", notesEn = "")
+        assertEquals("中文说明", UpdateChecker.selectNotes(chineseOnly, Locale.US))
+    }
+
+    @Test
+    fun selectNotes_honoursNotesLangWhenNotesHoldsEnglish() {
+        val englishPrimary = state(notes = "English notes", notesEn = "中文说明", notesLang = "en")
+        assertEquals("English notes", UpdateChecker.selectNotes(englishPrimary, Locale.US))
+        assertEquals("中文说明", UpdateChecker.selectNotes(englishPrimary, Locale.SIMPLIFIED_CHINESE))
+    }
+
+    @Test
+    fun selectNotes_blankBothLanguagesIsBlank() {
+        assertEquals("", UpdateChecker.selectNotes(state(notes = "", notesEn = ""), Locale.US))
+    }
+
     private fun manifest(version: String, apkSize: Long, notes: String = "") =
         UpdateManifest(
             version = version,
@@ -90,4 +126,10 @@ class UpdateCheckerTest {
             apkSize = apkSize,
             notes = notes,
         )
+
+    private fun state(
+        notes: String = "",
+        notesEn: String = "",
+        notesLang: String = UpdateManifest.DEFAULT_NOTES_LANG,
+    ) = UpdateState(notes = notes, notesEn = notesEn, notesLang = notesLang)
 }

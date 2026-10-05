@@ -70,6 +70,8 @@ class UpdateRepository @Inject constructor(
             it.copy(
                 latestVersion = versionTag,
                 notes = manifest.notes,
+                notesEn = manifest.notesEn,
+                notesLang = manifest.notesLang,
                 apkUrl = manifest.apkUrl,
                 apkSize = manifest.apkSize,
                 lastCheckSuccessTime = System.currentTimeMillis(),

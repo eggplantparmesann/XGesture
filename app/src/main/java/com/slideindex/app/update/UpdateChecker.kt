@@ -166,6 +166,22 @@ object UpdateChecker {
         return "$number. "
     }
 
+    /**
+     * Picks the notes to display. `update.json` ships both languages (`notes` + `notesEn`, see
+     * `notesLang`), so Chinese locales read [UpdateState.notes] and every other locale prefers
+     * [UpdateState.notesEn], falling back to the other field whenever one side is missing
+     * (older manifests carry Chinese `notes` only).
+     */
+    fun selectNotes(state: UpdateState, locale: Locale = Locale.getDefault()): String {
+        val englishPrimary = state.notesLang.equals("en", ignoreCase = true)
+        val chinese = if (englishPrimary) state.notesEn else state.notes
+        val english = if (englishPrimary) state.notes else state.notesEn
+        val wantsChinese = locale.language == "zh"
+        return (if (wantsChinese) chinese else english).ifBlank {
+            if (wantsChinese) english else chinese
+        }
+    }
+
     internal fun chineseOrdinal(number: Int): String {
         if (number <= 0) return number.toString()
         val digits = arrayOf("零", "一", "二", "三", "四", "五", "六", "七", "八", "九")

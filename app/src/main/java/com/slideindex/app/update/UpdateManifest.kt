@@ -10,4 +10,12 @@ data class UpdateManifest(
     val apkUrl: String = "",
     val apkSize: Long = 0L,
     val notes: String = "",
-)
+    /** 与 [notes] 同版的英文文案；缺省或为空时非中文语言回落到 [notes]。 */
+    val notesEn: String = "",
+    /** [notes] 的语言：`zh`（默认，兼容旧 manifest）/ `en`。 */
+    val notesLang: String = DEFAULT_NOTES_LANG,
+) {
+    companion object {
+        const val DEFAULT_NOTES_LANG = "zh"
+    }
+}

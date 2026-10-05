@@ -258,7 +258,7 @@ class UpdateViewModel @Inject constructor(
                 showDialog = show,
                 phase = phase,
                 version = version,
-                notes = cache.notes,
+                notes = UpdateChecker.selectNotes(cache),
                 apkUrl = cache.apkUrl,
                 apkSize = cache.apkSize,
                 progress = download.progress,
