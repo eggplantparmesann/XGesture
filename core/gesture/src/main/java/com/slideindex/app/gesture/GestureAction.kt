@@ -1,5 +1,26 @@
 package com.slideindex.app.gesture
 
+/**
+ * 单个「启动应用」绑定自身的启动形态。
+ *
+ * - [FOLLOW_GLOBAL]：跟随小窗设置里的全局启动策略（含长按判定），默认值；
+ * - [ALWAYS_FULLSCREEN] / [ALWAYS_FREE_WINDOW]：该绑定固定形态，不受全局策略影响。
+ */
+enum class LaunchWindowMode(val id: Int) {
+    FOLLOW_GLOBAL(0),
+    ALWAYS_FULLSCREEN(1),
+    ALWAYS_FREE_WINDOW(2),
+    ;
+
+    companion object {
+        fun fromId(id: Int): LaunchWindowMode =
+            entries.firstOrNull { it.id == id } ?: FOLLOW_GLOBAL
+    }
+
+    /** 固定形态的绑定不再受全局启动策略（含长按判定）影响。 */
+    val followsGlobalPolicy: Boolean get() = this == FOLLOW_GLOBAL
+}
+
 enum class GestureActionType(val id: Int) {
     OPEN_INDEX(0),
     LAUNCH_APP(1),
@@ -113,7 +134,8 @@ sealed class GestureAction {
 
     data class LaunchApp(
         val packageName: String,
-        val fullscreen: Boolean = true,
+        /** 该绑定自己的启动形态；落库编码见 [com.slideindex.app.launcher.QuickLauncherItemCodec]。 */
+        val windowMode: LaunchWindowMode = LaunchWindowMode.FOLLOW_GLOBAL,
     ) : GestureAction() {
         override val type = GestureActionType.LAUNCH_APP
         override val payload = packageName

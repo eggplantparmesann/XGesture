@@ -368,8 +368,11 @@ private class FingertipRingOverlayView(context: Context) : View(context) {
         postDelayed(runnable, appSettings.effectiveLongPressDurationMs().toLong())
     }
 
-    private fun GestureAction.usesLaunchPolicy(): Boolean =
-        this is GestureAction.LaunchApp || this is GestureAction.LaunchShortcut
+    private fun GestureAction.usesLaunchPolicy(): Boolean = when (this) {
+        is GestureAction.LaunchApp -> windowMode.followsGlobalPolicy
+        is GestureAction.LaunchShortcut -> true
+        else -> false
+    }
 
     private fun screenCenterLocal(): Pair<Float, Float> {
         getLocationOnScreen(viewLocationOnScreen)

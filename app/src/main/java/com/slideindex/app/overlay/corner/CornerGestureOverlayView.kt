@@ -753,8 +753,11 @@ internal class CornerGestureOverlayView(
         return event.eventTime - slotPressDownTime >= settings.effectiveLongPressDurationMs()
     }
 
-    private fun GestureAction.usesLaunchPolicy(): Boolean =
-        this is GestureAction.LaunchApp || this is GestureAction.LaunchShortcut
+    private fun GestureAction.usesLaunchPolicy(): Boolean = when (this) {
+        is GestureAction.LaunchApp -> windowMode.followsGlobalPolicy
+        is GestureAction.LaunchShortcut -> true
+        else -> false
+    }
 
     private fun anchorCenter(anchor: CornerAnchor): Pair<Float, Float> = when (anchor) {
         CornerAnchor.LEFT -> 0f to height.toFloat()

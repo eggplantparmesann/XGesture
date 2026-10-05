@@ -1978,6 +1978,12 @@
     <string name="launch_policy_free_window_long_press_fullscreen_desc">Freeform by default; hold the icon for the set time, then release to open fullscreen</string>
     <string name="long_press_launch_duration">Long-press duration</string>
     <string name="long_press_launch_duration_value">%1$d ms</string>
+    <string name="launch_window_mode_title">Launch mode</string>
+    <string name="launch_window_mode_follow_global">Follow global policy</string>
+    <string name="launch_window_mode_follow_global_desc">Fullscreen or freeform depends on the launch policy in freeform settings</string>
+    <string name="launch_window_mode_fullscreen">Always fullscreen</string>
+    <string name="launch_window_mode_free_window">Always freeform</string>
+    <string name="launch_window_mode_free_window_desc">Requires freeform enabled in freeform settings</string>
     <string name="hidden_apps_entry_title">Hidden apps</string>
     <string name="hidden_apps_title">Hidden apps</string>
     <string name="hidden_apps_section_hidden">Hidden</string>

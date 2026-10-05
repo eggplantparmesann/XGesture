@@ -1,5 +1,7 @@
 package com.slideindex.app.settings
 
+import com.slideindex.app.gesture.LaunchWindowMode
+
 enum class AppLaunchPolicy(val id: Int) {
     ALWAYS_FULLSCREEN(0),
     ALWAYS_FREE_WINDOW(1),
@@ -26,6 +28,19 @@ fun AppSettings.shouldLaunchFullscreen(longPressTriggered: Boolean): Boolean {
         AppLaunchPolicy.FULLSCREEN_LONG_PRESS_FREE_WINDOW -> !longPressTriggered
         AppLaunchPolicy.FREE_WINDOW_LONG_PRESS_FULLSCREEN -> longPressTriggered
     }
+}
+
+/**
+ * 单个绑定自带启动形态时优先于全局策略；[LaunchWindowMode.FOLLOW_GLOBAL] 回落到
+ * [shouldLaunchFullscreen]。
+ */
+fun AppSettings.shouldLaunchFullscreen(
+    windowMode: LaunchWindowMode,
+    longPressTriggered: Boolean,
+): Boolean = when (windowMode) {
+    LaunchWindowMode.FOLLOW_GLOBAL -> shouldLaunchFullscreen(longPressTriggered)
+    LaunchWindowMode.ALWAYS_FULLSCREEN -> true
+    LaunchWindowMode.ALWAYS_FREE_WINDOW -> !freeWindowEnabled
 }
 
 fun AppSettings.effectiveLongPressDurationMs(): Int =

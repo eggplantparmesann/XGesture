@@ -1,6 +1,8 @@
 package com.slideindex.app.launcher
 
 import com.slideindex.app.gesture.GestureAction
+import com.slideindex.app.gesture.GestureActionType
+import com.slideindex.app.gesture.LaunchWindowMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -38,6 +40,52 @@ class QuickLauncherItemCodecTest {
         val parsed = QuickLauncherItemCodec.parseActionPayload(payload)
 
         assertEquals(action, parsed)
+    }
+
+    @Test
+    fun parseActionPayload_roundTrip_preservesLaunchWindowMode() {
+        for (mode in LaunchWindowMode.entries) {
+            val action = GestureAction.LaunchApp("com.example.app", mode)
+
+            val payload = QuickLauncherItemCodec.encodeActionPayload(action)
+            val parsed = QuickLauncherItemCodec.parseActionPayload(payload)
+
+            assertEquals(action, parsed)
+        }
+    }
+
+    @Test
+    fun parseActionPayload_legacyLaunchApp_followsGlobalPolicy() {
+        val legacy = "${GestureActionType.LAUNCH_APP.id}${QuickLauncherItemCodec.SHORTCUT_PAYLOAD_SEP}com.example.app"
+
+        assertEquals(
+            GestureAction.LaunchApp("com.example.app", LaunchWindowMode.FOLLOW_GLOBAL),
+            QuickLauncherItemCodec.parseActionPayload(legacy),
+        )
+    }
+
+    @Test
+    fun parseActionPayload_malformedModeSuffix_fallsBackToWholeBody() {
+        val malformed =
+            "${GestureActionType.LAUNCH_APP.id}${QuickLauncherItemCodec.SHORTCUT_PAYLOAD_SEP}com.example.app${QuickLauncherItemCodec.LAUNCH_WINDOW_MODE_SEP}x"
+
+        assertEquals(
+            GestureAction.LaunchApp("com.example.app", LaunchWindowMode.FOLLOW_GLOBAL),
+            QuickLauncherItemCodec.parseActionPayload(malformed),
+        )
+    }
+
+    @Test
+    fun actionKey_distinguishesLaunchWindowModes() {
+        val global = QuickLauncherItemCodec.actionKey(GestureAction.LaunchApp("com.example.app"))
+        val fullscreen = QuickLauncherItemCodec.actionKey(
+            GestureAction.LaunchApp("com.example.app", LaunchWindowMode.ALWAYS_FULLSCREEN),
+        )
+        val freeWindow = QuickLauncherItemCodec.actionKey(
+            GestureAction.LaunchApp("com.example.app", LaunchWindowMode.ALWAYS_FREE_WINDOW),
+        )
+
+        assertEquals(3, setOf(global, fullscreen, freeWindow).size)
     }
 
     @Test

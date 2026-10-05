@@ -32,6 +32,7 @@ import com.slideindex.app.data.AppInfo
 import com.slideindex.app.gesture.GestureAction
 import com.slideindex.app.gesture.ActionPickerCatalogPolicy
 import com.slideindex.app.gesture.GestureTriggerType
+import com.slideindex.app.gesture.LaunchWindowMode
 import com.slideindex.app.gesture.SlotPickerKind
 import com.slideindex.app.overlay.TaskSwitcherMenuItem
 import com.slideindex.app.ui.Md3PickerAppShortcutLeading
@@ -202,12 +203,15 @@ fun ExpandPanelSlotPicker(
                     } else {
                         items(filteredApps.size, key = { filteredApps[it].packageName }) { index ->
                             val app = filteredApps[index]
+                            val currentLaunchApp = currentAction as? GestureAction.LaunchApp
+                            val selected = currentLaunchApp?.packageName == app.packageName
                             ActionPickerAppRow(
                                 app = app,
                                 segmentIndex = index,
                                 segmentCount = filteredApps.size,
-                                selected = currentAction is GestureAction.LaunchApp &&
-                                    currentAction.packageName == app.packageName,
+                                selected = selected,
+                                windowMode = currentLaunchApp?.takeIf { selected }?.windowMode
+                                    ?: LaunchWindowMode.FOLLOW_GLOBAL,
                                 onSelect = { onSelect(GestureAction.LaunchApp(it.packageName)) },
                             )
                         }

@@ -19,6 +19,7 @@ import com.slideindex.app.gesture.GestureAction
 import com.slideindex.app.gesture.GestureActionType
 import com.slideindex.app.gesture.ActionPickerCatalogPolicy
 import com.slideindex.app.gesture.GestureTriggerType
+import com.slideindex.app.gesture.LaunchWindowMode
 import com.slideindex.app.gesture.SlotPickerKind
 import com.slideindex.app.ui.picker.FilteredShortcutCatalog
 import com.slideindex.app.ui.picker.GestureActionCatalog
@@ -194,12 +195,14 @@ fun LazyListScope.actionPickerAppItems(
 ) {
     items(filtered.size, key = { filtered[it].packageName }) { index ->
         val app = filtered[index]
-        val selected = current is GestureAction.LaunchApp && current.packageName == app.packageName
+        val currentApp = current as? GestureAction.LaunchApp
+        val selected = currentApp?.packageName == app.packageName
         ActionPickerAppRow(
             app = app,
             segmentIndex = index,
             segmentCount = filtered.size,
             selected = selected,
+            windowMode = if (selected) currentApp.windowMode else LaunchWindowMode.FOLLOW_GLOBAL,
             onSelect = onSelect,
         )
     }

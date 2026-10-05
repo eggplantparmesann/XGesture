@@ -11,6 +11,7 @@ import com.slideindex.app.data.AppRepository
 import com.slideindex.app.gesture.ActionExecutor
 import com.slideindex.app.gesture.GestureAction
 import com.slideindex.app.gesture.GestureShortcutPayload
+import com.slideindex.app.gesture.LaunchWindowMode
 import com.slideindex.app.launcher.QuickLauncherItem
 import com.slideindex.app.launcher.QuickLauncherItemCodec
 import com.slideindex.app.launcher.QuickLauncherItemType
@@ -82,11 +83,16 @@ internal class ActionExecutorLaunch(
         }
     }
 
-    fun launchApp(packageName: String, settings: AppSettings, longPressArmed: Boolean): Boolean {
+    fun launchApp(
+        packageName: String,
+        settings: AppSettings,
+        longPressArmed: Boolean,
+        windowMode: LaunchWindowMode = LaunchWindowMode.FOLLOW_GLOBAL,
+    ): Boolean {
         val app = appRepository.getCachedApps().firstOrNull { it.packageName == packageName }
             ?: appRepository.lookupApp(packageName)
             ?: return false
-        val fullscreen = settings.shouldLaunchFullscreen(longPressArmed)
+        val fullscreen = settings.shouldLaunchFullscreen(windowMode, longPressArmed)
         return appRepository.launchApp(app, settings, fullscreen)
     }
 

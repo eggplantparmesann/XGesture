@@ -3,6 +3,7 @@ package com.slideindex.app.launcher
 import android.content.Intent
 import com.slideindex.app.gesture.GestureAction
 import com.slideindex.app.gesture.GestureActionType
+import com.slideindex.app.gesture.LaunchWindowMode
 import com.slideindex.app.gesture.SlotPickerKind
 import com.slideindex.app.gesture.sanitizeForSlotPicker
 import com.slideindex.app.gesture.normalized
@@ -130,6 +131,9 @@ object QuickLauncherItemCodec {
     const val INTENT_LIST_PAYLOAD_PREFIX = "is:"
     const val INTENT_LIST_SEP = "\u001F"
 
+    /** 「启动应用」动作正文里包名与启动形态 id 的分隔符。 */
+    const val LAUNCH_WINDOW_MODE_SEP = "\u001D"
+
     fun encode(item: QuickLauncherItem): String =
         listOf(item.type.id, item.payload, item.label).joinToString(SEP)
 
@@ -146,14 +150,36 @@ object QuickLauncherItemCodec {
     }
 
     fun encodeActionPayload(action: GestureAction): String =
-        "${action.type.id}$SHORTCUT_PAYLOAD_SEP${action.payload}"
+        "${action.type.id}$SHORTCUT_PAYLOAD_SEP${encodeActionBody(action)}"
 
     fun parseActionPayload(payload: String): GestureAction? {
         val index = payload.indexOf(SHORTCUT_PAYLOAD_SEP)
         if (index < 0) return null
         val typeId = payload.substring(0, index).toIntOrNull() ?: return null
-        val actionPayload = payload.substring(index + 1)
-        return GestureAction.from(GestureActionType.fromId(typeId), actionPayload).normalized()
+        val body = payload.substring(index + 1)
+        val type = GestureActionType.fromId(typeId)
+        return decodeActionBody(type, body)?.normalized()
+    }
+
+    /**
+     * 动作正文编码。除「启动应用」外与 `action.payload` 一致；
+     * 「启动应用」追加启动形态后缀（见 [LAUNCH_WINDOW_MODE_SEP]），旧数据无后缀按跟随全局解析。
+     */
+    private fun encodeActionBody(action: GestureAction): String {
+        if (action !is GestureAction.LaunchApp) return action.payload
+        val mode = action.windowMode
+        if (mode == LaunchWindowMode.FOLLOW_GLOBAL) return action.payload
+        return "${action.payload}$LAUNCH_WINDOW_MODE_SEP${mode.id}"
+    }
+
+    private fun decodeActionBody(type: GestureActionType, body: String): GestureAction? {
+        if (type != GestureActionType.LAUNCH_APP) return GestureAction.from(type, body)
+        val modeIndex = body.lastIndexOf(LAUNCH_WINDOW_MODE_SEP)
+        if (modeIndex <= 0) return GestureAction.from(type, body)
+        val modeId = body.substring(modeIndex + 1).toIntOrNull()
+        val mode = modeId?.let(LaunchWindowMode::fromId)
+        if (mode == null || mode.id != modeId) return GestureAction.from(type, body.substring(0, modeIndex))
+        return GestureAction.LaunchApp(body.substring(0, modeIndex), mode)
     }
 
     fun sanitizeOverlayTapItem(item: QuickLauncherItem): QuickLauncherItem = when (item.type) {

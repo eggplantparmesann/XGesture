@@ -629,6 +629,12 @@
     <string name="launch_policy_free_window_long_press_fullscreen_desc">默认小窗；在图标上按住达到设定时间后松开，以全屏打开</string>
     <string name="long_press_launch_duration">长按触发时间</string>
     <string name="long_press_launch_duration_value">%1$d 毫秒</string>
+    <string name="launch_window_mode_title">启动方式</string>
+    <string name="launch_window_mode_follow_global">跟随全局策略</string>
+    <string name="launch_window_mode_follow_global_desc">按小窗设置中的启动策略决定全屏或小窗</string>
+    <string name="launch_window_mode_fullscreen">总是全屏</string>
+    <string name="launch_window_mode_free_window">总是小窗</string>
+    <string name="launch_window_mode_free_window_desc">需在小窗设置中开启小窗</string>
     <string name="hidden_apps_entry_title">隐藏应用</string>
     <string name="hidden_apps_entry_desc">从应用索引列表中隐藏指定应用</string>
     <string name="hidden_apps_title">隐藏应用</string>
