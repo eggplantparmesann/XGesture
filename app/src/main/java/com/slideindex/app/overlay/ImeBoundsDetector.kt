@@ -10,10 +10,10 @@ object ImeBoundsDetector {
     private const val MIN_IME_HEIGHT_DP = 48
     private const val ESTIMATED_KEYBOARD_HEIGHT_FRACTION = 0.40f
 
-    fun detectImeBounds(service: AccessibilityService): Rect? {
-        detectFromAccessibilityWindows(service)?.let { return it }
-        return detectFromInputMethodManager(service)
-    }
+    fun detectImeBounds(service: AccessibilityService): Rect? =
+        com.slideindex.app.perf.PerfProbe.probe("IME.detectImeBounds") {
+            detectFromAccessibilityWindows(service) ?: detectFromInputMethodManager(service)
+        }
 
     private fun detectFromAccessibilityWindows(service: AccessibilityService): Rect? {
         val minHeightPx = (MIN_IME_HEIGHT_DP * service.resources.displayMetrics.density).roundToInt()

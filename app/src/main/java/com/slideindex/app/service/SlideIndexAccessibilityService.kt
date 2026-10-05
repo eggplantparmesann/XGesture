@@ -98,11 +98,17 @@ class SlideIndexAccessibilityService : AccessibilityService() {
         event ?: return
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
+                // 真实前台切换（Activity 变化）才丢弃前台包名缓存。
+                // 实测 resolveHostPackage 被调用 26.5 次/秒、累计占整段交互 26% 时间（PerfProbe），
+                // 这里是它唯一必须立刻看到新值的入口。
+                com.slideindex.app.util.AccessibilityForegroundResolver.invalidate()
                 foregroundTracker.handleWindowStateChanged(event)
                 ClipboardFloatImeCoordinator.onWindowsChanged(this)
                 KeyboardTriggerImeCoordinator.onWindowsChanged(this)
             }
             AccessibilityEvent.TYPE_WINDOWS_CHANGED -> {
+                // 注意：这里**不**失效前台包名缓存。WINDOWS_CHANGED 由输入法/弹窗/Toast 高频触发，
+                // 用它失效会让缓存失去意义；前台正确性由 WINDOW_STATE_CHANGED + TTL 双重保证。
                 foregroundTracker.handleWindowsChanged()
                 ClipboardFloatImeCoordinator.onWindowsChanged(this)
                 KeyboardTriggerImeCoordinator.onWindowsChanged(this)

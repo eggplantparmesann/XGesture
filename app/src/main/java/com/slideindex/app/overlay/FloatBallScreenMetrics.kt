@@ -14,7 +14,9 @@ internal object FloatBallScreenMetrics {
     ): OverlayScreenBounds {
         val wm = windowManager ?: context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
         if (wm != null) {
-            val rect = runCatching { wm.currentWindowMetrics.bounds }.getOrNull()
+            val rect = com.slideindex.app.perf.PerfProbe.probe("WM.currentWindowMetrics") {
+                runCatching { wm.currentWindowMetrics.bounds }.getOrNull()
+            }
             if (rect != null) {
                 return OverlayScreenBounds(
                     width = rect.width().toFloat(),

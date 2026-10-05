@@ -5,6 +5,7 @@ package com.slideindex.app.overlay.animation
  * Licensed under Apache-2.0. Modified for com.slideindex.app.
  */
 
+import android.view.Choreographer
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.runtime.getValue
@@ -16,13 +17,11 @@ import androidx.compose.ui.geometry.Offset
 import com.slideindex.app.gesture.GestureTriggerType
 import com.slideindex.app.gesture.SwipeDirection
 import com.slideindex.app.overlay.PanelSide
+import com.slideindex.app.perf.PerfProbe
 import com.slideindex.app.settings.WaveStyle
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlin.math.abs
 import kotlin.math.hypot
 
@@ -46,7 +45,13 @@ class GestureAnimationState(
     var isActive by mutableStateOf(false)
         private set
 
-    /** Bumps on every anim frame so Canvas recomposes when [Animatable] values change. */
+    /**
+     * 动画帧计数器：Canvas 读它来触发重组。
+     *
+     * 由 [scheduleRedrawFrame] 在**每个 Choreographer 帧**最多递增一次，而不是每个触摸事件递增：
+     * 同一帧内到达的多个 MOVE 只重组一次。实测（Perfetto，120Hz）拖动期同一帧最多 2 个 MOVE，
+     * 按事件重组会让全屏 Canvas 重组次数翻倍。
+     */
     internal var redrawTick by mutableIntStateOf(0)
         private set
 
@@ -64,8 +69,76 @@ class GestureAnimationState(
     private val fingerYAnim = Animatable(Float.NaN)
 
     private val animationSpec = spring<Float>(stiffness = 3000f)
-    private val animMutex = Mutex()
     private var animJob: Job? = null
+
+    /**
+     * 帧驱动的重绘泵。
+     *
+     * 只在"有值没画、且本帧还没排帧"时挂一次回调，保证**每帧最多一次**
+     * `redrawTick++`（即每帧最多一次全屏 Canvas 重组），同时不丢任何一帧的视觉更新。
+     */
+    private lateinit var choreographer: Choreographer
+    private var frameScheduled = false
+    private var redrawPending = false
+
+    private val frameCallback = Choreographer.FrameCallback {
+        frameScheduled = false
+        if (redrawPending) {
+            redrawPending = false
+            redrawTick++
+            // 拖动期会不停有新值进来；这里不主动续帧，等下一次值变化再排，避免空转。
+        }
+    }
+
+    private fun scheduleRedrawFrame() {
+        if (!::choreographer.isInitialized) {
+            choreographer = Choreographer.getInstance()
+        }
+        redrawPending = true
+        if (frameScheduled) return
+        frameScheduled = true
+        choreographer.postFrameCallback(frameCallback)
+    }
+
+    private fun cancelRedrawFrame() {
+        redrawPending = false
+        if (frameScheduled && ::choreographer.isInitialized) {
+            choreographer.removeFrameCallback(frameCallback)
+        }
+        frameScheduled = false
+    }
+
+    // ---- 收束动画期间：整段动画需要逐帧重绘（animateTo 的值变化不会自动触发重组）----
+
+    private var animTickerRunning = false
+
+    private val animTickCallback = object : Choreographer.FrameCallback {
+        override fun doFrame(frameTimeNanos: Long) {
+            if (!animTickerRunning) return
+            redrawTick++
+            if (::choreographer.isInitialized) {
+                choreographer.postFrameCallback(this)
+            }
+        }
+    }
+
+    private fun startAnimTicker() {
+        if (animTickerRunning) return
+        if (!::choreographer.isInitialized) {
+            choreographer = Choreographer.getInstance()
+        }
+        animTickerRunning = true
+        choreographer.postFrameCallback(animTickCallback)
+    }
+
+    private fun stopAnimTicker() {
+        if (!animTickerRunning) return
+        animTickerRunning = false
+        if (::choreographer.isInitialized) {
+            choreographer.removeFrameCallback(animTickCallback)
+        }
+    }
+
 
     var shortTriggerDistancePx: Float = 0f
     var longTriggerDistancePx: Float = 0f
@@ -73,10 +146,6 @@ class GestureAnimationState(
     var stickySlidePx: Float = 0f
 
     var hintFingerOffsetPx: Float = 0f
-
-    private fun markRedraw() {
-        redrawTick++
-    }
 
     /** 仅用于绘制：相对手指的视觉偏移（屏幕 Y）；触发改动仍按真实手指位置。 */
     fun displayYOffset(position: GestureAnimationPosition): Float {
@@ -102,27 +171,25 @@ class GestureAnimationState(
         currentTrigger = null
         currentDistancePx = 0f
 
-        animJob = scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            animMutex.withLock {
-                originXAnim.snapTo(rawX)
-                originYAnim.snapTo(rawY)
-                when (position) {
-                    GestureAnimationPosition.Left, GestureAnimationPosition.Right -> {
-                        fingerXAnim.snapTo(stickySlideOffset(position, horizontal = true))
-                        fingerYAnim.snapTo(rawY)
-                    }
-                    GestureAnimationPosition.Bottom -> {
-                        fingerXAnim.snapTo(rawX)
-                        fingerYAnim.snapTo(stickySlideOffset(position, horizontal = false))
-                    }
-                    GestureAnimationPosition.Top -> {
-                        fingerXAnim.snapTo(rawX)
-                        fingerYAnim.snapTo(stickySlideOffset(position, horizontal = false))
-                    }
+        scope.launch {
+            originXAnim.snapTo(rawX)
+            originYAnim.snapTo(rawY)
+            when (position) {
+                GestureAnimationPosition.Left, GestureAnimationPosition.Right -> {
+                    fingerXAnim.snapTo(stickySlideOffset(position, horizontal = true))
+                    fingerYAnim.snapTo(rawY)
                 }
-                markRedraw()
+                GestureAnimationPosition.Bottom -> {
+                    fingerXAnim.snapTo(rawX)
+                    fingerYAnim.snapTo(stickySlideOffset(position, horizontal = false))
+                }
+                GestureAnimationPosition.Top -> {
+                    fingerXAnim.snapTo(rawX)
+                    fingerYAnim.snapTo(stickySlideOffset(position, horizontal = false))
+                }
             }
         }
+        scheduleRedrawFrame()
     }
 
     fun onDrag(
@@ -134,21 +201,25 @@ class GestureAnimationState(
         currentDistancePx: Float = 0f,
     ) {
         if (!isActive) return
-        val dragAmount = Offset(rawX - finger.x, rawY - finger.y)
-        finger = Offset(rawX, rawY)
+        PerfProbe.probe("Edge.animState.onDrag") {
+            val dragAmount = Offset(rawX - finger.x, rawY - finger.y)
+            finger = Offset(rawX, rawY)
 
-        val longDistance = inwardPx >= longTriggerDistancePx || currentDistancePx >= longTriggerDistancePx
-        this.swipeDirection = swipeDirection
-        this.currentTrigger = currentTrigger
-        this.currentDistancePx = currentDistancePx
-        triggerDirection = swipeDirection.toGestureTriggerDirection(longDistance)
+            val longDistance = inwardPx >= longTriggerDistancePx || currentDistancePx >= longTriggerDistancePx
+            this.swipeDirection = swipeDirection
+            this.currentTrigger = currentTrigger
+            this.currentDistancePx = currentDistancePx
+            triggerDirection = swipeDirection.toGestureTriggerDirection(longDistance)
 
-        animJob = scope.launch {
-            animMutex.withLock {
-                fingerXAnim.snapTo(fingerXAnimVal + dragAmount.x)
-                fingerYAnim.snapTo(fingerYAnimVal + dragAmount.y)
-                markRedraw()
+            // 拖动跟手是硬实时路径：不再抢互斥锁（原实现每个 MOVE 都要 animMutex.withLock），
+            // 只提交数值更新。重绘统一交给帧泵，保证同一帧内多个 MOVE 只触发一次全屏重组。
+            scope.launch {
+                PerfProbe.probeSuspend("Edge.animState.snapTo") {
+                    fingerXAnim.snapTo(fingerXAnimVal + dragAmount.x)
+                    fingerYAnim.snapTo(fingerYAnimVal + dragAmount.y)
+                }
             }
+            scheduleRedrawFrame()
         }
     }
 
@@ -172,14 +243,13 @@ class GestureAnimationState(
         currentDistancePx = 0f
         button = null
         scope.launch {
-            animMutex.withLock {
-                originXAnim.snapTo(Float.NaN)
-                originYAnim.snapTo(Float.NaN)
-                fingerXAnim.snapTo(Float.NaN)
-                fingerYAnim.snapTo(Float.NaN)
-                markRedraw()
-            }
+            originXAnim.snapTo(Float.NaN)
+            originYAnim.snapTo(Float.NaN)
+            fingerXAnim.snapTo(Float.NaN)
+            fingerYAnim.snapTo(Float.NaN)
         }
+        cancelRedrawFrame()
+        redrawTick++
     }
 
     private fun reset(endInteraction: Boolean) {
@@ -198,8 +268,9 @@ class GestureAnimationState(
             return
         }
         animJob?.cancel()
+        startAnimTicker()
         animJob = scope.launch {
-            animMutex.withLock {
+            try {
                 when (position) {
                     GestureAnimationPosition.Left, GestureAnimationPosition.Right -> {
                         fingerXAnim.animateTo(0f, animationSpec)
@@ -210,7 +281,9 @@ class GestureAnimationState(
                         fingerXAnim.animateTo(originXAnimVal, animationSpec)
                     }
                 }
-                markRedraw()
+                redrawTick++
+            } finally {
+                stopAnimTicker()
             }
             triggerDirection = GestureAnimationTriggerDirection.Center2
             swipeDirection = null
@@ -221,15 +294,15 @@ class GestureAnimationState(
     }
 
     private fun clearAnimValues() {
+        stopAnimTicker()
         scope.launch {
-            animMutex.withLock {
-                originXAnim.snapTo(Float.NaN)
-                originYAnim.snapTo(Float.NaN)
-                fingerXAnim.snapTo(Float.NaN)
-                fingerYAnim.snapTo(Float.NaN)
-                markRedraw()
-            }
+            originXAnim.snapTo(Float.NaN)
+            originYAnim.snapTo(Float.NaN)
+            fingerXAnim.snapTo(Float.NaN)
+            fingerYAnim.snapTo(Float.NaN)
         }
+        cancelRedrawFrame()
+        redrawTick++
         button = null
     }
 
