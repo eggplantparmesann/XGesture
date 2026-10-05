@@ -192,6 +192,8 @@ fun FloatBallGestureType.toGestureTriggerType(): GestureTriggerType? = when (thi
     FloatBallGestureType.SWIPE_SIDE_LONG -> GestureTriggerType.LONG_SWIPE_IN
     FloatBallGestureType.SWIPE_DOWN_IN -> GestureTriggerType.SHORT_SWIPE_DOWN_IN
     FloatBallGestureType.SWIPE_UP_IN -> GestureTriggerType.SHORT_SWIPE_UP_IN
+    FloatBallGestureType.SWIPE_IN_DOWN -> GestureTriggerType.SHORT_SWIPE_IN_DOWN
+    FloatBallGestureType.SWIPE_IN_UP -> GestureTriggerType.SHORT_SWIPE_IN_UP
     FloatBallGestureType.SINGLE_TAP -> GestureTriggerType.SHORT_SINGLE_TAP
     FloatBallGestureType.LONG_PRESS -> GestureTriggerType.SHORT_LONG_PRESS
     FloatBallGestureType.DOUBLE_TAP,

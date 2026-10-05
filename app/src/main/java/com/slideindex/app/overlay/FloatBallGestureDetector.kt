@@ -42,6 +42,8 @@ internal class FloatBallGestureDetector(
         const val REBOUND_THRESHOLD_DP = 28f
         /** 混合手势第二段「向内」位移门槛（与边缘触钮 TURN_SLOP_DP 一致）。 */
         const val COMPOUND_TURN_DP = 32f
+        /** 混合手势首段为「向内」时的位移门槛（低于侧滑短滑门槛，避免两段手势过累）。 */
+        const val COMPOUND_INWARD_ANCHOR_DP = 40f
         /** 混合手势第二段沿边分量相对向内分量的上限（与边缘触钮同容差，防斜滑误判）。 */
         const val COMPOUND_MAX_ALONG_RATIO = 0.8f
         /** 拉回原点停顿超时判定为取消（ms）。 */
@@ -441,13 +443,21 @@ internal class FloatBallGestureDetector(
         } else if (reboundStartTime == 0L && peakForwardProgressPx - forwardProgress >= REBOUND_THRESHOLD_DP * density) {
             reboundStartTime = SystemClock.uptimeMillis()
         }
-        // 首段（上/下）滑够与短滑阈值后记录拐点，供第二段「向内」判定使用。
-        if (firstSegmentAnchorX == null &&
-            (axis == LockedSwipeAxis.UP || axis == LockedSwipeAxis.DOWN) &&
-            forwardProgress >= shortThresholdForAxis(axis)
-        ) {
-            firstSegmentAnchorX = lastX
-            firstSegmentAnchorY = lastY
+        // 首段达标后记录拐点，供第二段判定使用：
+        // - 上/下轴：滑够该轴短滑阈值（先上/下滑，再向内）；
+        // - 侧轴且锁定方向朝屏幕内侧：滑够较小的向内门槛（先向内，再上/下滑）。
+        if (firstSegmentAnchorX == null) {
+            val anchorReached = when {
+                axis == LockedSwipeAxis.UP || axis == LockedSwipeAxis.DOWN ->
+                    forwardProgress >= shortThresholdForAxis(axis)
+                axis == LockedSwipeAxis.SIDE && lockedAxisForwardSign * inwardSignProvider() > 0f ->
+                    forwardProgress >= COMPOUND_INWARD_ANCHOR_DP * density
+                else -> false
+            }
+            if (anchorReached) {
+                firstSegmentAnchorX = lastX
+                firstSegmentAnchorY = lastY
+            }
         }
         gestureArmed = retainsGestureCommitment(forwardProgress) &&
             qualifiesAsSwipe(projDx, projDy)
@@ -569,7 +579,10 @@ internal class FloatBallGestureDetector(
     }
 
     /**
-     * 混合手势：首段上/下滑达标后，第二段朝屏幕内侧滑够 [COMPOUND_TURN_DP] 且以内向为主。
+     * 混合手势，两类方向相反的两段式：
+     * - 先上/下滑再向内：首段滑够该轴短滑阈值，第二段向内滑够 [COMPOUND_TURN_DP] 且以内向为主；
+     * - 先向内再上/下滑：首段向内滑够 [COMPOUND_INWARD_ANCHOR_DP]，第二段以纵向为主且滑够 [COMPOUND_TURN_DP]。
+     *
      * 未配置对应动作、首段未达标、或整体已超出取词时间窗时均不触发（回落为普通滑动）。
      */
     internal fun classifyCompoundGesture(): FloatBallGestureType? {
@@ -577,18 +590,37 @@ internal class FloatBallGestureDetector(
         val axis = lockedSwipeAxis ?: return null
         val anchorX = firstSegmentAnchorX ?: return null
         val anchorY = firstSegmentAnchorY ?: return null
-        val type = when (axis) {
-            LockedSwipeAxis.DOWN -> FloatBallGestureType.SWIPE_DOWN_IN
-            LockedSwipeAxis.UP -> FloatBallGestureType.SWIPE_UP_IN
-            LockedSwipeAxis.SIDE -> return null
+        val inwardSign = inwardSignProvider()
+        val type: FloatBallGestureType
+        if (axis == LockedSwipeAxis.SIDE) {
+            // 「先向内再上/下滑」：第二段必须是纵向上/下滑为主。
+            val inwardFirst = lockedAxisForwardSign * inwardSign > 0f
+            if (!inwardFirst || peakForwardProgressPx < COMPOUND_INWARD_ANCHOR_DP * density) return null
+            val secondAlong = lastY - anchorY
+            val dominant = abs(secondAlong)
+            if (dominant < COMPOUND_TURN_DP * density) return null
+            val extraInward = (lastX - anchorX) * inwardSign
+            if (extraInward > dominant * COMPOUND_MAX_ALONG_RATIO) return null
+            type = if (secondAlong < 0f) {
+                FloatBallGestureType.SWIPE_IN_UP
+            } else {
+                FloatBallGestureType.SWIPE_IN_DOWN
+            }
+        } else {
+            // 「先上/下滑再向内」：第二段必须是向内为主。
+            type = when (axis) {
+                LockedSwipeAxis.DOWN -> FloatBallGestureType.SWIPE_DOWN_IN
+                LockedSwipeAxis.UP -> FloatBallGestureType.SWIPE_UP_IN
+                LockedSwipeAxis.SIDE -> return null
+            }
+            if (peakForwardProgressPx < shortThresholdForAxis(axis)) return null
+            val secondInward = (lastX - anchorX) * inwardSign
+            if (secondInward < COMPOUND_TURN_DP * density) return null
+            val secondAlong = abs(lastY - anchorY)
+            if (secondAlong > secondInward * COMPOUND_MAX_ALONG_RATIO) return null
         }
         val action = configuredActions[type] ?: GestureAction.None
         if (!action.isEffective()) return null
-        if (peakForwardProgressPx < shortThresholdForAxis(axis)) return null
-        val secondInward = (lastX - anchorX) * inwardSignProvider()
-        if (secondInward < COMPOUND_TURN_DP * density) return null
-        val secondAlong = abs(lastY - anchorY)
-        if (secondAlong > secondInward * COMPOUND_MAX_ALONG_RATIO) return null
         return type
     }
 

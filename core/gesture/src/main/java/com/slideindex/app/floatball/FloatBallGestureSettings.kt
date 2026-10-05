@@ -23,6 +23,10 @@ enum class FloatBallGestureType(val id: Int) {
     SWIPE_DOWN_IN(12),
     /** 首段上滑达标后，第二段再朝屏幕内侧滑出（混合手势）。 */
     SWIPE_UP_IN(13),
+    /** 首段朝屏幕内侧滑出后，第二段再下滑（混合手势）。 */
+    SWIPE_IN_DOWN(14),
+    /** 首段朝屏幕内侧滑出后，第二段再上滑（混合手势）。 */
+    SWIPE_IN_UP(15),
     ;
 
     val isReturnGesture: Boolean
@@ -31,23 +35,54 @@ enum class FloatBallGestureType(val id: Int) {
     companion object {
         fun fromId(id: Int): FloatBallGestureType? = entries.firstOrNull { it.id == id }
 
-        /** 设置页展示顺序：方向（下→上→侧）短/长/返回/混合，再点击类。 */
-        fun settingsDisplayOrder(): List<FloatBallGestureType> = listOf(
-            SWIPE_DOWN_SHORT,
-            SWIPE_DOWN_LONG,
-            SWIPE_DOWN_RETURN,
-            SWIPE_DOWN_IN,
-            SWIPE_UP_SHORT,
-            SWIPE_UP_LONG,
-            SWIPE_UP_RETURN,
-            SWIPE_UP_IN,
-            SWIPE_SIDE_SHORT,
-            SWIPE_SIDE_LONG,
-            SWIPE_SIDE_RETURN,
-            SINGLE_TAP,
-            DOUBLE_TAP,
-            LONG_PRESS,
-        )
+        /** 设置页展示顺序（由 [FloatBallGestureGroup] 分组展平而来，避免两处顺序各写一份）。 */
+        fun settingsDisplayOrder(): List<FloatBallGestureType> =
+            FloatBallGestureGroup.displayOrder.flatMap { it.types }
+    }
+}
+
+/** 悬浮球手势设置页的分组（枚举顺序即展示顺序）。 */
+enum class FloatBallGestureGroup(val types: List<FloatBallGestureType>) {
+    /** 下滑起手：短/长/后返回/再向内滑。 */
+    DOWN_SWIPE(
+        listOf(
+            FloatBallGestureType.SWIPE_DOWN_SHORT,
+            FloatBallGestureType.SWIPE_DOWN_LONG,
+            FloatBallGestureType.SWIPE_DOWN_RETURN,
+            FloatBallGestureType.SWIPE_DOWN_IN,
+        ),
+    ),
+    /** 上滑起手：短/长/后返回/再向内滑。 */
+    UP_SWIPE(
+        listOf(
+            FloatBallGestureType.SWIPE_UP_SHORT,
+            FloatBallGestureType.SWIPE_UP_LONG,
+            FloatBallGestureType.SWIPE_UP_RETURN,
+            FloatBallGestureType.SWIPE_UP_IN,
+        ),
+    ),
+    /** 侧滑起手：短/长/后返回，以及先向内再上/下滑。 */
+    SIDE_SWIPE(
+        listOf(
+            FloatBallGestureType.SWIPE_SIDE_SHORT,
+            FloatBallGestureType.SWIPE_SIDE_LONG,
+            FloatBallGestureType.SWIPE_SIDE_RETURN,
+            FloatBallGestureType.SWIPE_IN_DOWN,
+            FloatBallGestureType.SWIPE_IN_UP,
+        ),
+    ),
+    /** 点击类：单击/双击/长按。 */
+    TAP(
+        listOf(
+            FloatBallGestureType.SINGLE_TAP,
+            FloatBallGestureType.DOUBLE_TAP,
+            FloatBallGestureType.LONG_PRESS,
+        ),
+    ),
+    ;
+
+    companion object {
+        val displayOrder: List<FloatBallGestureGroup> = entries.toList()
     }
 }
 
@@ -86,6 +121,8 @@ object FloatBallGestureCodec {
         FloatBallGestureType.SWIPE_UP_RETURN to GestureAction.None,
         FloatBallGestureType.SWIPE_DOWN_IN to GestureAction.None,
         FloatBallGestureType.SWIPE_UP_IN to GestureAction.None,
+        FloatBallGestureType.SWIPE_IN_DOWN to GestureAction.None,
+        FloatBallGestureType.SWIPE_IN_UP to GestureAction.None,
         FloatBallGestureType.SWIPE_SIDE_SHORT to GestureAction.Back,
         FloatBallGestureType.SWIPE_SIDE_LONG to GestureAction.Back,
         FloatBallGestureType.SWIPE_SIDE_RETURN to GestureAction.None,
