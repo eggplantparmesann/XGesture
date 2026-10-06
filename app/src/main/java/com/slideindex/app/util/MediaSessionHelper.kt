@@ -79,8 +79,41 @@ object MediaSessionHelper {
         }
     }
 
-    fun notificationListenerSettingsIntent(): Intent =
+    /**
+     * Notification-access settings for this app.
+     *
+     * Android 11+ (minSdk is 31) exposes a per-listener detail screen, so the user lands on our own
+     * switch instead of the all-apps list. Some OEM ROMs do not implement that action, so fall back
+     * to the list page whenever it cannot be resolved.
+     */
+    fun notificationListenerSettingsIntent(context: Context): Intent {
+        val component = ComponentName(context, MediaNotificationListener::class.java)
+        val detail = Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS)
+            .putExtra(
+                Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
+                component.flattenToString(),
+            )
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (context.packageManager.resolveActivity(detail, PackageManager.MATCH_DEFAULT_ONLY) != null) {
+            return detail
+        }
+        return listNotificationListenerSettingsIntent()
+    }
+
+    /** All-apps notification-access list; kept as the fallback for ROMs without the detail screen. */
+    fun listNotificationListenerSettingsIntent(): Intent =
         Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+    /**
+     * Opens notification access without ever throwing: a [android.content.ActivityNotFoundException]
+     * from a half-implemented OEM Settings activity degrades to the list page. Safe to call from the
+     * long-lived `:overlay` process, where an uncaught exception would take down the overlay.
+     */
+    fun openNotificationListenerSettings(context: Context) {
+        val detail = notificationListenerSettingsIntent(context)
+        if (runCatching { context.startActivity(detail) }.isSuccess) return
+        runCatching { context.startActivity(listNotificationListenerSettingsIntent()) }
+    }
 
     fun isIgnoredMediaPackage(pkg: String, selfPackage: String): Boolean =
         pkg == selfPackage ||

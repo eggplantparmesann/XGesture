@@ -322,7 +322,7 @@ class OhoQuickToolsPanelState(
     fun openMediaTarget(): Boolean {
         if (launchMediaApp()) return true
         if (!MediaSessionHelper.isNotificationListenerEnabled(appContext)) {
-            appContext.startActivity(MediaSessionHelper.notificationListenerSettingsIntent())
+            MediaSessionHelper.openNotificationListenerSettings(appContext)
         }
         return false
     }

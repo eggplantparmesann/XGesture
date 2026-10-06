@@ -163,10 +163,7 @@ object GestureActionPermissionAuditor {
                 SystemWallpaperBlurHelper.requestWallpaperPermission(context)
             }
             REQUEST_NOTIFICATION_LISTENER -> {
-                context.startActivity(
-                    Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
+                com.slideindex.app.util.MediaSessionHelper.openNotificationListenerSettings(context)
             }
             else -> requestPermissionForAdjustAction(context, item.action)
         }

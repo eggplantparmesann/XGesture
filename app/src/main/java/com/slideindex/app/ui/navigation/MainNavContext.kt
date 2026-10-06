@@ -454,7 +454,7 @@ class MainNavContext(
     }
 
     fun openNotificationListenerSettings() {
-        startActivity(MediaSessionHelper.notificationListenerSettingsIntent())
+        MediaSessionHelper.openNotificationListenerSettings(activity)
     }
 
     fun openUsageAccessSettings() {
