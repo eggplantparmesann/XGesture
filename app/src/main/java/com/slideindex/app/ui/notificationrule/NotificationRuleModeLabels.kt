@@ -3,10 +3,11 @@ package com.slideindex.app.ui.notificationrule
 import androidx.annotation.StringRes
 import com.slideindex.app.R
 import com.slideindex.app.notification.AppMatchMode
+import com.slideindex.app.notification.ScreenMode
 import com.slideindex.app.notification.TextMatchMode
 
 /**
- * Display order and labels for the app / text condition dropdowns.
+ * Display order and labels for the app / text / screen condition dropdowns.
  *
  * The dropdowns in [NotificationRuleConditionEditor] index a list of labels and map the index
  * back to an enum constant. Building that list by hand and assuming it lines up with the enum
@@ -38,9 +39,19 @@ object NotificationRuleModeLabels {
         TextMatchMode.ADVANCED to R.string.notification_rule_text_mode_advanced,
     )
 
+    /** 屏幕状态条件选项，按显示顺序；首项为「不限」，对应 [ScreenMode.ANY]。 */
+    val screenModes: List<Pair<ScreenMode, Int>> = listOf(
+        ScreenMode.ANY to R.string.notification_rule_screen_any,
+        ScreenMode.ON to R.string.notification_rule_screen_on,
+        ScreenMode.OFF to R.string.notification_rule_screen_off,
+    )
+
     @StringRes
     fun appModeLabelRes(mode: AppMatchMode): Int = appModes.first { it.first == mode }.second
 
     @StringRes
     fun textModeLabelRes(mode: TextMatchMode): Int = textModes.first { it.first == mode }.second
+
+    @StringRes
+    fun screenModeLabelRes(mode: ScreenMode): Int = screenModes.first { it.first == mode }.second
 }

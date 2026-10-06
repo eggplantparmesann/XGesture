@@ -2209,11 +2209,15 @@
     <string name="notification_rule_time_end">وقت الانتهاء (ساعة:دقيقة)</string>
     <string name="notification_rule_time_all_day">طوال اليوم</string>
     <string name="notification_rule_week_days">أيام الأسبوع</string>
+    <string name="notification_rule_screen_state">حالة الشاشة</string>
+    <string name="notification_rule_screen_any">بدون قيد</string>
     <string name="notification_rule_screen_on">عند إضاءة الشاشة</string>
     <string name="notification_rule_screen_off">عند إطفاء الشاشة</string>
+    <string name="notification_rule_charge_state">حالة الشحن</string>
     <string name="notification_rule_charge_battery">تشغيل بالبطارية</string>
     <string name="notification_rule_charge_wired">شحن سلكي</string>
     <string name="notification_rule_charge_wireless">شحن لاسلكي</string>
+    <string name="notification_rule_charge_unrestricted_hint">عند عدم تحديد أي خيار لا تُقيَّد حالة الشحن</string>
     <string name="notification_rule_channel">معرّف قناة الإشعارات (اختياري)</string>
     <string name="notification_rule_action_mute">كتم الصوت</string>
     <string name="notification_rule_action_later">تأجيل</string>

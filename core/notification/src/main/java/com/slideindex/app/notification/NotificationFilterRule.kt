@@ -20,8 +20,8 @@ data class NotificationFilterRule(
     val timeStartMs: Int = 0,
     val timeEndMs: Int = 0,
     val weekDays: Set<Int> = NotificationRuleWeekDays.ALL,
-    val screenMode: ScreenMode = ScreenMode.BOTH,
-    val chargeMask: Int = NotificationRuleChargeMask.ALL,
+    val screenMode: ScreenMode = ScreenMode.ANY,
+    val chargeMask: Int = NotificationRuleChargeMask.UNRESTRICTED,
     val actionEntries: List<RuleActionEntry> = listOf(RuleActionEntry(NotificationRuleActionType.HIDE)),
     /** @deprecated Legacy v1 comma-separated include list; merged by [normalized]. */
     val packageName: String = "",

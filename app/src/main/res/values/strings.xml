@@ -1388,11 +1388,15 @@
     <string name="notification_rule_time_end">End (HH:mm)</string>
     <string name="notification_rule_time_all_day">All day</string>
     <string name="notification_rule_week_days">Weekdays</string>
+    <string name="notification_rule_screen_state">Screen state</string>
+    <string name="notification_rule_screen_any">Any</string>
     <string name="notification_rule_screen_on">Screen on</string>
     <string name="notification_rule_screen_off">Screen off</string>
+    <string name="notification_rule_charge_state">Charging state</string>
     <string name="notification_rule_charge_battery">On battery</string>
     <string name="notification_rule_charge_wired">Wired charging</string>
     <string name="notification_rule_charge_wireless">Wireless charging</string>
+    <string name="notification_rule_charge_unrestricted_hint">Unchecked means any charging state</string>
     <string name="notification_rule_channel">Channel ID (optional)</string>
     <string name="notification_rule_action_mute">Mute</string>
     <string name="notification_rule_action_later">Postpone</string>

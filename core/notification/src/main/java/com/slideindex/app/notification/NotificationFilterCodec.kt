@@ -134,9 +134,10 @@ object NotificationFilterCodec {
             timeStartMs = obj.optInt("timeStartMs", 0),
             timeEndMs = obj.optInt("timeEndMs", 0),
             weekDays = weekDays,
-            screenMode = runCatching { ScreenMode.valueOf(obj.optString("screenMode", ScreenMode.BOTH.name)) }
-                .getOrDefault(ScreenMode.BOTH),
-            chargeMask = obj.optInt("chargeMask", NotificationRuleChargeMask.ALL),
+            screenMode = ScreenMode.fromPersistedName(obj.optString("screenMode")),
+            chargeMask = NotificationRuleChargeMask.canonical(
+                obj.optInt("chargeMask", NotificationRuleChargeMask.UNRESTRICTED),
+            ),
             actionEntries = actions,
         )
     }

@@ -2,6 +2,14 @@
 
 All notable changes to XGesture are documented in this file.
 
+## [Unreleased]
+
+### Changed
+- 通知过滤规则的屏幕状态改为「不限 / 亮屏时 / 熄屏时」三选一，充电状态三项全部不勾选表示不限制
+
+### Fixed
+- 修复通知过滤规则只选一项手机状态时，重新进入编辑页后充电状态三项被自动勾选
+
 ## [1.35.0] - 2026-10-05
 
 ### Added

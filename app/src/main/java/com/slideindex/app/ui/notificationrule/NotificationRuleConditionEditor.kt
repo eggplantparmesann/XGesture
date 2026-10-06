@@ -61,10 +61,8 @@ internal fun NotificationRuleConditionEditor(
     onTimeEndChange: (String) -> Unit,
     weekDays: Set<Int>,
     onWeekDaysChange: (Set<Int>) -> Unit,
-    screenOn: Boolean,
-    onScreenOnChange: (Boolean) -> Unit,
-    screenOff: Boolean,
-    onScreenOffChange: (Boolean) -> Unit,
+    screenMode: ScreenMode,
+    onScreenModeChange: (ScreenMode) -> Unit,
     chargeBattery: Boolean,
     onChargeBatteryChange: (Boolean) -> Unit,
     chargeWired: Boolean,
@@ -264,15 +262,20 @@ internal fun NotificationRuleConditionEditor(
             NotificationRuleSectionHeading(
                 text = stringResource(R.string.notification_rule_section_device),
             )
-            CheckboxPreference(
-                title = stringResource(R.string.notification_rule_screen_on),
-                checked = screenOn,
-                onCheckedChange = onScreenOnChange,
+            // 屏幕状态用三选一下拉：亮屏 / 熄屏两个勾选框的「两个都勾」与「两个都不勾」都等于不限，
+            // 保存后无法区分，会把没勾的项回显成已勾选。
+            val screenModeEntries = NotificationRuleModeLabels.screenModes
+                .map { (mode, labelRes) -> mode to stringResource(labelRes) }
+            OverlayDropdownPreference(
+                title = stringResource(R.string.notification_rule_screen_state),
+                items = screenModeEntries.map { it.second },
+                selectedIndex = screenModeEntries.indexOfFirst { it.first == screenMode }.coerceAtLeast(0),
+                onSelectedIndexChange = { index ->
+                    screenModeEntries.getOrNull(index)?.let { onScreenModeChange(it.first) }
+                },
             )
-            CheckboxPreference(
-                title = stringResource(R.string.notification_rule_screen_off),
-                checked = screenOff,
-                onCheckedChange = onScreenOffChange,
+            NotificationRuleSectionHeading(
+                text = stringResource(R.string.notification_rule_charge_state),
             )
             CheckboxPreference(
                 title = stringResource(R.string.notification_rule_charge_battery),
@@ -288,6 +291,11 @@ internal fun NotificationRuleConditionEditor(
                 title = stringResource(R.string.notification_rule_charge_wireless),
                 checked = chargeWireless,
                 onCheckedChange = onChargeWirelessChange,
+            )
+            Text(
+                text = stringResource(R.string.notification_rule_charge_unrestricted_hint),
+                style = MiuixTheme.textStyles.body2,
+                color = MiuixTheme.colorScheme.onSurfaceSecondary,
             )
         }
     }
@@ -360,18 +368,35 @@ internal fun msToTimeString(ms: Int): String {
     return "%02d:%02d".format(hour, minute)
 }
 
-internal fun resolveScreenMode(on: Boolean, off: Boolean): ScreenMode = when {
-    on && off -> ScreenMode.BOTH
-    on -> ScreenMode.ON
-    off -> ScreenMode.OFF
-    else -> ScreenMode.BOTH
-}
+/**
+ * 编辑页「充电状态」三个勾选框的状态。
+ *
+ * 保存 [toMask] 与回显 [fromMask] 必须成对且可逆，否则会出现「只选了一个手机状态，重进编辑页后
+ * 充电三项被自动勾上」：历史版本把「三项都没勾」保存成不限制（位值 15，三位全选），而回显又按位
+ * 判断，于是三项全被勾上。这里规定不限制只以「三项都未勾选」呈现，且未勾选与全勾都写回不限制，
+ * 于是 `fromMask(toMask(x)) == x` 对每个可表示状态都成立。
+ */
+internal data class ChargeSelection(
+    val battery: Boolean,
+    val wired: Boolean,
+    val wireless: Boolean,
+) {
+    fun toMask(): Int = NotificationRuleChargeMask.canonical(
+        (if (battery) NotificationRuleChargeMask.BATTERY else 0) or
+            (if (wired) NotificationRuleChargeMask.WIRED else 0) or
+            (if (wireless) NotificationRuleChargeMask.WIRELESS else 0),
+    )
 
-internal fun resolveChargeMask(battery: Boolean, wired: Boolean, wireless: Boolean): Int {
-    if (battery && wired && wireless) return NotificationRuleChargeMask.ALL
-    var mask = 0
-    if (battery) mask = mask or NotificationRuleChargeMask.BATTERY
-    if (wired) mask = mask or NotificationRuleChargeMask.WIRED
-    if (wireless) mask = mask or NotificationRuleChargeMask.WIRELESS
-    return if (mask == 0) NotificationRuleChargeMask.ALL else mask
+    companion object {
+        fun fromMask(mask: Int): ChargeSelection =
+            if (NotificationRuleChargeMask.isUnrestricted(mask)) {
+                ChargeSelection(battery = false, wired = false, wireless = false)
+            } else {
+                ChargeSelection(
+                    battery = (mask and NotificationRuleChargeMask.BATTERY) != 0,
+                    wired = (mask and NotificationRuleChargeMask.WIRED) != 0,
+                    wireless = (mask and NotificationRuleChargeMask.WIRELESS) != 0,
+                )
+            }
+    }
 }

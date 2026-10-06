@@ -2252,11 +2252,15 @@
     <string name="notification_rule_time_end">结束时间 (HH:mm)</string>
     <string name="notification_rule_time_all_day">整天</string>
     <string name="notification_rule_week_days">星期</string>
+    <string name="notification_rule_screen_state">屏幕状态</string>
+    <string name="notification_rule_screen_any">不限</string>
     <string name="notification_rule_screen_on">亮屏时</string>
     <string name="notification_rule_screen_off">熄屏时</string>
+    <string name="notification_rule_charge_state">充电状态</string>
     <string name="notification_rule_charge_battery">电池供电</string>
     <string name="notification_rule_charge_wired">有线充电</string>
     <string name="notification_rule_charge_wireless">无线充电</string>
+    <string name="notification_rule_charge_unrestricted_hint">未勾选表示不限制充电状态</string>
     <string name="notification_rule_channel">通知渠道 ID（可选）</string>
     <string name="notification_rule_action_mute">静音</string>
     <string name="notification_rule_action_later">推迟</string>

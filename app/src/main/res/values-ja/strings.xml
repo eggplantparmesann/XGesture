@@ -2216,11 +2216,15 @@
     <string name="notification_rule_time_end">終了（HH:mm）</string>
     <string name="notification_rule_time_all_day">終日</string>
     <string name="notification_rule_week_days">曜日</string>
+    <string name="notification_rule_screen_state">画面の状態</string>
+    <string name="notification_rule_screen_any">問わない</string>
     <string name="notification_rule_screen_on">画面オン</string>
     <string name="notification_rule_screen_off">画面オフ</string>
+    <string name="notification_rule_charge_state">充電状態</string>
     <string name="notification_rule_charge_battery">バッテリー駆動</string>
     <string name="notification_rule_charge_wired">有線充電</string>
     <string name="notification_rule_charge_wireless">ワイヤレス充電</string>
+    <string name="notification_rule_charge_unrestricted_hint">未選択の場合は充電状態を問いません</string>
     <string name="notification_rule_channel">チャンネル ID（任意）</string>
     <string name="notification_rule_action_mute">ミュート</string>
     <string name="notification_rule_action_later">延期</string>

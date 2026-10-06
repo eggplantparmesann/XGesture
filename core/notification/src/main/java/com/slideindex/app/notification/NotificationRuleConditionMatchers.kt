@@ -157,7 +157,7 @@ internal object NotificationRuleDeviceMatcher {
 
     fun matchesScreen(context: Context, rule: NotificationFilterRule): Boolean {
         return when (rule.normalized().screenMode) {
-            ScreenMode.BOTH -> true
+            ScreenMode.ANY -> true
             ScreenMode.ON -> isScreenOn(context)
             ScreenMode.OFF -> !isScreenOn(context)
         }
@@ -165,7 +165,7 @@ internal object NotificationRuleDeviceMatcher {
 
     fun matchesCharge(context: Context, rule: NotificationFilterRule): Boolean {
         val mask = rule.normalized().chargeMask
-        if (mask == NotificationRuleChargeMask.ALL) return true
+        if (NotificationRuleChargeMask.isUnrestricted(mask)) return true
         val pluggedMask = currentChargeMask(context)
         return pluggedMask and mask != 0
     }
