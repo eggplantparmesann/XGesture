@@ -107,9 +107,13 @@ object ClipboardFocusReader {
 
         fun safeRemove() {
             if (removed) return
-            val ok = runCatching { windowManager.removeViewImmediate(probe) }.isSuccess ||
-                runCatching { windowManager.removeView(probe) }.isSuccess
-            if (ok) removed = true
+            // 只能用异步 removeView：removeViewImmediate 会同步走 ViewRootImpl.die(true)
+            // → doDie() → dispatchDetachedFromWindow() → mView = null。若此刻正处于框架
+            // 分发栈中（本探针就会在自己的窗口焦点回调里走到这里），框架分发返回后仍要使用
+            // mView，会在 ViewRootImpl.handleWindowFocusChanged 里
+            // mView.getLayoutParams()（该行未判空）抛 NPE 打崩进程（issue #17）。
+            // removeView 走 die(false)，只 post MSG_DIE，拆除发生在本轮分发返回之后。
+            if (runCatching { windowManager.removeView(probe) }.isSuccess) removed = true
         }
 
         fun finishAttempt() {
@@ -155,11 +159,14 @@ object ClipboardFocusReader {
         }
 
         // 1) 窗口一拿到焦点立刻读：这是权限判定上最早的合法时机。
+        //    读取必须 post 出这个回调：onWindowFocusChanged 处在框架的焦点分发栈内，在这里
+        //    同步读+收尾（→ safeRemove）等于在框架分发中拆掉自己的窗口（issue #17）。
+        //    焦点状态照旧同步记录，读取内容不变，只晚一个消息（下一轮主线程消息）。
         probe.onWindowFocus = { focused ->
             if (focused) {
                 hasFocus = true
                 if (focusGainedAtMs < 0) focusGainedAtMs = SystemClock.uptimeMillis()
-                performRead("focus")
+                mainHandler.post { performRead("focus") }
             } else {
                 hasFocus = false
                 if (focusGainedAtMs >= 0 && focusLostAtMs < 0) {
