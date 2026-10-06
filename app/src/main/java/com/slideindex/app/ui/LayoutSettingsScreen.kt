@@ -235,7 +235,7 @@ fun SettingsCardScope.HoneycombLauncherEntryCard(
 }
 
 @Composable
-fun SettingsCardScope.AppSwitcherEntryCard(
+fun SettingsCardScope.RingLauncherEntryCard(
     settings: ExtensionHubSettings,
     enabled: Boolean,
     outlinedLeadingIcons: Boolean = false,
@@ -243,18 +243,18 @@ fun SettingsCardScope.AppSwitcherEntryCard(
 ) {
     val subtitle = if (enabled) {
         pluralStringResource(
-            R.plurals.fv_app_switcher_entry_summary,
-            settings.fvAppSwitcherConfiguredCount,
-            settings.fvAppSwitcherConfiguredCount,
+            R.plurals.fv_ring_launcher_entry_summary,
+            settings.fvRingLauncherConfiguredCount,
+            settings.fvRingLauncherConfiguredCount,
         )
     } else {
-        stringResource(R.string.fv_app_switcher_entry_desc)
+        stringResource(R.string.fv_ring_launcher_entry_desc)
     }
     SettingNavigationRow(
         icon = { label ->
-            Icon(HubLeadingIcons.appSwitcher(outlinedLeadingIcons), contentDescription = label)
+            Icon(HubLeadingIcons.ringLauncher(outlinedLeadingIcons), contentDescription = label)
         },
-        title = stringResource(R.string.fv_app_switcher_entry_title),
+        title = stringResource(R.string.fv_ring_launcher_entry_title),
         subtitle = subtitle,
         enabled = enabled,
         onClick = onClick,

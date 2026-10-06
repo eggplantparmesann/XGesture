@@ -128,6 +128,6 @@ object FloatBallGestureCodec {
         FloatBallGestureType.SWIPE_SIDE_RETURN to GestureAction.None,
         FloatBallGestureType.SINGLE_TAP to GestureAction.ClickPassthrough,
         FloatBallGestureType.DOUBLE_TAP to GestureAction.None,
-        FloatBallGestureType.LONG_PRESS to GestureAction.AppSwitcher,
+        FloatBallGestureType.LONG_PRESS to GestureAction.RingLauncher,
     )
 }

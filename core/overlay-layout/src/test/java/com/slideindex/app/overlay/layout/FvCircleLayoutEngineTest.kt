@@ -23,7 +23,7 @@ class FvCircleLayoutEngineTest {
   fun layout_twoCircles_hasThirteenSlots_openingRightFromLeftEdge() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = anchorX,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -39,7 +39,7 @@ class FvCircleLayoutEngineTest {
   fun layout_rightSide_mirrorsX() {
     val left = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 40f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -47,7 +47,7 @@ class FvCircleLayoutEngineTest {
     )
     val right = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.RIGHT,
+      side = FvRingLauncherSide.RIGHT,
       anchorX = screenWidth - 40f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -66,7 +66,7 @@ class FvCircleLayoutEngineTest {
   fun slotIndexAt_hitsConfiguredSlotCenter() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 36f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -82,7 +82,7 @@ class FvCircleLayoutEngineTest {
     val anchorX = screenWidth - 60f
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.RIGHT,
+      side = FvRingLauncherSide.RIGHT,
       anchorX = anchorX,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -97,7 +97,7 @@ class FvCircleLayoutEngineTest {
   fun layout_layerRadius_scalesWithDensity() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 60f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -114,7 +114,7 @@ class FvCircleLayoutEngineTest {
   fun slotIndexAt_hitsWithinEnlargedTouchTarget() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 36f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -131,7 +131,7 @@ class FvCircleLayoutEngineTest {
   fun layout_leftSide_toolbarOnRightScreenEdge() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 60f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -145,7 +145,7 @@ class FvCircleLayoutEngineTest {
   fun slotIndexAt_innerDeadzone_returnsNoSlot() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 0f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -161,7 +161,7 @@ class FvCircleLayoutEngineTest {
   fun slotIndexAt_interRingGap_returnsNoSlot() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 4,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 0f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -188,7 +188,7 @@ class FvCircleLayoutEngineTest {
   fun slotIndexAt_beyondOuterRing_returnsNoSlot() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 4,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 0f,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -207,7 +207,7 @@ class FvCircleLayoutEngineTest {
     val anchorY = 2400f
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.BOTTOM,
+      side = FvRingLauncherSide.BOTTOM,
       anchorX = anchorX,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -227,7 +227,7 @@ class FvCircleLayoutEngineTest {
   fun slotIndexAt_bottomSide_hitsConfiguredSlotCenter() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.BOTTOM,
+      side = FvRingLauncherSide.BOTTOM,
       anchorX = screenWidth / 2f,
       anchorY = 2400f,
       screenWidth = screenWidth,
@@ -244,7 +244,7 @@ class FvCircleLayoutEngineTest {
     val anchorY = 2400f
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.BOTTOM,
+      side = FvRingLauncherSide.BOTTOM,
       anchorX = anchorX,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -264,7 +264,7 @@ class FvCircleLayoutEngineTest {
     val anchorY = 60f * density
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.TOP,
+      side = FvRingLauncherSide.TOP,
       anchorX = anchorX,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -286,7 +286,7 @@ class FvCircleLayoutEngineTest {
     val anchorY = 60f * density
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.TOP,
+      side = FvRingLauncherSide.TOP,
       anchorX = anchorX,
       anchorY = anchorY,
       screenWidth = screenWidth,
@@ -304,7 +304,7 @@ class FvCircleLayoutEngineTest {
   fun slotIndexAt_topSide_hitsConfiguredSlotCenter() {
     val layout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.TOP,
+      side = FvRingLauncherSide.TOP,
       anchorX = screenWidth / 2f,
       anchorY = 60f * density,
       screenWidth = screenWidth,
@@ -319,7 +319,7 @@ class FvCircleLayoutEngineTest {
   fun layout_customParameters_adjustsItemSizeAndRadiiCorrectly() {
     val customLayout = FvCircleLayoutEngine.layout(
       circleCount = 2,
-      side = FvAppSwitcherSide.LEFT,
+      side = FvRingLauncherSide.LEFT,
       anchorX = 0f,
       anchorY = anchorY,
       screenWidth = screenWidth,

@@ -63,7 +63,7 @@
     <plurals name="honeycomb_launcher_entry_summary">
         <item quantity="other">%d 件を設定済み</item>
     </plurals>
-    <plurals name="fv_app_switcher_entry_summary">
+    <plurals name="fv_ring_launcher_entry_summary">
         <item quantity="other">%d 項目を設定済み</item>
     </plurals>
     <plurals name="quick_launcher_entry_summary_panels">

@@ -77,7 +77,7 @@ The app features four main navigation tabs: 🏠 **Home** · 📳 **Motion** · 
 | **System Navigation** | Back, Home, Recents, Previous App, Lock Screen, Power Menu, Split Screen |
 | **Screenshot & Visual** | Fullscreen Screenshot, Region Screenshot, Screenshot OCR, Region OCR, Screen Recorder, Flashlight |
 | **OCR & Image Search** | Floating Ball OCR, Reverse Image Search, Live Screen Translation, Universal Screen Copy, Pin Screenshot, QR Code Scanner |
-| **Panels & Launchers** | Quick Launcher, App Index, Circle Launcher (FV Style), Honeycomb Launcher, Holographic Launcher, Task Switcher (OHO Style), App Freezer, Expand Panel (Volume/Brightness), Widget Overlay |
+| **Panels & Launchers** | Quick Launcher, App Index, Ring Launcher (FV Style), Honeycomb Launcher, Holographic Launcher, Task Switcher (OHO Style), App Freezer, Expand Panel (Volume/Brightness), Widget Overlay |
 | **Media & Controls** | Previous/Next Track, Play/Pause, Volume Adjust, Brightness Adjust, Switch IME |
 | **Tools & History** | Floating Pointer, Clipboard History Panel, Quick Tools Panel (OHO Style), Pause Overlay, Pause Gestures |
 | **Advanced & Extensions** | Run Shell Commands (Shizuku / Root), Launch Activity / Shortcut, Direct App Launch, Alarm Reminder in N min, Re-freeze Apps |
@@ -122,7 +122,7 @@ The app features four main navigation tabs: 🏠 **Home** · 📳 **Motion** · 
 | :--- | :--- | :--- |
 | **App Index** | Extensions → App Index | Alphabetical Pinyin rail app drawer with adjustable columns and transparency |
 | **Quick Launcher** | Extensions → Quick Launcher | Grid launcher supporting multi-panel switching, pagination, folder grouping, and shortcut library |
-| **Circle Launcher** | Gesture Action "Circle Launcher" | FV-style concentric circle layout with customizable tiers, spacing, shapes, and slots |
+| **Ring Launcher** | Gesture Action "Ring Launcher" | FV-style concentric ring layout with customizable tiers, spacing, shapes, and slots |
 | **Honeycomb Launcher** | Extensions → Honeycomb Launcher | Hexagonal honeycomb grid layout with swipe-out direct launching |
 | **Holographic Launcher** | Extensions → Holographic Launcher | Fullscreen 3D holographic sphere launcher; drag to rotate and click to open |
 | **Task Switcher** | Gesture Action "Task Switcher" | OHO-style vertical running tasks panel with swipe-to-switch, kill, clear all, and freeform launch |
@@ -142,12 +142,12 @@ The app features four main navigation tabs: 🏠 **Home** · 📳 **Motion** · 
 <table>
   <tr>
     <th width="33.33%" align="center">Corner Radial Menu</th>
-    <th width="33.33%" align="center">Circle Launcher (FV Style)</th>
+    <th width="33.33%" align="center">Ring Launcher (FV Style)</th>
     <th width="33.33%" align="center">Quick Launcher (Grid)</th>
   </tr>
   <tr>
     <td align="center"><img src="art/screenshots/01_circle_launcher_framed.webp" width="100%" alt="Corner Radial Menu" /></td>
-    <td align="center"><img src="art/screenshots/03_honeycomb_launcher_framed.webp" width="100%" alt="Circle Launcher" /></td>
+    <td align="center"><img src="art/screenshots/03_honeycomb_launcher_framed.webp" width="100%" alt="Ring Launcher" /></td>
     <td align="center"><img src="art/screenshots/06_quick_launcher_framed.webp" width="100%" alt="Quick Launcher" /></td>
   </tr>
   <tr>

@@ -120,7 +120,7 @@ data class ExtensionHubSettings(
     val clipboardLsposedWhitelist: Set<String> = setOf(CLIPBOARD_LSPOSED_SELF_PACKAGE),
     val privilegeMode: PrivilegeMode = PrivilegeMode.SHIZUKU,
     val holographicHiddenAppCount: Int = 0,
-    val fvAppSwitcherConfiguredCount: Int = 0,
+    val fvRingLauncherConfiguredCount: Int = 0,
 ) {
     companion object {
         fun from(settings: AppSettings): ExtensionHubSettings = ExtensionHubSettings(
@@ -140,7 +140,7 @@ data class ExtensionHubSettings(
             clipboardLsposedWhitelist = settings.clipboardLsposedWhitelist,
             privilegeMode = settings.privilegeMode,
             holographicHiddenAppCount = settings.holographicLauncher.hiddenAppPackages.size,
-            fvAppSwitcherConfiguredCount = settings.launcher.fvAppSwitcherVertical.configuredCount(),
+            fvRingLauncherConfiguredCount = settings.launcher.fvRingLauncherVertical.configuredCount(),
         )
     }
 }

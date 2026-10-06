@@ -5,7 +5,7 @@ import android.os.Looper
 import android.util.Log
 import com.slideindex.app.copy.UniversalCopyOverlay
 import com.slideindex.app.freezer.FreezerOverlayWindow
-import com.slideindex.app.overlay.appswitcher.AppSwitcherOverlayWindow
+import com.slideindex.app.overlay.ringlauncher.RingLauncherOverlayWindow
 import com.slideindex.app.overlay.holographic.HolographicLauncherOverlayWindow
 import com.slideindex.app.overlay.searchpanel.SearchPanelOverlayWindow
 import com.slideindex.app.overlay.volumepanel.VolumePanelOverlayWindow
@@ -46,7 +46,7 @@ object GlobalOverlayDismissHelper {
         runCatching { RegionalPickOverlay.dismiss() }
         runCatching { OhoQuickToolsOverlayWindow.dismiss() }
         runCatching { HoneycombAppPickerOverlayWindow.dismiss() }
-        runCatching { AppSwitcherOverlayWindow.dismiss() }
+        runCatching { RingLauncherOverlayWindow.dismiss() }
         runCatching { com.slideindex.app.overlay.fingertip.FingertipRingOverlayWindow.dismiss() }
         runCatching { com.slideindex.app.overlay.carousel.AppCarouselSwitcherOverlay.dismiss() }
         runCatching { FloatBallImageSearchPanel.dismiss() }

@@ -835,43 +835,43 @@
       "ja": "KeyCode %1$d"
     },
     {
-      "name": "app_switcher_slot_title",
+      "name": "ring_launcher_slot_title",
       "zh": "圆环启动器 · 槽位 %1$d",
       "en": "Ring launcher · Slot %1$d",
       "ja": "リングランチャー · スロット %1$d"
     },
     {
-      "name": "app_switcher_slot_bound",
+      "name": "ring_launcher_slot_bound",
       "zh": "已绑定: %1$s",
       "en": "Bound: %1$s",
       "ja": "バインド済み: %1$s"
     },
     {
-      "name": "app_switcher_slot_unconfigured",
+      "name": "ring_launcher_slot_unconfigured",
       "zh": "未配置（自动填充最近任务）",
       "en": "Not configured (auto-fill from recents)",
       "ja": "未設定（最近のタスクから自動入力）"
     },
     {
-      "name": "fv_app_switcher_circle_1",
+      "name": "fv_ring_launcher_circle_1",
       "zh": "1 圈(5)",
       "en": "1 ring (5)",
       "ja": "1 リング (5)"
     },
     {
-      "name": "fv_app_switcher_circle_2",
+      "name": "fv_ring_launcher_circle_2",
       "zh": "2 圈(13)",
       "en": "2 rings (13)",
       "ja": "2 リング (13)"
     },
     {
-      "name": "fv_app_switcher_circle_3",
+      "name": "fv_ring_launcher_circle_3",
       "zh": "3 圈(24)",
       "en": "3 rings (24)",
       "ja": "3 リング (24)"
     },
     {
-      "name": "fv_app_switcher_circle_4",
+      "name": "fv_ring_launcher_circle_4",
       "zh": "4 圈(38)",
       "en": "4 rings (38)",
       "ja": "4 リング (38)"

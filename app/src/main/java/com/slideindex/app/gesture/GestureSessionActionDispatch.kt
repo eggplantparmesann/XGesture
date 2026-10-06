@@ -94,15 +94,15 @@ internal fun GestureSession.trackContinuousGesture(
             }
         }
 
-        GestureAction.AppSwitcher -> {
-            if (!sessionContinuousPick.appSwitcher) {
-                val shown = sessionCallbacks.onShowAppSwitcher(continuousPick = true, rawX, rawY)
+        GestureAction.RingLauncher -> {
+            if (!sessionContinuousPick.ringLauncher) {
+                val shown = sessionCallbacks.onShowRingLauncher(continuousPick = true, rawX, rawY)
                 if (shown) {
-                    sessionContinuousPick.appSwitcher = true
+                    sessionContinuousPick.ringLauncher = true
                     sessionCallbacks.hapticConfirmLaunch()
                 }
             } else {
-                sessionCallbacks.onAppSwitcherPointerMove(rawX, rawY)
+                sessionCallbacks.onRingLauncherPointerMove(rawX, rawY)
             }
         }
 
@@ -271,10 +271,10 @@ internal fun GestureSession.handleClassifiedGesture(
             }
         }
 
-        GestureAction.AppSwitcher -> {
-            sessionContinuousPick.appSwitcher = false
+        GestureAction.RingLauncher -> {
+            sessionContinuousPick.ringLauncher = false
             sessionCallbacks.hapticConfirmLaunch()
-            sessionCallbacks.onShowAppSwitcher(continuousPick = false, rawX, rawY)
+            sessionCallbacks.onShowRingLauncher(continuousPick = false, rawX, rawY)
             endSession()
         }
 
@@ -501,11 +501,11 @@ internal fun GestureSession.dispatchQuickLauncherAction(
             )
             return true
         }
-        GestureAction.AppSwitcher -> {
-            sessionContinuousPick.appSwitcher = false
+        GestureAction.RingLauncher -> {
+            sessionContinuousPick.ringLauncher = false
             if (confirmHaptic) sessionCallbacks.hapticConfirmLaunch()
             sessionActionExecutor.execute(
-                GestureAction.AppSwitcher,
+                GestureAction.RingLauncher,
                 sessionSettings,
                 anchorRawY = rawY
             )

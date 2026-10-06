@@ -50,7 +50,7 @@ class QuickLauncherPanelRemovalRemapTest {
             GestureAction.QuickLauncher(removedPanelId),
             "快速启动器",
         )
-        val slotWrite = repository.setFvAppSwitcherSlot(FvAppSwitcherAxis.VERTICAL, 0, quickLauncherItem)
+        val slotWrite = repository.setFvRingLauncherSlot(FvRingLauncherAxis.VERTICAL, 0, quickLauncherItem)
         assertTrue("写入圆环槽位失败: $slotWrite", slotWrite.isSuccess)
         val gestureWrite = repository.setSlotConfig(
             side = PanelSide.LEFT,
@@ -79,7 +79,7 @@ class QuickLauncherPanelRemovalRemapTest {
         assertEquals(
             expected,
             settings
-                .fvAppSwitcherFor(FvAppSwitcherAxis.VERTICAL)
+                .fvRingLauncherFor(FvRingLauncherAxis.VERTICAL)
                 .slots[0]
                 ?.let { QuickLauncherItemCodec.parseActionPayload(it.payload) },
         )
@@ -105,8 +105,8 @@ class QuickLauncherPanelRemovalRemapTest {
             ),
         )
 
-        repository.setFvAppSwitcherSlot(
-            FvAppSwitcherAxis.VERTICAL,
+        repository.setFvRingLauncherSlot(
+            FvRingLauncherAxis.VERTICAL,
             1,
             QuickLauncherItem.action(GestureAction.QuickLauncher(""), "快速启动器"),
         )
@@ -115,7 +115,7 @@ class QuickLauncherPanelRemovalRemapTest {
         assertEquals(
             GestureAction.QuickLauncher(firstPanelId),
             settings
-                .fvAppSwitcherFor(FvAppSwitcherAxis.VERTICAL)
+                .fvRingLauncherFor(FvRingLauncherAxis.VERTICAL)
                 .slots[1]
                 ?.let { QuickLauncherItemCodec.parseActionPayload(it.payload) },
         )
@@ -132,21 +132,21 @@ class QuickLauncherPanelRemovalRemapTest {
             prefs[SettingsPreferenceKeys.QUICK_LAUNCHER_PANELS] = QuickLauncherPanelCodec.encodeAll(
                 listOf(QuickLauncherPanel(id = panelId, name = "Panel")),
             )
-            prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_PANEL_REFERENCE_MIGRATED] = false
-            FvAppSwitcherSettings.writeSlotsAxis(
+            prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_PANEL_REFERENCE_MIGRATED] = false
+            FvRingLauncherSettings.writeSlotsAxis(
                 prefs,
-                FvAppSwitcherAxis.VERTICAL,
-                FvAppSwitcherSettings(slots = mapOf(0 to legacyBlankSlot)),
+                FvRingLauncherAxis.VERTICAL,
+                FvRingLauncherSettings(slots = mapOf(0 to legacyBlankSlot)),
             )
         }
 
-        OverlaySettingsMutator(editor).migrateFvAppSwitcherQuickLauncherPanelsOnce()
+        OverlaySettingsMutator(editor).migrateFvRingLauncherQuickLauncherPanelsOnce()
 
         val settings = editor.settings.first()
         assertEquals(
             GestureAction.QuickLauncher(panelId),
             settings
-                .fvAppSwitcherFor(FvAppSwitcherAxis.VERTICAL)
+                .fvRingLauncherFor(FvRingLauncherAxis.VERTICAL)
                 .slots[0]
                 ?.let { QuickLauncherItemCodec.parseActionPayload(it.payload) },
         )

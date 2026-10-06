@@ -24,13 +24,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.slideindex.app.R
-import com.slideindex.app.overlay.appswitcher.AppSwitcherOverlayWindow
+import com.slideindex.app.overlay.ringlauncher.RingLauncherOverlayWindow
 import com.slideindex.app.overlay.layout.FvIconShape
 import com.slideindex.app.settings.AppSettings
-import com.slideindex.app.settings.FvAppSwitcherAxis
-import com.slideindex.app.settings.FvAppSwitcherAxisMergeDirection
-import com.slideindex.app.settings.FvAppSwitcherSettings
-import com.slideindex.app.settings.fvAppSwitcherFor
+import com.slideindex.app.settings.FvRingLauncherAxis
+import com.slideindex.app.settings.FvRingLauncherAxisMergeDirection
+import com.slideindex.app.settings.FvRingLauncherSettings
+import com.slideindex.app.settings.fvRingLauncherFor
 import com.slideindex.app.ui.miuix.MiuixConfirmDialog
 import com.slideindex.app.ui.miuix.groupedCardItems
 import com.slideindex.app.ui.settings.components.SettingLinkRow
@@ -42,40 +42,40 @@ import com.slideindex.app.ui.settings.components.settingsLazySmallTitle
 import com.slideindex.app.util.PermissionHelper
 import kotlin.math.roundToInt
 
-private enum class AppSwitcherSyncDialogTarget {
+private enum class RingLauncherSyncDialogTarget {
     APPEARANCE,
     SLOTS,
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun AppSwitcherSettingsScreen(
+fun RingLauncherSettingsScreen(
     appSettings: AppSettings,
     onBack: () -> Unit,
-    onSettingsChange: (FvAppSwitcherAxis, FvAppSwitcherSettings) -> Unit,
-    onLinkAppearanceAxesChange: (Boolean, FvAppSwitcherAxis, FvAppSwitcherAxisMergeDirection?) -> Unit,
-    onLinkSlotAxesChange: (Boolean, FvAppSwitcherAxis, FvAppSwitcherAxisMergeDirection?) -> Unit,
+    onSettingsChange: (FvRingLauncherAxis, FvRingLauncherSettings) -> Unit,
+    onLinkAppearanceAxesChange: (Boolean, FvRingLauncherAxis, FvRingLauncherAxisMergeDirection?) -> Unit,
+    onLinkSlotAxesChange: (Boolean, FvRingLauncherAxis, FvRingLauncherAxisMergeDirection?) -> Unit,
 ) {
     val context = LocalContext.current
-    var selectedAxis by remember { mutableStateOf(FvAppSwitcherAxis.HORIZONTAL) }
-    var pendingSyncTarget by remember { mutableStateOf<AppSwitcherSyncDialogTarget?>(null) }
+    var selectedAxis by remember { mutableStateOf(FvRingLauncherAxis.HORIZONTAL) }
+    var pendingSyncTarget by remember { mutableStateOf<RingLauncherSyncDialogTarget?>(null) }
 
-    val currentAxisSettings = appSettings.fvAppSwitcherFor(selectedAxis)
-    val linkAppearanceAxes = appSettings.fvAppSwitcherLinkAppearanceAxes
-    val linkSlotAxes = appSettings.fvAppSwitcherLinkSlotAxes
+    val currentAxisSettings = appSettings.fvRingLauncherFor(selectedAxis)
+    val linkAppearanceAxes = appSettings.fvRingLauncherLinkAppearanceAxes
+    val linkSlotAxes = appSettings.fvRingLauncherLinkSlotAxes
 
-    fun updateCurrentAxisSettings(transform: (FvAppSwitcherSettings) -> FvAppSwitcherSettings) {
+    fun updateCurrentAxisSettings(transform: (FvRingLauncherSettings) -> FvRingLauncherSettings) {
         val next = transform(currentAxisSettings)
         onSettingsChange(selectedAxis, next)
     }
 
-    val launchSectionTitle = stringResource(R.string.fv_app_switcher_open_overlay)
-    val syncSectionTitle = stringResource(R.string.fv_app_switcher_link_merge_title)
-    val appearanceSectionTitle = stringResource(R.string.fv_app_switcher_appearance_title)
+    val launchSectionTitle = stringResource(R.string.fv_ring_launcher_open_overlay)
+    val syncSectionTitle = stringResource(R.string.fv_ring_launcher_link_merge_title)
+    val appearanceSectionTitle = stringResource(R.string.fv_ring_launcher_appearance_title)
 
     SettingsScreenScaffold(
-        title = stringResource(R.string.fv_app_switcher_entry_title),
-        pageHint = stringResource(R.string.fv_app_switcher_entry_desc),
+        title = stringResource(R.string.fv_ring_launcher_entry_title),
+        pageHint = stringResource(R.string.fv_ring_launcher_entry_desc),
         onBack = onBack,
     ) {
         // 顶部切轴 SegmentedButton
@@ -86,8 +86,8 @@ fun AppSwitcherSettingsScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             ) {
                 val axes = listOf(
-                    FvAppSwitcherAxis.HORIZONTAL to stringResource(R.string.fv_app_switcher_axis_horizontal),
-                    FvAppSwitcherAxis.VERTICAL to stringResource(R.string.fv_app_switcher_axis_vertical),
+                    FvRingLauncherAxis.HORIZONTAL to stringResource(R.string.fv_ring_launcher_axis_horizontal),
+                    FvRingLauncherAxis.VERTICAL to stringResource(R.string.fv_ring_launcher_axis_vertical),
                 )
                 axes.forEachIndexed { index, (axis, label) ->
                     SegmentedButton(
@@ -112,24 +112,24 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("open-overlay") {
                         SettingLinkRow(
-                            title = stringResource(R.string.fv_app_switcher_open_overlay),
-                            subtitle = stringResource(R.string.fv_app_switcher_open_overlay_desc),
+                            title = stringResource(R.string.fv_ring_launcher_open_overlay),
+                            subtitle = stringResource(R.string.fv_ring_launcher_open_overlay_desc),
                             onClick = {
                                 if (!PermissionHelper.isAccessibilityServiceEnabledForOverlays(context)) {
                                     Toast.makeText(
                                         context,
-                                        R.string.fv_app_switcher_accessibility_required,
+                                        R.string.fv_ring_launcher_accessibility_required,
                                         Toast.LENGTH_SHORT,
                                     ).show()
                                 } else {
                                     val displayMetrics = context.resources.displayMetrics
-                                    val anchorX = if (selectedAxis == FvAppSwitcherAxis.VERTICAL) {
+                                    val anchorX = if (selectedAxis == FvRingLauncherAxis.VERTICAL) {
                                         displayMetrics.widthPixels / 2f
                                     } else {
                                         0f
                                     }
                                     val anchorY = displayMetrics.heightPixels / 2f
-                                    AppSwitcherOverlayWindow.show(
+                                    RingLauncherOverlayWindow.show(
                                         context = context,
                                         settings = appSettings,
                                         anchorRawX = anchorX,
@@ -156,13 +156,13 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("sync-appearance") {
                         SettingSwitchRow(
-                            title = stringResource(R.string.fv_app_switcher_link_appearance_axes_title),
-                            subtitle = stringResource(R.string.fv_app_switcher_link_appearance_axes_desc),
+                            title = stringResource(R.string.fv_ring_launcher_link_appearance_axes_title),
+                            subtitle = stringResource(R.string.fv_ring_launcher_link_appearance_axes_desc),
                             checked = linkAppearanceAxes,
                             enabled = true,
                             onCheckedChange = { checked ->
                                 if (checked) {
-                                    pendingSyncTarget = AppSwitcherSyncDialogTarget.APPEARANCE
+                                    pendingSyncTarget = RingLauncherSyncDialogTarget.APPEARANCE
                                 } else {
                                     onLinkAppearanceAxesChange(false, selectedAxis, null)
                                 }
@@ -173,13 +173,13 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("sync-slots") {
                         SettingSwitchRow(
-                            title = stringResource(R.string.fv_app_switcher_link_slot_axes_title),
-                            subtitle = stringResource(R.string.fv_app_switcher_link_slot_axes_desc),
+                            title = stringResource(R.string.fv_ring_launcher_link_slot_axes_title),
+                            subtitle = stringResource(R.string.fv_ring_launcher_link_slot_axes_desc),
                             checked = linkSlotAxes,
                             enabled = true,
                             onCheckedChange = { checked ->
                                 if (checked) {
-                                    pendingSyncTarget = AppSwitcherSyncDialogTarget.SLOTS
+                                    pendingSyncTarget = RingLauncherSyncDialogTarget.SLOTS
                                 } else {
                                     onLinkSlotAxesChange(false, selectedAxis, null)
                                 }
@@ -207,7 +207,7 @@ fun AppSwitcherSettingsScreen(
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
                         ) {
                             Text(
-                                text = stringResource(R.string.fv_app_switcher_circle_count_title),
+                                text = stringResource(R.string.fv_ring_launcher_circle_count_title),
                                 fontWeight = FontWeight.Medium,
                             )
                             Row(
@@ -217,10 +217,10 @@ fun AppSwitcherSettingsScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp),
                             ) {
                                 val circleLabels = listOf(
-                                    stringResource(R.string.fv_app_switcher_circle_1),
-                                    stringResource(R.string.fv_app_switcher_circle_2),
-                                    stringResource(R.string.fv_app_switcher_circle_3),
-                                    stringResource(R.string.fv_app_switcher_circle_4),
+                                    stringResource(R.string.fv_ring_launcher_circle_1),
+                                    stringResource(R.string.fv_ring_launcher_circle_2),
+                                    stringResource(R.string.fv_ring_launcher_circle_3),
+                                    stringResource(R.string.fv_ring_launcher_circle_4),
                                 )
                                 circleLabels.forEachIndexed { index, label ->
                                     val count = index + 1
@@ -251,7 +251,7 @@ fun AppSwitcherSettingsScreen(
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
                         ) {
                             Text(
-                                text = stringResource(R.string.fv_app_switcher_icon_shape_title),
+                                text = stringResource(R.string.fv_ring_launcher_icon_shape_title),
                                 fontWeight = FontWeight.Medium,
                             )
                             Row(
@@ -289,10 +289,10 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("icon-size") {
                         SettingsSliderRow(
-                            title = stringResource(R.string.fv_app_switcher_icon_size_title),
+                            title = stringResource(R.string.fv_ring_launcher_icon_size_title),
                             value = currentAxisSettings.iconSizeDp,
-                            valueRange = FvAppSwitcherSettings.MIN_ICON_SIZE_DP..FvAppSwitcherSettings.MAX_ICON_SIZE_DP,
-                            steps = ((FvAppSwitcherSettings.MAX_ICON_SIZE_DP - FvAppSwitcherSettings.MIN_ICON_SIZE_DP) / 2f).toInt() - 1,
+                            valueRange = FvRingLauncherSettings.MIN_ICON_SIZE_DP..FvRingLauncherSettings.MAX_ICON_SIZE_DP,
+                            steps = ((FvRingLauncherSettings.MAX_ICON_SIZE_DP - FvRingLauncherSettings.MIN_ICON_SIZE_DP) / 2f).toInt() - 1,
                             enabled = true,
                             label = "${currentAxisSettings.iconSizeDp.toInt()} dp",
                             onValueChange = {
@@ -307,10 +307,10 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("base-radius") {
                         SettingsSliderRow(
-                            title = stringResource(R.string.fv_app_switcher_base_radius_title),
+                            title = stringResource(R.string.fv_ring_launcher_base_radius_title),
                             value = currentAxisSettings.baseRadiusDp,
-                            valueRange = FvAppSwitcherSettings.MIN_BASE_RADIUS_DP..FvAppSwitcherSettings.MAX_BASE_RADIUS_DP,
-                            steps = ((FvAppSwitcherSettings.MAX_BASE_RADIUS_DP - FvAppSwitcherSettings.MIN_BASE_RADIUS_DP) / 2f).toInt() - 1,
+                            valueRange = FvRingLauncherSettings.MIN_BASE_RADIUS_DP..FvRingLauncherSettings.MAX_BASE_RADIUS_DP,
+                            steps = ((FvRingLauncherSettings.MAX_BASE_RADIUS_DP - FvRingLauncherSettings.MIN_BASE_RADIUS_DP) / 2f).toInt() - 1,
                             enabled = true,
                             label = "${currentAxisSettings.baseRadiusDp.toInt()} dp",
                             onValueChange = {
@@ -325,10 +325,10 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("layer-gap") {
                         SettingsSliderRow(
-                            title = stringResource(R.string.fv_app_switcher_layer_gap_title),
+                            title = stringResource(R.string.fv_ring_launcher_layer_gap_title),
                             value = currentAxisSettings.layerGapDp,
-                            valueRange = FvAppSwitcherSettings.MIN_LAYER_GAP_DP..FvAppSwitcherSettings.MAX_LAYER_GAP_DP,
-                            steps = ((FvAppSwitcherSettings.MAX_LAYER_GAP_DP - FvAppSwitcherSettings.MIN_LAYER_GAP_DP) / 2f).toInt() - 1,
+                            valueRange = FvRingLauncherSettings.MIN_LAYER_GAP_DP..FvRingLauncherSettings.MAX_LAYER_GAP_DP,
+                            steps = ((FvRingLauncherSettings.MAX_LAYER_GAP_DP - FvRingLauncherSettings.MIN_LAYER_GAP_DP) / 2f).toInt() - 1,
                             enabled = true,
                             label = "${currentAxisSettings.layerGapDp.toInt()} dp",
                             onValueChange = {
@@ -343,10 +343,10 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("end-margin") {
                         SettingsSliderRow(
-                            title = stringResource(R.string.fv_app_switcher_end_margin_title),
+                            title = stringResource(R.string.fv_ring_launcher_end_margin_title),
                             value = currentAxisSettings.endMarginDeg,
-                            valueRange = FvAppSwitcherSettings.MIN_END_MARGIN_DEG..FvAppSwitcherSettings.MAX_END_MARGIN_DEG,
-                            steps = ((FvAppSwitcherSettings.MAX_END_MARGIN_DEG - FvAppSwitcherSettings.MIN_END_MARGIN_DEG) / 2f).toInt() - 1,
+                            valueRange = FvRingLauncherSettings.MIN_END_MARGIN_DEG..FvRingLauncherSettings.MAX_END_MARGIN_DEG,
+                            steps = ((FvRingLauncherSettings.MAX_END_MARGIN_DEG - FvRingLauncherSettings.MIN_END_MARGIN_DEG) / 2f).toInt() - 1,
                             enabled = true,
                             label = "${currentAxisSettings.endMarginDeg.toInt()}°",
                             onValueChange = {
@@ -361,8 +361,8 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("show-toolbar") {
                         SettingSwitchRow(
-                            title = stringResource(R.string.fv_app_switcher_show_toolbar_title),
-                            subtitle = stringResource(R.string.fv_app_switcher_show_toolbar_desc),
+                            title = stringResource(R.string.fv_ring_launcher_show_toolbar_title),
+                            subtitle = stringResource(R.string.fv_ring_launcher_show_toolbar_desc),
                             checked = currentAxisSettings.showToolbar,
                             enabled = true,
                             onCheckedChange = { checked ->
@@ -376,10 +376,10 @@ fun AppSwitcherSettingsScreen(
                 add(
                     settingsCardScopeItem("reset-defaults") {
                         SettingLinkRow(
-                            title = stringResource(R.string.fv_app_switcher_reset_defaults),
+                            title = stringResource(R.string.fv_ring_launcher_reset_defaults),
                             onClick = {
                                 updateCurrentAxisSettings { s ->
-                                    FvAppSwitcherSettings(
+                                    FvRingLauncherSettings(
                                         circleCount = s.circleCount,
                                         slots = s.slots,
                                     )
@@ -396,54 +396,54 @@ fun AppSwitcherSettingsScreen(
     pendingSyncTarget?.let { target ->
         val mergeKindLabel = stringResource(
             when (target) {
-                AppSwitcherSyncDialogTarget.APPEARANCE -> R.string.fv_app_switcher_link_merge_appearance_kind
-                AppSwitcherSyncDialogTarget.SLOTS -> R.string.fv_app_switcher_link_merge_slot_kind
+                RingLauncherSyncDialogTarget.APPEARANCE -> R.string.fv_ring_launcher_link_merge_appearance_kind
+                RingLauncherSyncDialogTarget.SLOTS -> R.string.fv_ring_launcher_link_merge_slot_kind
             },
         )
         val currentAxisLabel = stringResource(
-            if (selectedAxis == FvAppSwitcherAxis.VERTICAL) {
-                R.string.fv_app_switcher_axis_vertical
+            if (selectedAxis == FvRingLauncherAxis.VERTICAL) {
+                R.string.fv_ring_launcher_axis_vertical
             } else {
-                R.string.fv_app_switcher_axis_horizontal
+                R.string.fv_ring_launcher_axis_horizontal
             },
         )
         val otherAxisLabel = stringResource(
-            if (selectedAxis == FvAppSwitcherAxis.VERTICAL) {
-                R.string.fv_app_switcher_axis_horizontal
+            if (selectedAxis == FvRingLauncherAxis.VERTICAL) {
+                R.string.fv_ring_launcher_axis_horizontal
             } else {
-                R.string.fv_app_switcher_axis_vertical
+                R.string.fv_ring_launcher_axis_vertical
             },
         )
 
         MiuixConfirmDialog(
             show = true,
-            title = stringResource(R.string.fv_app_switcher_link_merge_title),
+            title = stringResource(R.string.fv_ring_launcher_link_merge_title),
             message = stringResource(
-                R.string.fv_app_switcher_link_merge_message,
+                R.string.fv_ring_launcher_link_merge_message,
                 mergeKindLabel,
                 currentAxisLabel,
                 otherAxisLabel,
             ),
-            confirmText = stringResource(R.string.fv_app_switcher_link_merge_use_current),
+            confirmText = stringResource(R.string.fv_ring_launcher_link_merge_use_current),
             onConfirm = {
                 when (target) {
-                    AppSwitcherSyncDialogTarget.APPEARANCE -> {
-                        onLinkAppearanceAxesChange(true, selectedAxis, FvAppSwitcherAxisMergeDirection.USE_CURRENT_AXIS)
+                    RingLauncherSyncDialogTarget.APPEARANCE -> {
+                        onLinkAppearanceAxesChange(true, selectedAxis, FvRingLauncherAxisMergeDirection.USE_CURRENT_AXIS)
                     }
-                    AppSwitcherSyncDialogTarget.SLOTS -> {
-                        onLinkSlotAxesChange(true, selectedAxis, FvAppSwitcherAxisMergeDirection.USE_CURRENT_AXIS)
+                    RingLauncherSyncDialogTarget.SLOTS -> {
+                        onLinkSlotAxesChange(true, selectedAxis, FvRingLauncherAxisMergeDirection.USE_CURRENT_AXIS)
                     }
                 }
                 pendingSyncTarget = null
             },
-            secondaryConfirmText = stringResource(R.string.fv_app_switcher_link_merge_use_other),
+            secondaryConfirmText = stringResource(R.string.fv_ring_launcher_link_merge_use_other),
             onSecondaryConfirm = {
                 when (target) {
-                    AppSwitcherSyncDialogTarget.APPEARANCE -> {
-                        onLinkAppearanceAxesChange(true, selectedAxis, FvAppSwitcherAxisMergeDirection.USE_OTHER_AXIS)
+                    RingLauncherSyncDialogTarget.APPEARANCE -> {
+                        onLinkAppearanceAxesChange(true, selectedAxis, FvRingLauncherAxisMergeDirection.USE_OTHER_AXIS)
                     }
-                    AppSwitcherSyncDialogTarget.SLOTS -> {
-                        onLinkSlotAxesChange(true, selectedAxis, FvAppSwitcherAxisMergeDirection.USE_OTHER_AXIS)
+                    RingLauncherSyncDialogTarget.SLOTS -> {
+                        onLinkSlotAxesChange(true, selectedAxis, FvRingLauncherAxisMergeDirection.USE_OTHER_AXIS)
                     }
                 }
                 pendingSyncTarget = null

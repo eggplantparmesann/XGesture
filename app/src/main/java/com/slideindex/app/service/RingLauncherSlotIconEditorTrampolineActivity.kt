@@ -36,17 +36,17 @@ import androidx.compose.runtime.setValue
 
 import com.slideindex.app.di.AppDependencies
 
-import com.slideindex.app.overlay.appswitcher.AppSwitcherOverlayWindow
+import com.slideindex.app.overlay.ringlauncher.RingLauncherOverlayWindow
 
 import com.slideindex.app.settings.AppSettings
 
-import com.slideindex.app.settings.FvAppSwitcherAxis
+import com.slideindex.app.settings.FvRingLauncherAxis
 
-import com.slideindex.app.settings.FvAppSwitcherSlotIconOverride
+import com.slideindex.app.settings.FvRingLauncherSlotIconOverride
 
-import com.slideindex.app.settings.fvAppSwitcherFor
+import com.slideindex.app.settings.fvRingLauncherFor
 
-import com.slideindex.app.ui.appswitcher.AppSwitcherSlotIconEditorHost
+import com.slideindex.app.ui.ringlauncher.RingLauncherSlotIconEditorHost
 
 import com.slideindex.app.ui.compose.LocalAppDependencies
 
@@ -64,7 +64,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 
-class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
+class RingLauncherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
 
 
@@ -128,7 +128,7 @@ class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
             var slotLabel by remember { mutableStateOf("") }
 
-            var slotIconOverride by remember { mutableStateOf<FvAppSwitcherSlotIconOverride?>(null) }
+            var slotIconOverride by remember { mutableStateOf<FvRingLauncherSlotIconOverride?>(null) }
 
 
 
@@ -136,7 +136,7 @@ class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
                 appSettings = deps.settingsRepository.settings.first()
 
-                val fvSettings = appSettings.fvAppSwitcherFor(axis)
+                val fvSettings = appSettings.fvRingLauncherFor(axis)
 
                 val item = fvSettings.itemAt(slotIndex)
 
@@ -156,7 +156,7 @@ class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
                 ModuleTheme(settings = appSettings) {
 
-                    AppSwitcherSlotIconEditorHost(
+                    RingLauncherSlotIconEditorHost(
 
                         slotLabel = slotLabel,
 
@@ -168,7 +168,7 @@ class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
                             scope.launch {
 
-                                deps.settingsRepository.setFvAppSwitcherSlotIconOverride(
+                                deps.settingsRepository.setFvRingLauncherSlotIconOverride(
 
                                     axis = axis,
 
@@ -178,7 +178,7 @@ class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
                                 )
 
-                                AppSwitcherOverlayWindow.refreshFromSettings()
+                                RingLauncherOverlayWindow.refreshFromSettings()
 
                                 finishPicker()
 
@@ -210,12 +210,12 @@ class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
         overridePendingTransition(0, 0)
 
-        AppSwitcherOverlayWindow.resumeAfterSlotIconEditor()
+        RingLauncherOverlayWindow.resumeAfterSlotIconEditor()
         // 本 Activity 跑在主进程，而圆环/悬浮球宿主在 :overlay —— 上面那次调用在主进程其实是空操作，
         // 必须跨进程通知 overlay 进程恢复（否则返回后圆环与悬浮球都不见了）。
         com.slideindex.app.overlay.OverlayStatePort.sendCommand(
             applicationContext,
-            com.slideindex.app.overlay.OverlayStatePort.COMMAND_RESUME_APP_SWITCHER_OVERLAY,
+            com.slideindex.app.overlay.OverlayStatePort.COMMAND_RESUME_RING_LAUNCHER_OVERLAY,
         )
 
     }
@@ -252,13 +252,13 @@ class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
             context: Context,
 
-            axis: FvAppSwitcherAxis,
+            axis: FvRingLauncherAxis,
 
             slotIndex: Int,
 
         ): Intent =
 
-            Intent(context, AppSwitcherSlotIconEditorTrampolineActivity::class.java).apply {
+            Intent(context, RingLauncherSlotIconEditorTrampolineActivity::class.java).apply {
 
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
@@ -270,21 +270,21 @@ class AppSwitcherSlotIconEditorTrampolineActivity : ComponentActivity() {
 
 
 
-        private fun axisToName(axis: FvAppSwitcherAxis): String = when (axis) {
+        private fun axisToName(axis: FvRingLauncherAxis): String = when (axis) {
 
-            FvAppSwitcherAxis.VERTICAL -> AXIS_VERTICAL
+            FvRingLauncherAxis.VERTICAL -> AXIS_VERTICAL
 
-            FvAppSwitcherAxis.HORIZONTAL -> AXIS_HORIZONTAL
+            FvRingLauncherAxis.HORIZONTAL -> AXIS_HORIZONTAL
 
         }
 
 
 
-        private fun axisFromName(name: String): FvAppSwitcherAxis? = when (name) {
+        private fun axisFromName(name: String): FvRingLauncherAxis? = when (name) {
 
-            AXIS_VERTICAL -> FvAppSwitcherAxis.VERTICAL
+            AXIS_VERTICAL -> FvRingLauncherAxis.VERTICAL
 
-            AXIS_HORIZONTAL -> FvAppSwitcherAxis.HORIZONTAL
+            AXIS_HORIZONTAL -> FvRingLauncherAxis.HORIZONTAL
 
             else -> null
 

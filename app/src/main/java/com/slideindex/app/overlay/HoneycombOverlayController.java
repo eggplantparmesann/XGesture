@@ -92,7 +92,7 @@ public final class HoneycombOverlayController {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 displayHeight(),
-                OverlayWindowTypes.INSTANCE.appSwitcherWindowType(context),
+                OverlayWindowTypes.INSTANCE.fullscreenLauncherWindowType(context),
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                         | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                         | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM

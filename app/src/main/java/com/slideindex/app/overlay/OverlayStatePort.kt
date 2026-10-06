@@ -33,7 +33,7 @@ object OverlayStatePort {
     const val COMMAND_PUBLISH_ACTIVE_NOTIFICATIONS = "publish_active_notifications"
     const val COMMAND_RECOVER_ACCESSIBILITY = "recover_accessibility"
     const val COMMAND_RESUME_CORNER_OVERLAY = "resume_corner_overlay"
-    const val COMMAND_RESUME_APP_SWITCHER_OVERLAY = "resume_app_switcher_overlay"
+    const val COMMAND_RESUME_RING_LAUNCHER_OVERLAY = "resume_ring_launcher_overlay"
 
     private val _activeNotificationSnapshots =
         MutableStateFlow<List<ActiveNotificationSnapshot>?>(null)
@@ -99,11 +99,11 @@ object OverlayStatePort {
                 runCatching { com.slideindex.app.overlay.corner.CornerGestureHost.resumeAfterSlotPicker() }
                     .onFailure { Log.w(TAG, "resume corner overlay failed", it) }
 
-            COMMAND_RESUME_APP_SWITCHER_OVERLAY ->
+            COMMAND_RESUME_RING_LAUNCHER_OVERLAY ->
                 runCatching {
-                    com.slideindex.app.overlay.appswitcher.AppSwitcherOverlayWindow
+                    com.slideindex.app.overlay.ringlauncher.RingLauncherOverlayWindow
                         .resumeAfterSlotIconEditor()
-                }.onFailure { Log.w(TAG, "resume app switcher overlay failed", it) }
+                }.onFailure { Log.w(TAG, "resume ring launcher overlay failed", it) }
 
             COMMAND_RECOVER_ACCESSIBILITY -> scope.launch {
                 val deps = runCatching {

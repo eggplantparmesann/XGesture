@@ -22,7 +22,7 @@ import com.slideindex.app.launcher.QuickLauncherItem
 import com.slideindex.app.overlay.PanelSide
 import com.slideindex.app.settings.AppSettings
 import com.slideindex.app.ui.QuickLauncherAddOverlaySheet
-import com.slideindex.app.overlay.appswitcher.AppSwitcherOverlayWindow
+import com.slideindex.app.overlay.ringlauncher.RingLauncherOverlayWindow
 import com.slideindex.app.service.CreateShortcutTrampoline
 import com.slideindex.app.ui.compose.LocalAppDependencies
 import com.slideindex.app.ui.miuix.theme.ModuleTheme
@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AppSwitcherSlotPickTrampolineActivity : ComponentActivity() {
+class RingLauncherSlotPickTrampolineActivity : ComponentActivity() {
 
     @Inject lateinit var deps: AppDependencies
 
@@ -84,18 +84,18 @@ class AppSwitcherSlotPickTrampolineActivity : ComponentActivity() {
                         onDismiss = { finishPicker() },
                         launchCreateShortcut = { host, onResult ->
                             CreateShortcutTrampoline.launch(
-                                context = this@AppSwitcherSlotPickTrampolineActivity,
+                                context = this@RingLauncherSlotPickTrampolineActivity,
                                 host = host,
                                 onPrepare = { finishPicker() },
                                 onResult = { created ->
                                     created?.let { shortcut ->
                                         scope.launch {
-                                            deps.settingsRepository.setFvAppSwitcherSlot(
-                                                AppSwitcherOverlayWindow.currentAxis(),
+                                            deps.settingsRepository.setFvRingLauncherSlot(
+                                                RingLauncherOverlayWindow.currentAxis(),
                                                 slotIndex,
                                                 shortcut.toQuickLauncherItem()
                                             )
-                                            AppSwitcherOverlayWindow.refreshFromSettings()
+                                            RingLauncherOverlayWindow.refreshFromSettings()
                                         }
                                     }
                                     onResult(created)
@@ -104,12 +104,12 @@ class AppSwitcherSlotPickTrampolineActivity : ComponentActivity() {
                         },
                         onAdd = { item ->
                             scope.launch {
-                                deps.settingsRepository.setFvAppSwitcherSlot(
-                                    AppSwitcherOverlayWindow.currentAxis(),
+                                deps.settingsRepository.setFvRingLauncherSlot(
+                                    RingLauncherOverlayWindow.currentAxis(),
                                     slotIndex,
                                     item
                                 )
-                                AppSwitcherOverlayWindow.refreshFromSettings()
+                                RingLauncherOverlayWindow.refreshFromSettings()
                                 finishPicker()
                             }
                         }
@@ -141,7 +141,7 @@ class AppSwitcherSlotPickTrampolineActivity : ComponentActivity() {
         private const val STATE_DISMISSED = "dismissed"
 
         fun createIntent(context: Context, side: String, slotIndex: Int): Intent =
-            Intent(context, AppSwitcherSlotPickTrampolineActivity::class.java).apply {
+            Intent(context, RingLauncherSlotPickTrampolineActivity::class.java).apply {
                 putExtra(EXTRA_SIDE, side)
                 putExtra(EXTRA_SLOT_INDEX, slotIndex)
             }

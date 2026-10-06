@@ -501,24 +501,24 @@ class OverlaySettingsMutator @Inject constructor(
      * 一次性修复历史数据：圆环槽位里「打开快速启动器」但没指定面板的旧条目，
      * 钉到当时的第一个面板，避免以后用户增删/调整面板顺序时槽位悄悄换目标。
      *
-     * 新写入已经在 [setFvAppSwitcherSlot] 归一化，这里只补齐存量。
+     * 新写入已经在 [setFvRingLauncherSlot] 归一化，这里只补齐存量。
      */
-    suspend fun migrateFvAppSwitcherQuickLauncherPanelsOnce() = editor.edit { prefs ->
-        if (prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_PANEL_REFERENCE_MIGRATED] == true) return@edit
-        prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_PANEL_REFERENCE_MIGRATED] = true
+    suspend fun migrateFvRingLauncherQuickLauncherPanelsOnce() = editor.edit { prefs ->
+        if (prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_PANEL_REFERENCE_MIGRATED] == true) return@edit
+        prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_PANEL_REFERENCE_MIGRATED] = true
         val panels = readQuickLauncherPanelsFromPrefs(prefs)
         listOf(
-            FvAppSwitcherAxis.VERTICAL to SettingsPreferenceKeys.FV_APP_SWITCHER_SLOTS,
-            FvAppSwitcherAxis.HORIZONTAL to SettingsPreferenceKeys.FV_APP_SWITCHER_HORIZONTAL_SLOTS,
+            FvRingLauncherAxis.VERTICAL to SettingsPreferenceKeys.FV_RING_LAUNCHER_SLOTS,
+            FvRingLauncherAxis.HORIZONTAL to SettingsPreferenceKeys.FV_RING_LAUNCHER_HORIZONTAL_SLOTS,
         ).forEach { (axis, slotsKey) ->
             if (prefs[slotsKey].isNullOrEmpty()) return@forEach
-            val current = FvAppSwitcherSettings.fromPreferences(prefs, axis)
+            val current = FvRingLauncherSettings.fromPreferences(prefs, axis)
             if (current.slots.isEmpty()) return@forEach
             val normalized = current.slots.mapValues { (_, item) ->
                 com.slideindex.app.launcher.QuickLauncherPanelMutator.normalizeQuickLauncherItem(item, panels)
             }
             if (normalized != current.slots) {
-                FvAppSwitcherSettings.writeSlotsAxis(prefs, axis, current.copy(slots = normalized))
+                FvRingLauncherSettings.writeSlotsAxis(prefs, axis, current.copy(slots = normalized))
             }
         }
     }
@@ -582,40 +582,40 @@ class OverlaySettingsMutator @Inject constructor(
         prefs[SettingsPreferenceKeys.HONEYCOMB_LAUNCHER] = QuickLauncherItemCodec.encodeAll(items)
     }
 
-    suspend fun setFvAppSwitcherSettings(
-        axis: FvAppSwitcherAxis,
-        settings: FvAppSwitcherSettings,
+    suspend fun setFvRingLauncherSettings(
+        axis: FvRingLauncherAxis,
+        settings: FvRingLauncherSettings,
     ) = editor.edit { prefs ->
-        val linkAppearance = prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_LINK_APPEARANCE_AXES]
-            ?: FvAppSwitcherSettings.linkFlagsFromPreferences(prefs).linkAppearanceAxes
+        val linkAppearance = prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_LINK_APPEARANCE_AXES]
+            ?: FvRingLauncherSettings.linkFlagsFromPreferences(prefs).linkAppearanceAxes
         if (linkAppearance) {
-            FvAppSwitcherSettings.writeAppearanceAxis(prefs, FvAppSwitcherAxis.VERTICAL, settings)
-            FvAppSwitcherSettings.writeAppearanceAxis(prefs, FvAppSwitcherAxis.HORIZONTAL, settings)
+            FvRingLauncherSettings.writeAppearanceAxis(prefs, FvRingLauncherAxis.VERTICAL, settings)
+            FvRingLauncherSettings.writeAppearanceAxis(prefs, FvRingLauncherAxis.HORIZONTAL, settings)
         } else {
-            FvAppSwitcherSettings.writeAppearanceAxis(prefs, axis, settings)
+            FvRingLauncherSettings.writeAppearanceAxis(prefs, axis, settings)
         }
     }
 
-    suspend fun swapFvAppSwitcherSlots(
-        axis: FvAppSwitcherAxis,
+    suspend fun swapFvRingLauncherSlots(
+        axis: FvRingLauncherAxis,
         fromIndex: Int,
         toIndex: Int,
     ) = editor.edit { prefs ->
         if (fromIndex == toIndex) return@edit
-        val linkSlots = prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_LINK_SLOT_AXES]
-            ?: FvAppSwitcherSettings.linkFlagsFromPreferences(prefs).linkSlotAxes
+        val linkSlots = prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_LINK_SLOT_AXES]
+            ?: FvRingLauncherSettings.linkFlagsFromPreferences(prefs).linkSlotAxes
         val targetAxes = if (linkSlots) {
-            listOf(FvAppSwitcherAxis.VERTICAL, FvAppSwitcherAxis.HORIZONTAL)
+            listOf(FvRingLauncherAxis.VERTICAL, FvRingLauncherAxis.HORIZONTAL)
         } else {
             listOf(axis)
         }
         targetAxes.forEach { targetAxis ->
-            val currentSettings = FvAppSwitcherSettings.fromPreferences(prefs, targetAxis)
+            val currentSettings = FvRingLauncherSettings.fromPreferences(prefs, targetAxis)
             val current = currentSettings.slots.toMutableMap()
             val overrides = currentSettings.slotIconOverrides.toMutableMap()
-            if (!current.moveFvAppSwitcherSlot(fromIndex, toIndex)) return@forEach
-            overrides.moveFvAppSwitcherSlotIconOverride(fromIndex, toIndex)
-            FvAppSwitcherSettings.writeSlotsAxis(
+            if (!current.moveFvRingLauncherSlot(fromIndex, toIndex)) return@forEach
+            overrides.moveFvRingLauncherSlotIconOverride(fromIndex, toIndex)
+            FvRingLauncherSettings.writeSlotsAxis(
                 prefs,
                 targetAxis,
                 currentSettings.copy(slots = current, slotIconOverrides = overrides),
@@ -623,8 +623,8 @@ class OverlaySettingsMutator @Inject constructor(
         }
     }
 
-    suspend fun setFvAppSwitcherSlot(
-        axis: FvAppSwitcherAxis,
+    suspend fun setFvRingLauncherSlot(
+        axis: FvRingLauncherAxis,
         index: Int,
         item: com.slideindex.app.launcher.QuickLauncherItem,
     ) = editor.edit { prefs ->
@@ -633,15 +633,15 @@ class OverlaySettingsMutator @Inject constructor(
             item = item,
             panels = readQuickLauncherPanelsFromPrefs(prefs),
         )
-        val linkSlots = prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_LINK_SLOT_AXES]
-            ?: FvAppSwitcherSettings.linkFlagsFromPreferences(prefs).linkSlotAxes
+        val linkSlots = prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_LINK_SLOT_AXES]
+            ?: FvRingLauncherSettings.linkFlagsFromPreferences(prefs).linkSlotAxes
         val targetAxes = if (linkSlots) {
-            listOf(FvAppSwitcherAxis.VERTICAL, FvAppSwitcherAxis.HORIZONTAL)
+            listOf(FvRingLauncherAxis.VERTICAL, FvRingLauncherAxis.HORIZONTAL)
         } else {
             listOf(axis)
         }
         targetAxes.forEach { targetAxis ->
-            val currentSettings = FvAppSwitcherSettings.fromPreferences(prefs, targetAxis)
+            val currentSettings = FvRingLauncherSettings.fromPreferences(prefs, targetAxis)
             val current = currentSettings.slots.toMutableMap()
             val overrides = currentSettings.slotIconOverrides.toMutableMap()
             if (resolvedItem.payload.isBlank()) {
@@ -650,7 +650,7 @@ class OverlaySettingsMutator @Inject constructor(
             } else {
                 current[index] = resolvedItem
             }
-            FvAppSwitcherSettings.writeSlotsAxis(
+            FvRingLauncherSettings.writeSlotsAxis(
                 prefs,
                 targetAxis,
                 currentSettings.copy(slots = current, slotIconOverrides = overrides),
@@ -658,27 +658,27 @@ class OverlaySettingsMutator @Inject constructor(
         }
     }
 
-    suspend fun setFvAppSwitcherSlotIconOverride(
-        axis: FvAppSwitcherAxis,
+    suspend fun setFvRingLauncherSlotIconOverride(
+        axis: FvRingLauncherAxis,
         index: Int,
-        override: FvAppSwitcherSlotIconOverride?,
+        override: FvRingLauncherSlotIconOverride?,
     ) = editor.edit { prefs ->
-        val linkSlots = prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_LINK_SLOT_AXES]
-            ?: FvAppSwitcherSettings.linkFlagsFromPreferences(prefs).linkSlotAxes
+        val linkSlots = prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_LINK_SLOT_AXES]
+            ?: FvRingLauncherSettings.linkFlagsFromPreferences(prefs).linkSlotAxes
         val targetAxes = if (linkSlots) {
-            listOf(FvAppSwitcherAxis.VERTICAL, FvAppSwitcherAxis.HORIZONTAL)
+            listOf(FvRingLauncherAxis.VERTICAL, FvRingLauncherAxis.HORIZONTAL)
         } else {
             listOf(axis)
         }
         targetAxes.forEach { targetAxis ->
-            val currentSettings = FvAppSwitcherSettings.fromPreferences(prefs, targetAxis)
+            val currentSettings = FvRingLauncherSettings.fromPreferences(prefs, targetAxis)
             val overrides = currentSettings.slotIconOverrides.toMutableMap()
             if (override == null || !override.isConfigured()) {
                 overrides.remove(index)
             } else {
                 overrides[index] = override
             }
-            FvAppSwitcherSettings.writeSlotsAxis(
+            FvRingLauncherSettings.writeSlotsAxis(
                 prefs,
                 targetAxis,
                 currentSettings.copy(slotIconOverrides = overrides),
@@ -686,24 +686,24 @@ class OverlaySettingsMutator @Inject constructor(
         }
     }
 
-    suspend fun setFvAppSwitcherCircleCount(
-        axis: FvAppSwitcherAxis,
+    suspend fun setFvRingLauncherCircleCount(
+        axis: FvRingLauncherAxis,
         circleCount: Int,
     ) = editor.edit { prefs ->
         val safeCount = circleCount.coerceIn(
-            FvAppSwitcherSettings.MIN_CIRCLE_COUNT,
-            FvAppSwitcherSettings.MAX_CIRCLE_COUNT,
+            FvRingLauncherSettings.MIN_CIRCLE_COUNT,
+            FvRingLauncherSettings.MAX_CIRCLE_COUNT,
         )
-        val linkAppearance = prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_LINK_APPEARANCE_AXES]
-            ?: FvAppSwitcherSettings.linkFlagsFromPreferences(prefs).linkAppearanceAxes
+        val linkAppearance = prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_LINK_APPEARANCE_AXES]
+            ?: FvRingLauncherSettings.linkFlagsFromPreferences(prefs).linkAppearanceAxes
         val targetAxes = if (linkAppearance) {
-            listOf(FvAppSwitcherAxis.VERTICAL, FvAppSwitcherAxis.HORIZONTAL)
+            listOf(FvRingLauncherAxis.VERTICAL, FvRingLauncherAxis.HORIZONTAL)
         } else {
             listOf(axis)
         }
         targetAxes.forEach { targetAxis ->
-            val current = FvAppSwitcherSettings.fromPreferences(prefs, targetAxis)
-            FvAppSwitcherSettings.writeAppearanceAxis(
+            val current = FvRingLauncherSettings.fromPreferences(prefs, targetAxis)
+            FvRingLauncherSettings.writeAppearanceAxis(
                 prefs,
                 targetAxis,
                 current.copy(circleCount = safeCount),
@@ -711,40 +711,40 @@ class OverlaySettingsMutator @Inject constructor(
         }
     }
 
-    suspend fun setFvAppSwitcherLinkAppearanceAxes(
+    suspend fun setFvRingLauncherLinkAppearanceAxes(
         enabled: Boolean,
-        activeAxis: FvAppSwitcherAxis,
-        mergeDirection: FvAppSwitcherAxisMergeDirection?,
+        activeAxis: FvRingLauncherAxis,
+        mergeDirection: FvRingLauncherAxisMergeDirection?,
     ) = editor.edit { prefs ->
-        prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_LINK_APPEARANCE_AXES] = enabled
+        prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_LINK_APPEARANCE_AXES] = enabled
         if (!enabled || mergeDirection == null) return@edit
         val source = mergeSource(prefs, activeAxis, mergeDirection)
-        FvAppSwitcherSettings.writeAppearanceAxis(prefs, FvAppSwitcherAxis.VERTICAL, source)
-        FvAppSwitcherSettings.writeAppearanceAxis(prefs, FvAppSwitcherAxis.HORIZONTAL, source)
+        FvRingLauncherSettings.writeAppearanceAxis(prefs, FvRingLauncherAxis.VERTICAL, source)
+        FvRingLauncherSettings.writeAppearanceAxis(prefs, FvRingLauncherAxis.HORIZONTAL, source)
     }
 
-    suspend fun setFvAppSwitcherLinkSlotAxes(
+    suspend fun setFvRingLauncherLinkSlotAxes(
         enabled: Boolean,
-        activeAxis: FvAppSwitcherAxis,
-        mergeDirection: FvAppSwitcherAxisMergeDirection?,
+        activeAxis: FvRingLauncherAxis,
+        mergeDirection: FvRingLauncherAxisMergeDirection?,
     ) = editor.edit { prefs ->
-        prefs[SettingsPreferenceKeys.FV_APP_SWITCHER_LINK_SLOT_AXES] = enabled
+        prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_LINK_SLOT_AXES] = enabled
         if (!enabled || mergeDirection == null) return@edit
         val source = mergeSource(prefs, activeAxis, mergeDirection)
-        FvAppSwitcherSettings.writeSlotsAxis(prefs, FvAppSwitcherAxis.VERTICAL, source)
-        FvAppSwitcherSettings.writeSlotsAxis(prefs, FvAppSwitcherAxis.HORIZONTAL, source)
+        FvRingLauncherSettings.writeSlotsAxis(prefs, FvRingLauncherAxis.VERTICAL, source)
+        FvRingLauncherSettings.writeSlotsAxis(prefs, FvRingLauncherAxis.HORIZONTAL, source)
     }
 
     private fun mergeSource(
         prefs: Preferences,
-        activeAxis: FvAppSwitcherAxis,
-        mergeDirection: FvAppSwitcherAxisMergeDirection,
-    ): FvAppSwitcherSettings {
-        val current = FvAppSwitcherSettings.fromPreferences(prefs, activeAxis)
-        val other = FvAppSwitcherSettings.fromPreferences(prefs, activeAxis.other())
+        activeAxis: FvRingLauncherAxis,
+        mergeDirection: FvRingLauncherAxisMergeDirection,
+    ): FvRingLauncherSettings {
+        val current = FvRingLauncherSettings.fromPreferences(prefs, activeAxis)
+        val other = FvRingLauncherSettings.fromPreferences(prefs, activeAxis.other())
         return when (mergeDirection) {
-            FvAppSwitcherAxisMergeDirection.USE_OTHER_AXIS -> other
-            FvAppSwitcherAxisMergeDirection.USE_CURRENT_AXIS -> current
+            FvRingLauncherAxisMergeDirection.USE_OTHER_AXIS -> other
+            FvRingLauncherAxisMergeDirection.USE_CURRENT_AXIS -> current
         }
     }
 
@@ -1081,6 +1081,34 @@ class OverlaySettingsMutator @Inject constructor(
         prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE_DEFAULT_ON_MIGRATED] = true
         if (prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE] == null) {
             prefs[SettingsPreferenceKeys.FLOAT_BALL_INSTANT_TRANSLATE] = true
+        }
+    }
+
+    /**
+     * 迁移：圆环启动器的偏好键由 `fv_app_switcher_*` 改名为 `fv_ring_launcher_*`。
+     *
+     * 只搬「旧键有值、新键没值」的情况：新键已经有值说明用户在新版本里改过设置，
+     * 不能被旧值覆盖。搬完删掉旧键。
+     *
+     * 刻意**不用标记早退**：设置备份导入会把旧键原样写回来（备份里可能还带着标记），
+     * 早退就会把旧值永久搁浅。这里靠「只在旧键存在时才动手」自然幂等，
+     * 标记只用于记录跑过搬运。
+     */
+    suspend fun migrateFvRingLauncherPreferenceKeysOnce() = editor.edit { prefs ->
+        val pairs = SettingsPreferenceKeys.legacyFvRingLauncherRenamePairs()
+        prefs[SettingsPreferenceKeys.FV_RING_LAUNCHER_KEYS_RENAMED] = true
+        if (pairs.none { (legacy, _) -> prefs[legacy] != null }) return@edit
+        for ((legacy, current) in pairs) {
+            // 旧键 == 新键时绝不能动：那会变成「读新键、写新键、再删新键」，直接清空用户数据。
+            // 真机上就出过这一次（搬运清单里的字面值被改名脚本连带改掉），这条守卫是兜底。
+            if (legacy == current) continue
+            @Suppress("UNCHECKED_CAST")
+            val currentKey = current as Preferences.Key<Any>
+            @Suppress("UNCHECKED_CAST")
+            val legacyKey = legacy as Preferences.Key<Any>
+            val value = prefs[legacyKey] ?: continue
+            if (prefs[currentKey] == null) prefs[currentKey] = value
+            prefs.remove(legacyKey)
         }
     }
 

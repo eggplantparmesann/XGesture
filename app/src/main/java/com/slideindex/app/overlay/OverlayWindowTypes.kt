@@ -57,7 +57,7 @@ object OverlayWindowTypes {
      * FV 风格圆环启动器及全屏启动器面板：
      * 优先使用 [TYPE_APPLICATION_OVERLAY]，彻底避免部分 OEM（如 Meizu Flyme）对 [TYPE_ACCESSIBILITY_OVERLAY] 窗口强制叠加 80% alpha（0.7998047）导致面板背景发灰、图标发虚半透明的底层系统限制。
      */
-    fun appSwitcherWindowType(context: Context): Int {
+    fun fullscreenLauncherWindowType(context: Context): Int {
         if (PermissionHelper.canDrawOverlays(context)) {
             return WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         }

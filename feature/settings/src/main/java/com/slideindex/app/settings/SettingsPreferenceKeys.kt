@@ -1,5 +1,6 @@
 package com.slideindex.app.settings
 
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -145,32 +146,116 @@ internal object SettingsPreferenceKeys {
     val APP_CAROUSEL_CANCEL_DISTANCE_UP_DP = intPreferencesKey("app_carousel_cancel_distance_up_dp")
     val APP_CAROUSEL_CANCEL_DISTANCE_DOWN_DP = intPreferencesKey("app_carousel_cancel_distance_down_dp")
     val APP_CAROUSEL_CANCEL_BOTH_DIRECTIONS = booleanPreferencesKey("app_carousel_cancel_both_directions")
-    val FV_APP_SWITCHER_CIRCLE_COUNT = intPreferencesKey("fv_app_switcher_circle_count")
-    val FV_APP_SWITCHER_ICON_SIZE_DP = floatPreferencesKey("fv_app_switcher_icon_size_dp")
-    val FV_APP_SWITCHER_ICON_SHAPE = stringPreferencesKey("fv_app_switcher_icon_shape")
-    val FV_APP_SWITCHER_BASE_RADIUS_DP = floatPreferencesKey("fv_app_switcher_base_radius_dp")
-    val FV_APP_SWITCHER_LAYER_GAP_DP = floatPreferencesKey("fv_app_switcher_layer_gap_dp")
-    val FV_APP_SWITCHER_END_MARGIN_DEG = floatPreferencesKey("fv_app_switcher_end_margin_deg")
-    val FV_APP_SWITCHER_SLOTS = stringSetPreferencesKey("fv_app_switcher_slots")
-    val FV_APP_SWITCHER_SLOT_ICON_OVERRIDES = stringSetPreferencesKey("fv_app_switcher_slot_icon_overrides")
+    val FV_RING_LAUNCHER_CIRCLE_COUNT = intPreferencesKey("fv_ring_launcher_circle_count")
+    val FV_RING_LAUNCHER_ICON_SIZE_DP = floatPreferencesKey("fv_ring_launcher_icon_size_dp")
+    val FV_RING_LAUNCHER_ICON_SHAPE = stringPreferencesKey("fv_ring_launcher_icon_shape")
+    val FV_RING_LAUNCHER_BASE_RADIUS_DP = floatPreferencesKey("fv_ring_launcher_base_radius_dp")
+    val FV_RING_LAUNCHER_LAYER_GAP_DP = floatPreferencesKey("fv_ring_launcher_layer_gap_dp")
+    val FV_RING_LAUNCHER_END_MARGIN_DEG = floatPreferencesKey("fv_ring_launcher_end_margin_deg")
+    val FV_RING_LAUNCHER_SLOTS = stringSetPreferencesKey("fv_ring_launcher_slots")
+    val FV_RING_LAUNCHER_SLOT_ICON_OVERRIDES = stringSetPreferencesKey("fv_ring_launcher_slot_icon_overrides")
     /** 圆环槽位「快速启动器未指定面板」历史数据的一次性归一化标记。 */
-    val FV_APP_SWITCHER_PANEL_REFERENCE_MIGRATED =
+    val FV_RING_LAUNCHER_PANEL_REFERENCE_MIGRATED =
+        booleanPreferencesKey("fv_ring_launcher_panel_reference_migrated")
+    val FV_RING_LAUNCHER_LINK_AXES = booleanPreferencesKey("fv_ring_launcher_link_axes")
+    val FV_RING_LAUNCHER_LINK_APPEARANCE_AXES = booleanPreferencesKey("fv_ring_launcher_link_appearance_axes")
+    val FV_RING_LAUNCHER_LINK_SLOT_AXES = booleanPreferencesKey("fv_ring_launcher_link_slot_axes")
+    val FV_RING_LAUNCHER_HORIZONTAL_CIRCLE_COUNT = intPreferencesKey("fv_ring_launcher_horizontal_circle_count")
+    val FV_RING_LAUNCHER_HORIZONTAL_ICON_SIZE_DP = floatPreferencesKey("fv_ring_launcher_horizontal_icon_size_dp")
+    val FV_RING_LAUNCHER_HORIZONTAL_ICON_SHAPE = stringPreferencesKey("fv_ring_launcher_horizontal_icon_shape")
+    val FV_RING_LAUNCHER_HORIZONTAL_BASE_RADIUS_DP = floatPreferencesKey("fv_ring_launcher_horizontal_base_radius_dp")
+    val FV_RING_LAUNCHER_HORIZONTAL_LAYER_GAP_DP = floatPreferencesKey("fv_ring_launcher_horizontal_layer_gap_dp")
+    val FV_RING_LAUNCHER_HORIZONTAL_END_MARGIN_DEG = floatPreferencesKey("fv_ring_launcher_horizontal_end_margin_deg")
+    val FV_RING_LAUNCHER_HORIZONTAL_SLOTS = stringSetPreferencesKey("fv_ring_launcher_horizontal_slots")
+    val FV_RING_LAUNCHER_HORIZONTAL_SLOT_ICON_OVERRIDES =
+        stringSetPreferencesKey("fv_ring_launcher_horizontal_slot_icon_overrides")
+    val FV_RING_LAUNCHER_SHOW_TOOLBAR = booleanPreferencesKey("fv_ring_launcher_show_toolbar")
+    val FV_RING_LAUNCHER_HORIZONTAL_SHOW_TOOLBAR =
+        booleanPreferencesKey("fv_ring_launcher_horizontal_show_toolbar")
+
+    /**
+     * 圆环启动器偏好键由 `fv_app_switcher_*` 改名为 `fv_ring_launcher_*` 后，
+     * 存量用户数据仍写在旧键名下。这些字符串是**已经落盘的历史字面值，不可再改**，
+     * 只由 [OverlaySettingsMutator.migrateFvRingLauncherPreferenceKeysOnce] 一次性搬到新键。
+     *
+     * 注意：这里的字面值必须保持 `fv_app_switcher_` 前缀。曾经因为一次全局改名脚本
+     * 把这一段的字面值也一起改成了 `fv_ring_launcher_`，导致搬运清单变成「旧键 == 新键」，
+     * 迁移于是「读了新键、又删掉新键」，直接清空了用户的圆环槽位（真机已复现）。
+     * [RingLauncherSlotPayloadSurvivalTest] 专门守着这个不变量。
+     */
+    private val LEGACY_FV_RING_LAUNCHER_CIRCLE_COUNT = intPreferencesKey("fv_app_switcher_circle_count")
+    private val LEGACY_FV_RING_LAUNCHER_ICON_SIZE_DP = floatPreferencesKey("fv_app_switcher_icon_size_dp")
+    private val LEGACY_FV_RING_LAUNCHER_ICON_SHAPE = stringPreferencesKey("fv_app_switcher_icon_shape")
+    private val LEGACY_FV_RING_LAUNCHER_BASE_RADIUS_DP = floatPreferencesKey("fv_app_switcher_base_radius_dp")
+    private val LEGACY_FV_RING_LAUNCHER_LAYER_GAP_DP = floatPreferencesKey("fv_app_switcher_layer_gap_dp")
+    private val LEGACY_FV_RING_LAUNCHER_END_MARGIN_DEG = floatPreferencesKey("fv_app_switcher_end_margin_deg")
+    private val LEGACY_FV_RING_LAUNCHER_SLOTS = stringSetPreferencesKey("fv_app_switcher_slots")
+    private val LEGACY_FV_RING_LAUNCHER_SLOT_ICON_OVERRIDES =
+        stringSetPreferencesKey("fv_app_switcher_slot_icon_overrides")
+    private val LEGACY_FV_RING_LAUNCHER_PANEL_REFERENCE_MIGRATED =
         booleanPreferencesKey("fv_app_switcher_panel_reference_migrated")
-    val FV_APP_SWITCHER_LINK_AXES = booleanPreferencesKey("fv_app_switcher_link_axes")
-    val FV_APP_SWITCHER_LINK_APPEARANCE_AXES = booleanPreferencesKey("fv_app_switcher_link_appearance_axes")
-    val FV_APP_SWITCHER_LINK_SLOT_AXES = booleanPreferencesKey("fv_app_switcher_link_slot_axes")
-    val FV_APP_SWITCHER_HORIZONTAL_CIRCLE_COUNT = intPreferencesKey("fv_app_switcher_horizontal_circle_count")
-    val FV_APP_SWITCHER_HORIZONTAL_ICON_SIZE_DP = floatPreferencesKey("fv_app_switcher_horizontal_icon_size_dp")
-    val FV_APP_SWITCHER_HORIZONTAL_ICON_SHAPE = stringPreferencesKey("fv_app_switcher_horizontal_icon_shape")
-    val FV_APP_SWITCHER_HORIZONTAL_BASE_RADIUS_DP = floatPreferencesKey("fv_app_switcher_horizontal_base_radius_dp")
-    val FV_APP_SWITCHER_HORIZONTAL_LAYER_GAP_DP = floatPreferencesKey("fv_app_switcher_horizontal_layer_gap_dp")
-    val FV_APP_SWITCHER_HORIZONTAL_END_MARGIN_DEG = floatPreferencesKey("fv_app_switcher_horizontal_end_margin_deg")
-    val FV_APP_SWITCHER_HORIZONTAL_SLOTS = stringSetPreferencesKey("fv_app_switcher_horizontal_slots")
-    val FV_APP_SWITCHER_HORIZONTAL_SLOT_ICON_OVERRIDES =
+    private val LEGACY_FV_RING_LAUNCHER_LINK_AXES = booleanPreferencesKey("fv_app_switcher_link_axes")
+    private val LEGACY_FV_RING_LAUNCHER_LINK_APPEARANCE_AXES =
+        booleanPreferencesKey("fv_app_switcher_link_appearance_axes")
+    private val LEGACY_FV_RING_LAUNCHER_LINK_SLOT_AXES = booleanPreferencesKey("fv_app_switcher_link_slot_axes")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_CIRCLE_COUNT =
+        intPreferencesKey("fv_app_switcher_horizontal_circle_count")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_ICON_SIZE_DP =
+        floatPreferencesKey("fv_app_switcher_horizontal_icon_size_dp")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_ICON_SHAPE =
+        stringPreferencesKey("fv_app_switcher_horizontal_icon_shape")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_BASE_RADIUS_DP =
+        floatPreferencesKey("fv_app_switcher_horizontal_base_radius_dp")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_LAYER_GAP_DP =
+        floatPreferencesKey("fv_app_switcher_horizontal_layer_gap_dp")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_END_MARGIN_DEG =
+        floatPreferencesKey("fv_app_switcher_horizontal_end_margin_deg")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_SLOTS =
+        stringSetPreferencesKey("fv_app_switcher_horizontal_slots")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_SLOT_ICON_OVERRIDES =
         stringSetPreferencesKey("fv_app_switcher_horizontal_slot_icon_overrides")
-    val FV_APP_SWITCHER_SHOW_TOOLBAR = booleanPreferencesKey("fv_app_switcher_show_toolbar")
-    val FV_APP_SWITCHER_HORIZONTAL_SHOW_TOOLBAR =
+    private val LEGACY_FV_RING_LAUNCHER_SHOW_TOOLBAR = booleanPreferencesKey("fv_app_switcher_show_toolbar")
+    private val LEGACY_FV_RING_LAUNCHER_HORIZONTAL_SHOW_TOOLBAR =
         booleanPreferencesKey("fv_app_switcher_horizontal_show_toolbar")
+
+    /**
+     * 偏好键改名的搬运标记，仅用于记录「跑过搬运」。刻意不作为搬运的前置条件：
+     * 导入旧设置备份会把 `fv_ring_launcher_*` 写回来，靠标记早退会让旧值永久搁浅。
+     */
+    val FV_RING_LAUNCHER_KEYS_RENAMED =
+        booleanPreferencesKey("fv_ring_launcher_keys_renamed")
+
+    /**
+     * 旧 `fv_ring_launcher_*` → 新 `fv_ring_launcher_*` 的搬运清单（顺序无关）。
+     * 只在 [OverlaySettingsMutator.migrateFvRingLauncherPreferenceKeysOnce] 里使用。
+     */
+    internal fun legacyFvRingLauncherRenamePairs():
+        List<Pair<Preferences.Key<*>, Preferences.Key<*>>> = listOf(
+        LEGACY_FV_RING_LAUNCHER_CIRCLE_COUNT to FV_RING_LAUNCHER_CIRCLE_COUNT,
+        LEGACY_FV_RING_LAUNCHER_ICON_SIZE_DP to FV_RING_LAUNCHER_ICON_SIZE_DP,
+        LEGACY_FV_RING_LAUNCHER_ICON_SHAPE to FV_RING_LAUNCHER_ICON_SHAPE,
+        LEGACY_FV_RING_LAUNCHER_BASE_RADIUS_DP to FV_RING_LAUNCHER_BASE_RADIUS_DP,
+        LEGACY_FV_RING_LAUNCHER_LAYER_GAP_DP to FV_RING_LAUNCHER_LAYER_GAP_DP,
+        LEGACY_FV_RING_LAUNCHER_END_MARGIN_DEG to FV_RING_LAUNCHER_END_MARGIN_DEG,
+        LEGACY_FV_RING_LAUNCHER_SLOTS to FV_RING_LAUNCHER_SLOTS,
+        LEGACY_FV_RING_LAUNCHER_SLOT_ICON_OVERRIDES to FV_RING_LAUNCHER_SLOT_ICON_OVERRIDES,
+        LEGACY_FV_RING_LAUNCHER_PANEL_REFERENCE_MIGRATED to FV_RING_LAUNCHER_PANEL_REFERENCE_MIGRATED,
+        LEGACY_FV_RING_LAUNCHER_LINK_AXES to FV_RING_LAUNCHER_LINK_AXES,
+        LEGACY_FV_RING_LAUNCHER_LINK_APPEARANCE_AXES to FV_RING_LAUNCHER_LINK_APPEARANCE_AXES,
+        LEGACY_FV_RING_LAUNCHER_LINK_SLOT_AXES to FV_RING_LAUNCHER_LINK_SLOT_AXES,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_CIRCLE_COUNT to FV_RING_LAUNCHER_HORIZONTAL_CIRCLE_COUNT,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_ICON_SIZE_DP to FV_RING_LAUNCHER_HORIZONTAL_ICON_SIZE_DP,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_ICON_SHAPE to FV_RING_LAUNCHER_HORIZONTAL_ICON_SHAPE,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_BASE_RADIUS_DP to FV_RING_LAUNCHER_HORIZONTAL_BASE_RADIUS_DP,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_LAYER_GAP_DP to FV_RING_LAUNCHER_HORIZONTAL_LAYER_GAP_DP,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_END_MARGIN_DEG to FV_RING_LAUNCHER_HORIZONTAL_END_MARGIN_DEG,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_SLOTS to FV_RING_LAUNCHER_HORIZONTAL_SLOTS,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_SLOT_ICON_OVERRIDES to
+            FV_RING_LAUNCHER_HORIZONTAL_SLOT_ICON_OVERRIDES,
+        LEGACY_FV_RING_LAUNCHER_SHOW_TOOLBAR to FV_RING_LAUNCHER_SHOW_TOOLBAR,
+        LEGACY_FV_RING_LAUNCHER_HORIZONTAL_SHOW_TOOLBAR to FV_RING_LAUNCHER_HORIZONTAL_SHOW_TOOLBAR,
+    )
+
     val HOLOGRAPHIC_TIMEOUT_SECONDS = intPreferencesKey("holographic_timeout_seconds")
     val HOLOGRAPHIC_ROTATION_SENSITIVITY = floatPreferencesKey("holographic_rotation_sensitivity")
     val HOLOGRAPHIC_HAPTIC_LEVEL = intPreferencesKey("holographic_haptic_level")

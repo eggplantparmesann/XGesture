@@ -29,7 +29,7 @@ internal fun gestureActionTypeOutlinedIcon(type: GestureActionType): ImageVector
     GestureActionType.OPEN_INDEX -> ThinActionIcons.SortByAlpha
     GestureActionType.QUICK_LAUNCHER -> ThinActionIcons.Apps
     GestureActionType.HONEYCOMB_LAUNCHER -> ThinActionIcons.Hive
-    GestureActionType.APP_SWITCHER -> ThinActionIcons.Apps
+    GestureActionType.APP_RING_LAUNCHER -> ThinActionIcons.Apps
     GestureActionType.FINGERTIP_RING -> ThinActionIcons.MenuOpen
     GestureActionType.APP_CAROUSEL_SWITCHER -> ThinActionIcons.AppCarouselSwitcher
     GestureActionType.HOLOGRAPHIC_LAUNCHER -> ThinActionIcons.Globe
@@ -121,7 +121,7 @@ internal fun gestureActionTypeThinIcon(type: GestureActionType): ImageVector = w
     GestureActionType.OPEN_INDEX -> ThinActionIcons.SortByAlpha
     GestureActionType.QUICK_LAUNCHER -> ThinActionIcons.Apps
     GestureActionType.HONEYCOMB_LAUNCHER -> ThinActionIcons.Hive
-    GestureActionType.APP_SWITCHER -> ThinActionIcons.Apps
+    GestureActionType.APP_RING_LAUNCHER -> ThinActionIcons.Apps
     GestureActionType.FINGERTIP_RING -> ThinActionIcons.MenuOpen
     GestureActionType.APP_CAROUSEL_SWITCHER -> ThinActionIcons.AppCarouselSwitcher
     GestureActionType.HOLOGRAPHIC_LAUNCHER -> ThinActionIcons.Globe

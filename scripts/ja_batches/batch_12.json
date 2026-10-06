@@ -45,152 +45,152 @@
     "source": "en"
   },
   {
-    "name": "app_switcher_editor_title",
+    "name": "ring_launcher_editor_title",
     "text": "Ring launcher",
     "source": "en"
   },
   {
-    "name": "app_switcher_editor_desc",
+    "name": "ring_launcher_editor_desc",
     "text": "Configure slots for the ring launcher. Use Continuous trigger mode: hold and slide to select, release to launch.",
     "source": "en"
   },
   {
-    "name": "app_switcher_add",
+    "name": "ring_launcher_add",
     "text": "Add app",
     "source": "en"
   },
   {
-    "name": "app_switcher_entry_desc",
+    "name": "ring_launcher_entry_desc",
     "text": "Configure apps for the ring launcher",
     "source": "en"
   },
   {
-    "name": "app_switcher_display_settings_title",
+    "name": "ring_launcher_display_settings_title",
     "text": "Ring launcher appearance",
     "source": "en"
   },
   {
-    "name": "app_switcher_display_settings_entry",
+    "name": "ring_launcher_display_settings_entry",
     "text": "Appearance & behavior",
     "source": "en"
   },
   {
-    "name": "app_switcher_display_settings_entry_desc",
+    "name": "ring_launcher_display_settings_entry_desc",
     "text": "Icon size, selection scale, pin and background",
     "source": "en"
   },
   {
-    "name": "app_switcher_display_section_layout",
+    "name": "ring_launcher_display_section_layout",
     "text": "Layout",
     "source": "en"
   },
   {
-    "name": "app_switcher_display_section_behavior",
+    "name": "ring_launcher_display_section_behavior",
     "text": "Behavior",
     "source": "en"
   },
   {
-    "name": "app_switcher_display_section_background",
+    "name": "ring_launcher_display_section_background",
     "text": "Background",
     "source": "en"
   },
   {
-    "name": "app_switcher_icon_size",
+    "name": "ring_launcher_icon_size",
     "text": "Icon size",
     "source": "en"
   },
   {
-    "name": "app_switcher_spacing",
+    "name": "ring_launcher_spacing",
     "text": "Slot spacing",
     "source": "en"
   },
   {
-    "name": "app_switcher_selection_scale",
+    "name": "ring_launcher_selection_scale",
     "text": "Selection scale",
     "source": "en"
   },
   {
-    "name": "app_switcher_initial_radius_ratio",
+    "name": "ring_launcher_initial_radius_ratio",
     "text": "Edge radius",
     "source": "en"
   },
   {
-    "name": "app_switcher_pin_on_release",
+    "name": "ring_launcher_pin_on_release",
     "text": "Pin on release",
     "source": "en"
   },
   {
-    "name": "app_switcher_pin_on_release_desc",
+    "name": "ring_launcher_pin_on_release_desc",
     "text": "Keep the panel on screen when released without a slot hit",
     "source": "en"
   },
   {
-    "name": "app_switcher_empty_tap_close",
+    "name": "ring_launcher_empty_tap_close",
     "text": "Tap outside to close",
     "source": "en"
   },
   {
-    "name": "app_switcher_empty_tap_close_desc",
+    "name": "ring_launcher_empty_tap_close_desc",
     "text": "Dismiss pinned panel when tapping outside",
     "source": "en"
   },
   {
-    "name": "app_switcher_show_selected_name",
+    "name": "ring_launcher_show_selected_name",
     "text": "Show selected name",
     "source": "en"
   },
   {
-    "name": "app_switcher_show_selected_name_desc",
+    "name": "ring_launcher_show_selected_name_desc",
     "text": "Show the current slot name at the top while sliding",
     "source": "en"
   },
   {
-    "name": "app_switcher_slot_haptic",
+    "name": "ring_launcher_slot_haptic",
     "text": "Slot haptic feedback",
     "source": "en"
   },
   {
-    "name": "app_switcher_slot_haptic_desc",
+    "name": "ring_launcher_slot_haptic_desc",
     "text": "Provide light vibration when sliding across slots",
     "source": "en"
   },
   {
-    "name": "app_switcher_dim_percent",
+    "name": "ring_launcher_dim_percent",
     "text": "Background dim",
     "source": "en"
   },
   {
-    "name": "app_switcher_blur_dp",
+    "name": "ring_launcher_blur_dp",
     "text": "Background blur",
     "source": "en"
   },
   {
-    "name": "app_switcher_selected_hint_icon_size",
+    "name": "ring_launcher_selected_hint_icon_size",
     "text": "Selected name size",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_appearance_title",
+    "name": "fv_ring_launcher_appearance_title",
     "text": "Circular Launcher Appearance & Layout",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_circle_count_title",
+    "name": "fv_ring_launcher_circle_count_title",
     "text": "Ring Layers",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_circle_count_desc",
+    "name": "fv_ring_launcher_circle_count_desc",
     "text": "Select the number of concentric rings",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_icon_size_title",
+    "name": "fv_ring_launcher_icon_size_title",
     "text": "Icon Size",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_icon_shape_title",
+    "name": "fv_ring_launcher_icon_shape_title",
     "text": "Icon Shape",
     "source": "en"
   },
@@ -215,97 +215,97 @@
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_base_radius_title",
+    "name": "fv_ring_launcher_base_radius_title",
     "text": "Inner Ring Radius",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_layer_gap_title",
+    "name": "fv_ring_launcher_layer_gap_title",
     "text": "Ring Layer Gap",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_end_margin_title",
+    "name": "fv_ring_launcher_end_margin_title",
     "text": "Arc End Margin & Spacing",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_axes_title",
+    "name": "fv_ring_launcher_link_axes_title",
     "text": "Sync vertical and horizontal",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_axes_desc",
+    "name": "fv_ring_launcher_link_axes_desc",
     "text": "When on, top/bottom and left/right share the same rings, appearance, and slots",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_appearance_axes_title",
+    "name": "fv_ring_launcher_link_appearance_axes_title",
     "text": "Sync appearance",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_appearance_axes_desc",
+    "name": "fv_ring_launcher_link_appearance_axes_desc",
     "text": "When on, vertical and horizontal axes share ring count, icon size, shape, and radius",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_slot_axes_title",
+    "name": "fv_ring_launcher_link_slot_axes_title",
     "text": "Sync slots",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_slot_axes_desc",
+    "name": "fv_ring_launcher_link_slot_axes_desc",
     "text": "When on, vertical and horizontal axes share slot assignments",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_axis_vertical",
+    "name": "fv_ring_launcher_axis_vertical",
     "text": "Vertical axis (top/bottom)",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_axis_horizontal",
+    "name": "fv_ring_launcher_axis_horizontal",
     "text": "Horizontal axis (left/right)",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_merge_title",
+    "name": "fv_ring_launcher_link_merge_title",
     "text": "Choose sync direction",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_merge_message",
+    "name": "fv_ring_launcher_link_merge_message",
     "text": "When enabling %1$s, choose which axis to use:\\n\\n· Use %3$s\\n· Overwrite %3$s with %2$s",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_merge_appearance_kind",
+    "name": "fv_ring_launcher_link_merge_appearance_kind",
     "text": "appearance sync",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_merge_slot_kind",
+    "name": "fv_ring_launcher_link_merge_slot_kind",
     "text": "slot sync",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_merge_use_other",
+    "name": "fv_ring_launcher_link_merge_use_other",
     "text": "Use other axis",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_link_merge_use_current",
+    "name": "fv_ring_launcher_link_merge_use_current",
     "text": "Overwrite other with current axis",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_reset_defaults",
+    "name": "fv_ring_launcher_reset_defaults",
     "text": "Reset to Defaults",
     "source": "en"
   },
   {
-    "name": "fv_app_switcher_done",
+    "name": "fv_ring_launcher_done",
     "text": "Done",
     "source": "en"
   },

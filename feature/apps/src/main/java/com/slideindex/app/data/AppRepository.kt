@@ -387,7 +387,7 @@ class AppRepository @Inject constructor(
             // 同 queryInstalledFreezerApps：不在这里给整份启动器列表预热图标。
             // 这台机器上有 319 个带启动图标的包，逐个预热 = 启动期几百次 getApplicationIcon
             // + 192px 栅格化（实测本进程 870+ 次解码、持续 5–7 秒）。UI 侧一律 peek 命中即用、
-            // 未命中则异步预热（见 EdgeGestureOverlayView / AppSwitcherSlotIconBitmap 等）。
+            // 未命中则异步预热（见 EdgeGestureOverlayView / RingLauncherSlotIconBitmap 等）。
             val isSystem = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
             apps += buildAppInfo(pkg, label, isSystem)
         }

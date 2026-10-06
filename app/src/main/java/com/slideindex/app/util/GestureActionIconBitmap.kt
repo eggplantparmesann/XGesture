@@ -123,7 +123,7 @@ object GestureActionIconBitmap {
             GestureActionType.CLIPBOARD_PASTE,
             GestureActionType.QUICK_LAUNCHER,
             GestureActionType.HONEYCOMB_LAUNCHER,
-            GestureActionType.APP_SWITCHER,
+            GestureActionType.APP_RING_LAUNCHER,
             GestureActionType.HOLOGRAPHIC_LAUNCHER,
             GestureActionType.SEARCH_PANEL,
             GestureActionType.QUICK_TOOLS_OVERLAY -> {

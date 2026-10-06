@@ -43,8 +43,8 @@ internal object HubLeadingIcons {
     fun honeycombLauncher(outlined: Boolean) =
         if (outlined) gestureActionTypeOutlinedIcon(GestureActionType.HONEYCOMB_LAUNCHER) else Icons.Default.Hive
 
-    fun appSwitcher(outlined: Boolean) =
-        if (outlined) gestureActionTypeOutlinedIcon(GestureActionType.APP_SWITCHER) else Icons.Default.Apps
+    fun ringLauncher(outlined: Boolean) =
+        if (outlined) gestureActionTypeOutlinedIcon(GestureActionType.APP_RING_LAUNCHER) else Icons.Default.Apps
 
     fun holographicLauncher(outlined: Boolean) =
         if (outlined) gestureActionTypeOutlinedIcon(GestureActionType.HOLOGRAPHIC_LAUNCHER) else Icons.Default.Apps

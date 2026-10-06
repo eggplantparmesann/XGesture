@@ -286,7 +286,7 @@
             android:theme="@style/Theme.SlideIndex.Transparent" />
 
         <activity
-            android:name=".service.AppSwitcherSlotPickTrampolineActivity"
+            android:name=".service.RingLauncherSlotPickTrampolineActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:taskAffinity=""
@@ -351,7 +351,7 @@
             android:theme="@style/Theme.SlideIndex.Transparent" />
 
         <activity
-            android:name=".service.AppSwitcherSlotIconEditorTrampolineActivity"
+            android:name=".service.RingLauncherSlotIconEditorTrampolineActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:taskAffinity=""

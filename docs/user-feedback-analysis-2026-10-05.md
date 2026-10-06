@@ -45,7 +45,7 @@
 - `app/src/main/java/com/slideindex/app/ui/gesturepicker/GestureActionPickerLazyItems.kt:135-137`
 - `app/src/main/java/com/slideindex/app/ui/quicklauncher/QuickLauncherEditorAddPickerLazyItems.kt:113`
 - `app/src/main/java/com/slideindex/app/ui/quicklauncher/QuickLauncherAddOverlaySections.kt:92,111,123,181,435,840`
-- `app/src/main/java/com/slideindex/app/ui/appswitcher/AppSwitcherSlotConfigSheet.kt:133,250`
+- `app/src/main/java/com/slideindex/app/ui/ringlauncher/RingLauncherSlotConfigSheet.kt:133,250`
 
 **结论**：识别+执行本身几十行，但要把「动作参数配置」推广到上表 ~9 个入口。建议先把 `gestureActionNeedsShellCommandConfig` 泛化为「动作参数配置 spec」，让 Shell 与 JS 共用一套入口，避免第二次复制。
 

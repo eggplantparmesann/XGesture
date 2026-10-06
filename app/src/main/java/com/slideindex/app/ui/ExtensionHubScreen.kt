@@ -37,7 +37,7 @@ fun ExtensionHubScreen(
     onOpenLayoutSettings: () -> Unit,
     onOpenQuickLauncher: () -> Unit,
     onOpenHoneycombLauncher: () -> Unit,
-    onOpenAppSwitcher: () -> Unit,
+    onOpenRingLauncher: () -> Unit,
     onOpenHolographicLauncher: () -> Unit,
     onOpenActivityShortcuts: () -> Unit,
     onOpenExternalInvocations: () -> Unit,
@@ -107,11 +107,11 @@ fun ExtensionHubScreen(
                 )
                 add(
                     settingsCardScopeItem("app-switcher") {
-                        AppSwitcherEntryCard(
+                        RingLauncherEntryCard(
                             settings = settings,
                             enabled = gestureActive,
                             outlinedLeadingIcons = true,
-                            onClick = onOpenAppSwitcher
+                            onClick = onOpenRingLauncher
                         )
                     }
                 )

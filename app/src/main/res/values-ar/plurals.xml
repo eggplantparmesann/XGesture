@@ -168,7 +168,7 @@
         <item quantity="many">%d مُعدّة</item>
         <item quantity="other">%d مُعدّة</item>
     </plurals>
-    <plurals name="fv_app_switcher_entry_summary">
+    <plurals name="fv_ring_launcher_entry_summary">
         <item quantity="zero">تم تكوين %d عناصر</item>
         <item quantity="one">تم تكوين %d عنصر</item>
         <item quantity="two">تم تكوين %d عنصر</item>

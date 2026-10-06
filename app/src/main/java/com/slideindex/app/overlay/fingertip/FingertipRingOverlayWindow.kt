@@ -100,7 +100,7 @@ object FingertipRingOverlayWindow {
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
-            OverlayWindowTypes.appSwitcherWindowType(hostContext),
+            OverlayWindowTypes.fullscreenLauncherWindowType(hostContext),
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or

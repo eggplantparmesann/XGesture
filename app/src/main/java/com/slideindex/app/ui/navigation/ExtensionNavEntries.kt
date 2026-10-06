@@ -16,5 +16,5 @@ fun NavEntryBuilder.extensionNavEntries(ctx: MainNavContext) {
     searchPanelNavEntries(ctx)
     floatBallNavEntries(ctx)
     floatingPointerNavEntries(ctx)
-    appSwitcherNavEntries(ctx)
+    ringLauncherNavEntries(ctx)
 }

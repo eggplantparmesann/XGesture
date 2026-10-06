@@ -689,26 +689,26 @@ class ExtensionSettingsViewModel @Inject constructor(
         settingsRepository.setFloatBallRegionalCancelSlopDp(value)
     }
 
-    fun setFvAppSwitcherSettings(
-        axis: com.slideindex.app.settings.FvAppSwitcherAxis,
-        settings: com.slideindex.app.settings.FvAppSwitcherSettings,
+    fun setFvRingLauncherSettings(
+        axis: com.slideindex.app.settings.FvRingLauncherAxis,
+        settings: com.slideindex.app.settings.FvRingLauncherSettings,
     ) = launchSettingsWrite {
-        settingsRepository.setFvAppSwitcherSettings(axis, settings)
+        settingsRepository.setFvRingLauncherSettings(axis, settings)
     }
 
-    fun setFvAppSwitcherLinkAppearanceAxes(
+    fun setFvRingLauncherLinkAppearanceAxes(
         enabled: Boolean,
-        activeAxis: com.slideindex.app.settings.FvAppSwitcherAxis = com.slideindex.app.settings.FvAppSwitcherAxis.VERTICAL,
-        mergeDirection: com.slideindex.app.settings.FvAppSwitcherAxisMergeDirection? = null,
+        activeAxis: com.slideindex.app.settings.FvRingLauncherAxis = com.slideindex.app.settings.FvRingLauncherAxis.VERTICAL,
+        mergeDirection: com.slideindex.app.settings.FvRingLauncherAxisMergeDirection? = null,
     ) = launchSettingsWrite {
-        settingsRepository.setFvAppSwitcherLinkAppearanceAxes(enabled, activeAxis, mergeDirection)
+        settingsRepository.setFvRingLauncherLinkAppearanceAxes(enabled, activeAxis, mergeDirection)
     }
 
-    fun setFvAppSwitcherLinkSlotAxes(
+    fun setFvRingLauncherLinkSlotAxes(
         enabled: Boolean,
-        activeAxis: com.slideindex.app.settings.FvAppSwitcherAxis = com.slideindex.app.settings.FvAppSwitcherAxis.VERTICAL,
-        mergeDirection: com.slideindex.app.settings.FvAppSwitcherAxisMergeDirection? = null,
+        activeAxis: com.slideindex.app.settings.FvRingLauncherAxis = com.slideindex.app.settings.FvRingLauncherAxis.VERTICAL,
+        mergeDirection: com.slideindex.app.settings.FvRingLauncherAxisMergeDirection? = null,
     ) = launchSettingsWrite {
-        settingsRepository.setFvAppSwitcherLinkSlotAxes(enabled, activeAxis, mergeDirection)
+        settingsRepository.setFvRingLauncherLinkSlotAxes(enabled, activeAxis, mergeDirection)
     }
 }

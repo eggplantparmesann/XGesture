@@ -5,6 +5,10 @@ All notable changes to XGesture are documented in this file.
 ## [Unreleased]
 
 ### Changed
+- **圆环启动器命名统一**：内部代码、包名、Kotlin 符号里的 `app_switcher` / `AppSwitcher` 全部改为 `ring_launcher` / `RingLauncher`，与界面上的「圆环启动器 / Ring launcher」一致；动作枚举保持 `APP_RING_LAUNCHER(56)` 的整数 id 不变，手势规则不受影响
+- **存量配置一次性搬迁**：升级后首次启动把旧 `fv_app_switcher_*` 偏好键的值搬到 `fv_ring_launcher_*`（新键已有值时不覆盖），随后删除旧键；导入旧设置备份时同样会自愈
+- **字符串资源键改名**：`values/`、`values-zh/`、`values-ja/`、`values-ar/` 四个语言文件里的 `app_switcher_*` / `fv_app_switcher_*` 键改为 `ring_launcher_*` / `fv_ring_launcher_*`，译文内容未改；Weblate 上的旧条目会显示为「已删除」，需要按新键名重新关联（或直接用仓库里的译文覆盖）
+- **圆环启动器自动填充**：只有「一个槽位都没固定」且「没有任何应用可填充」时才进入编辑模式；此前只要槽位为空就进编辑模式并关掉「最近应用」填充，圆环会一个图标都不显示，必须先手动钉一个槽位其余槽位才会填充
 - 通知过滤规则的屏幕状态改为「不限 / 亮屏时 / 熄屏时」三选一，充电状态三项全部不勾选表示不限制
 
 ### Fixed

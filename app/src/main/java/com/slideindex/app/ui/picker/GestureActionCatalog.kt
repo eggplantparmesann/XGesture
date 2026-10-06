@@ -156,7 +156,7 @@ object GestureActionCatalog {
         // 4. 面板与启动 (Panels & Launchers)
         GestureActionType.OPEN_INDEX,
         GestureActionType.QUICK_LAUNCHER,
-        GestureActionType.APP_SWITCHER,
+        GestureActionType.APP_RING_LAUNCHER,
         GestureActionType.APP_CAROUSEL_SWITCHER,
         GestureActionType.TASK_SWITCHER,
         GestureActionType.HONEYCOMB_LAUNCHER,
@@ -211,7 +211,7 @@ object GestureActionCatalog {
         }
         add(GestureAction.QuickLauncher())
         add(GestureAction.OpenIndex)
-        add(GestureAction.AppSwitcher)
+        add(GestureAction.RingLauncher)
         add(GestureAction.FingertipRing)
         add(GestureAction.TaskSwitcher)
         add(GestureAction.HoneycombLauncher)
@@ -230,7 +230,7 @@ object GestureActionCatalog {
     private fun buildQuickLauncherActions(): List<GestureAction> = buildList {
         add(GestureAction.QuickLauncher())
         add(GestureAction.OpenIndex)
-        add(GestureAction.AppSwitcher)
+        add(GestureAction.RingLauncher)
         add(GestureAction.FingertipRing)
         add(GestureAction.TaskSwitcher)
         add(GestureAction.HoneycombLauncher)

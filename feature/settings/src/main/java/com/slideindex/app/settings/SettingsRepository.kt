@@ -74,6 +74,7 @@ class SettingsRepository @Inject constructor(
             // （历史上表现为 overlay 进程按默认手势动作执行，例如短滑=返回）。
             runCatching {
                 editor.cleanupLegacyClipboardKeysOnce()
+                overlay.migrateFvRingLauncherPreferenceKeysOnce()
                 overlay.migrateFloatBallInstantTranslateDefaultOnOnce()
                 edge.persistOppositeGestureSlotRepairIfNeeded()
             }.onFailure {
@@ -105,7 +106,7 @@ class SettingsRepository @Inject constructor(
         // 若把这条也串进去会推迟 collect 启动，readSnapshot() 读到旧值的窗口跟着变大）。
         cacheScope.launch {
             runCatching {
-                overlay.migrateFvAppSwitcherQuickLauncherPanelsOnce()
+                overlay.migrateFvRingLauncherQuickLauncherPanelsOnce()
             }.onFailure {
                 android.util.Log.w(
                     "SettingsRepository",
@@ -436,45 +437,45 @@ class SettingsRepository @Inject constructor(
     suspend fun setHoneycombLauncherItems(items: List<com.slideindex.app.launcher.QuickLauncherItem>) =
         overlay.setHoneycombLauncherItems(items)
 
-    suspend fun setFvAppSwitcherSettings(
-        axis: FvAppSwitcherAxis,
-        settings: FvAppSwitcherSettings,
-    ) = overlay.setFvAppSwitcherSettings(axis, settings)
+    suspend fun setFvRingLauncherSettings(
+        axis: FvRingLauncherAxis,
+        settings: FvRingLauncherSettings,
+    ) = overlay.setFvRingLauncherSettings(axis, settings)
 
-    suspend fun setFvAppSwitcherSlot(
-        axis: FvAppSwitcherAxis,
+    suspend fun setFvRingLauncherSlot(
+        axis: FvRingLauncherAxis,
         index: Int,
         item: com.slideindex.app.launcher.QuickLauncherItem,
-    ) = overlay.setFvAppSwitcherSlot(axis, index, item)
+    ) = overlay.setFvRingLauncherSlot(axis, index, item)
 
-    suspend fun setFvAppSwitcherSlotIconOverride(
-        axis: FvAppSwitcherAxis,
+    suspend fun setFvRingLauncherSlotIconOverride(
+        axis: FvRingLauncherAxis,
         index: Int,
-        override: FvAppSwitcherSlotIconOverride?,
-    ) = overlay.setFvAppSwitcherSlotIconOverride(axis, index, override)
+        override: FvRingLauncherSlotIconOverride?,
+    ) = overlay.setFvRingLauncherSlotIconOverride(axis, index, override)
 
-    suspend fun swapFvAppSwitcherSlots(
-        axis: FvAppSwitcherAxis,
+    suspend fun swapFvRingLauncherSlots(
+        axis: FvRingLauncherAxis,
         fromIndex: Int,
         toIndex: Int,
-    ) = overlay.swapFvAppSwitcherSlots(axis, fromIndex, toIndex)
+    ) = overlay.swapFvRingLauncherSlots(axis, fromIndex, toIndex)
 
-    suspend fun setFvAppSwitcherCircleCount(
-        axis: FvAppSwitcherAxis,
+    suspend fun setFvRingLauncherCircleCount(
+        axis: FvRingLauncherAxis,
         circleCount: Int,
-    ) = overlay.setFvAppSwitcherCircleCount(axis, circleCount)
+    ) = overlay.setFvRingLauncherCircleCount(axis, circleCount)
 
-    suspend fun setFvAppSwitcherLinkAppearanceAxes(
+    suspend fun setFvRingLauncherLinkAppearanceAxes(
         enabled: Boolean,
-        activeAxis: FvAppSwitcherAxis,
-        mergeDirection: FvAppSwitcherAxisMergeDirection?,
-    ) = overlay.setFvAppSwitcherLinkAppearanceAxes(enabled, activeAxis, mergeDirection)
+        activeAxis: FvRingLauncherAxis,
+        mergeDirection: FvRingLauncherAxisMergeDirection?,
+    ) = overlay.setFvRingLauncherLinkAppearanceAxes(enabled, activeAxis, mergeDirection)
 
-    suspend fun setFvAppSwitcherLinkSlotAxes(
+    suspend fun setFvRingLauncherLinkSlotAxes(
         enabled: Boolean,
-        activeAxis: FvAppSwitcherAxis,
-        mergeDirection: FvAppSwitcherAxisMergeDirection?,
-    ) = overlay.setFvAppSwitcherLinkSlotAxes(enabled, activeAxis, mergeDirection)
+        activeAxis: FvRingLauncherAxis,
+        mergeDirection: FvRingLauncherAxisMergeDirection?,
+    ) = overlay.setFvRingLauncherLinkSlotAxes(enabled, activeAxis, mergeDirection)
 
     suspend fun setQuickLauncherDisplaySettings(settings: QuickLauncherDisplaySettings) =
         overlay.setQuickLauncherDisplaySettings(settings)

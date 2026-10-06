@@ -58,7 +58,7 @@ internal class SlideIndexAccessibilityForegroundTracker(
         // 进编辑页的那一瞬间，前台事件里先到的是过渡态的"非本应用"包名，
         // 若不加这层判断，会把刚挂起的圆环立刻恢复出来（真机：第一次进自定义图标页圆环不收起）。
         if (!isSelfAppForeground()) {
-            runCatching { com.slideindex.app.overlay.appswitcher.AppSwitcherOverlayWindow.selfHealAfterExternalActivity() }
+            runCatching { com.slideindex.app.overlay.ringlauncher.RingLauncherOverlayWindow.selfHealAfterExternalActivity() }
             runCatching { com.slideindex.app.overlay.corner.CornerGestureHost.selfHealAfterExternalActivity() }
         }
         when (val update = computeWindowStatePackageUpdate(

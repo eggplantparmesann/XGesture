@@ -64,7 +64,7 @@ fun CornerGestureSlotSettingsScreen(
             IconButton(onClick = onSave) {
                 Icon(
                     imageVector = Icons.Default.Check,
-                    contentDescription = stringResource(R.string.fv_app_switcher_done),
+                    contentDescription = stringResource(R.string.fv_ring_launcher_done),
                 )
             }
         },

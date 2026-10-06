@@ -25,7 +25,7 @@ import com.slideindex.app.overlay.StashPanelInitialTab
 import com.slideindex.app.overlay.FloatingPointerOverlayWindow
 import com.slideindex.app.clipboard.ClipboardFocusReader
 import com.slideindex.app.overlay.HoneycombAppPickerOverlayWindow
-import com.slideindex.app.overlay.appswitcher.AppSwitcherOverlayWindow
+import com.slideindex.app.overlay.ringlauncher.RingLauncherOverlayWindow
 import com.slideindex.app.overlay.holographic.HolographicLauncherOverlayWindow
 import com.slideindex.app.overlay.OhoQuickToolsOverlayWindow
 import com.slideindex.app.overlay.PanelSide
@@ -192,10 +192,10 @@ class ActionExecutor(
                         }
                     )
                 }
-            GestureAction.AppSwitcher ->
+            GestureAction.RingLauncher ->
                 overlayPanels.showStandaloneOverlay(anchorRawY) { y ->
                     val x = anchorRawX ?: (context.resources.displayMetrics.widthPixels / 2f)
-                    AppSwitcherOverlayWindow.show(
+                    RingLauncherOverlayWindow.show(
                         context = context,
                         settings = settings,
                         anchorRawX = x,

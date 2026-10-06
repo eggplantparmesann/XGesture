@@ -77,7 +77,7 @@ enum class GestureActionType(val id: Int) {
     HONEYCOMB_LAUNCHER(53),
     REGIONAL_SCREENSHOT_PICK(54),
     CLIPBOARD_PICK(55),
-    APP_SWITCHER(56),
+    APP_RING_LAUNCHER(56),
     OPEN_CLIPBOARD_FLOAT(57),
     HOLOGRAPHIC_LAUNCHER(58),
     VOLUME_PANEL(59),
@@ -562,8 +562,8 @@ sealed class GestureAction {
     }
 
     /** FV 风格贴边半圆圆环启动器，按住滑选后松手启动。 */
-    data object AppSwitcher : GestureAction() {
-        override val type = GestureActionType.APP_SWITCHER
+    data object RingLauncher : GestureAction() {
+        override val type = GestureActionType.APP_RING_LAUNCHER
         override val payload = ""
     }
 
@@ -748,7 +748,7 @@ sealed class GestureAction {
             TaskSwitcher,
             ShellCommandPanel,
             HoneycombLauncher,
-            AppSwitcher,
+            RingLauncher,
             AppCarouselSwitcher,
             FingertipRing,
             AdjustVolume,
@@ -824,7 +824,7 @@ sealed class GestureAction {
                 GestureActionType.CORNER_INNER_PIN_WHEEL -> CornerInnerPinWheel
                 GestureActionType.SNOOZE_OVERLAYS -> SnoozeOverlays
                 GestureActionType.HONEYCOMB_LAUNCHER -> HoneycombLauncher
-                GestureActionType.APP_SWITCHER -> AppSwitcher
+                GestureActionType.APP_RING_LAUNCHER -> RingLauncher
                 GestureActionType.APP_CAROUSEL_SWITCHER -> AppCarouselSwitcher
                 GestureActionType.FINGERTIP_RING -> FingertipRing
                 GestureActionType.HOLOGRAPHIC_LAUNCHER -> HolographicLauncher
@@ -908,7 +908,7 @@ fun GestureAction.isContinuousTrackingKind(): Boolean =
 fun GestureAction.supportsContinuousTracking(trigger: GestureTriggerType): Boolean {
     if (!isContinuousTrackingKind()) return false
     return when (this) {
-        GestureAction.AppSwitcher,
+        GestureAction.RingLauncher,
         GestureAction.AppCarouselSwitcher,
         GestureAction.FingertipRing,
         GestureAction.HoneycombLauncher,
@@ -924,7 +924,7 @@ fun GestureAction.preferredTriggerMode(trigger: GestureTriggerType): GestureTrig
         GestureAction.OpenIndex ->
             if (!trigger.isPressOrTap) GestureTriggerMode.CONTINUOUS else null
         is GestureAction.QuickLauncher, GestureAction.ShellCommandPanel, GestureAction.HoneycombLauncher,
-        GestureAction.AppSwitcher, GestureAction.FingertipRing,
+        GestureAction.RingLauncher, GestureAction.FingertipRing,
         ->
             when {
                 trigger.isLongPress -> GestureTriggerMode.CONTINUOUS

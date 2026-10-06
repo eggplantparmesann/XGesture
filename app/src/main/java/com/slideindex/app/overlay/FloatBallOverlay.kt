@@ -41,7 +41,7 @@ import com.slideindex.app.settings.AppSettings
 import com.slideindex.app.floatball.FloatBallGestureType
 import com.slideindex.app.settings.FloatBallPositionMode
 import com.slideindex.app.settings.FloatBallSide
-import com.slideindex.app.overlay.appswitcher.AppSwitcherOverlayWindow
+import com.slideindex.app.overlay.ringlauncher.RingLauncherOverlayWindow
 import com.slideindex.app.util.PermissionHelper
 import kotlin.math.hypot
 import kotlin.math.max
@@ -931,9 +931,9 @@ object FloatBallOverlay {
 
     fun restoreChromeAfterRegionalPick() = restoreAfterScreenshotCapture()
 
-    fun hideChromeForAppSwitcher() {
+    fun hideChromeForRingLauncher() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
-            mainHandler.post { hideChromeForAppSwitcher() }
+            mainHandler.post { hideChromeForRingLauncher() }
             return
         }
         if (sceneState == null) return
@@ -951,9 +951,9 @@ object FloatBallOverlay {
         }
     }
 
-    fun restoreChromeAfterAppSwitcher() {
+    fun restoreChromeAfterRingLauncher() {
         if (Looper.myLooper() != Looper.getMainLooper()) {
-            mainHandler.post { restoreChromeAfterAppSwitcher() }
+            mainHandler.post { restoreChromeAfterRingLauncher() }
             return
         }
         displayView?.visibility = View.VISIBLE
@@ -972,7 +972,7 @@ object FloatBallOverlay {
         suppressTouchHostsForLauncherOverlay()
     }
 
-    fun ballCenterForAppSwitcher(settings: AppSettings): Pair<Float, Float>? {
+    fun ballCenterForRingLauncher(settings: AppSettings): Pair<Float, Float>? {
         val view = displayView ?: return null
         val metrics = view.resources.displayMetrics
         val (screenWidthPx, screenHeightPx) = FloatBallScreenMetrics.sizePx(view.context, windowManager)
@@ -1792,7 +1792,7 @@ object FloatBallOverlay {
     }
 
     private fun isOverlayLauncherAction(action: GestureAction): Boolean =
-        action == GestureAction.AppSwitcher || action == GestureAction.HoneycombLauncher
+        action == GestureAction.RingLauncher || action == GestureAction.HoneycombLauncher
 
     private fun createFloatBallActionExecutor(
         hostContext: Context,
@@ -1808,7 +1808,7 @@ object FloatBallOverlay {
     )
 
     private fun handleFloatBallLauncherCaptureMove(rawX: Float, rawY: Float) {
-        AppSwitcherOverlayWindow.updatePointer(rawX, rawY)
+        RingLauncherOverlayWindow.updatePointer(rawX, rawY)
         HoneycombAppPickerOverlayWindow.updatePointer(rawX, rawY)
     }
 
@@ -1822,15 +1822,15 @@ object FloatBallOverlay {
             ?: displayView?.context?.applicationContext
         val deps = hostContext?.let { OverlayDependencyAccess.overlayDependencies(it) }
         if (hostContext == null || deps == null) {
-            AppSwitcherOverlayWindow.dismiss()
+            RingLauncherOverlayWindow.dismiss()
             HoneycombAppPickerOverlayWindow.dismiss()
             releaseFloatBallLauncherCapture(fromLineStrip)
             return
         }
         val actionExecutor = createFloatBallActionExecutor(hostContext, deps)
         when {
-            AppSwitcherOverlayWindow.isShowing -> {
-                AppSwitcherOverlayWindow.confirmSelection(
+            RingLauncherOverlayWindow.isShowing -> {
+                RingLauncherOverlayWindow.confirmSelection(
                     rawX = rawX,
                     rawY = rawY,
                     actionExecutor = actionExecutor,
@@ -1847,7 +1847,7 @@ object FloatBallOverlay {
             }
         }
         releaseFloatBallLauncherCapture(fromLineStrip)
-        if (!AppSwitcherOverlayWindow.isShowing && !HoneycombAppPickerOverlayWindow.isShowing) {
+        if (!RingLauncherOverlayWindow.isShowing && !HoneycombAppPickerOverlayWindow.isShowing) {
             displayView?.visibility = View.VISIBLE
         }
     }
@@ -1858,7 +1858,7 @@ object FloatBallOverlay {
         } else {
             touchHost?.cancelLauncherCaptureMode()
         }
-        if (AppSwitcherOverlayWindow.isShowing || HoneycombAppPickerOverlayWindow.isShowing) {
+        if (RingLauncherOverlayWindow.isShowing || HoneycombAppPickerOverlayWindow.isShowing) {
             suppressTouchHostsForLauncherOverlay()
         } else {
             clearLauncherAssociatedDragState()
@@ -1874,7 +1874,7 @@ object FloatBallOverlay {
      * 避免 updateViewLayout 把全屏触摸窗抬到启动器之上（部分 OEM 上会挡住圆环）。
      */
     private fun suppressTouchHostsForLauncherOverlay() {
-        if (!AppSwitcherOverlayWindow.isShowing && !HoneycombAppPickerOverlayWindow.isShowing) return
+        if (!RingLauncherOverlayWindow.isShowing && !HoneycombAppPickerOverlayWindow.isShowing) return
         clearLauncherAssociatedDragState()
         touchHost?.forceEndGestureCapture()
         lineTouchHost?.cancelGesture()
@@ -1951,7 +1951,7 @@ object FloatBallOverlay {
             )
         }
         val shown = when (action) {
-            GestureAction.AppSwitcher -> AppSwitcherOverlayWindow.show(
+            GestureAction.RingLauncher -> RingLauncherOverlayWindow.show(
                 context = hostContext,
                 settings = settings,
                 anchorRawX = anchorX,
@@ -2024,7 +2024,7 @@ object FloatBallOverlay {
             val (anchorX, anchorY) = if (fromLineStrip) {
                 rawX to rawY
             } else {
-                ballCenterForAppSwitcher(settings) ?: (rawX to rawY)
+                ballCenterForRingLauncher(settings) ?: (rawX to rawY)
             }
             showFloatBallLauncherOverlay(
                 settings = settings,

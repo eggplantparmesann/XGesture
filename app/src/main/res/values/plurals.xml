@@ -84,7 +84,7 @@
         <item quantity="one">%d configured</item>
         <item quantity="other">%d configured</item>
     </plurals>
-    <plurals name="fv_app_switcher_entry_summary">
+    <plurals name="fv_ring_launcher_entry_summary">
         <item quantity="one">%d item configured</item>
         <item quantity="other">%d items configured</item>
     </plurals>
