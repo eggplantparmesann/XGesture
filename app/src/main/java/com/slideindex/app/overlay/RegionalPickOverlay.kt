@@ -318,7 +318,7 @@ object RegionalPickOverlay {
         val currentSettings = settings ?: return
         val view = cursorPreviewView ?: return
         val density = view.resources.displayMetrics.density
-        val ballSizePx = currentSettings.floatBallSizeDp.coerceIn(36f, 72f) * density
+        val ballSizePx = currentSettings.floatBallSizeDp.coerceIn(36f, 96f) * density
         val marginPx = (EDGE_MARGIN_DP * density).roundToInt()
 
         dragSession.reset()
@@ -482,7 +482,7 @@ object RegionalPickOverlay {
         val currentSettings = settings ?: return
         val view = cursorPreviewView ?: return
         val density = view.resources.displayMetrics.density
-        val ballSizePx = currentSettings.floatBallSizeDp.coerceIn(36f, 72f) * density
+        val ballSizePx = currentSettings.floatBallSizeDp.coerceIn(36f, 96f) * density
         val marginPx = (EDGE_MARGIN_DP * density).roundToInt()
 
         if (!dragSessionArmed) {

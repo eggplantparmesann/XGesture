@@ -571,7 +571,7 @@ object FloatBallOverlay {
         val current = state.value
         val updated = current.copy(
             floatBall = current.floatBall.copy(
-                floatBallSizeDp = sizeDp?.coerceIn(36f, 72f) ?: current.floatBallSizeDp,
+                floatBallSizeDp = sizeDp?.coerceIn(36f, 96f) ?: current.floatBallSizeDp,
                 floatBallOpacity = opacity?.coerceIn(0f, 1f) ?: current.floatBallOpacity,
                 floatBallVisibleFraction = visibleFraction?.let(FloatBallLayout::coerceVisibleFraction)
                     ?: current.floatBallVisibleFraction,
@@ -1004,7 +1004,7 @@ object FloatBallOverlay {
 
     private fun ballLayoutDensityHint(settings: AppSettings, viewDensity: Float): Float {
         val ballPx = FloatBallLayout.ballSizePx(settings, viewDensity).toFloat()
-        return ballPx / settings.floatBallSizeDp.coerceIn(36f, 72f)
+        return ballPx / settings.floatBallSizeDp.coerceIn(36f, 96f)
     }
 
     private fun detachChromeWindowsForCapture() {
@@ -2586,7 +2586,7 @@ object FloatBallOverlay {
         val metrics = view.resources.displayMetrics
         val (screenWidthPx, screenHeightPx) = FloatBallScreenMetrics.sizePx(view.context, windowManager)
         val density = metrics.density
-        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 72f) * density).roundToInt()
+        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 96f) * density).roundToInt()
         val activeSide = FloatBallLayout.resolvedActiveSide(settings)
         val (centerX, centerY) = FloatBallLayout.ballCenterPx(
             settings,
@@ -2675,7 +2675,7 @@ object FloatBallOverlay {
     ) {
         val density = metrics.density
         val bounds = FloatBallScreenMetrics.bounds(displayView!!.context, windowManager)
-        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 72f) * density).roundToInt()
+        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 96f) * density).roundToInt()
         val marginPx = (EDGE_MARGIN_DP * density).roundToInt()
         val screenWidth = bounds.width
         val screenHeight = bounds.height
@@ -2787,7 +2787,7 @@ object FloatBallOverlay {
         val metrics = view.resources.displayMetrics
         val density = metrics.density
         val bounds = FloatBallScreenMetrics.bounds(view.context, windowManager)
-        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 72f) * density)
+        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 96f) * density)
         val (screenWidthPx, screenHeightPx) = FloatBallScreenMetrics.sizePx(view.context, windowManager)
         val activeSide = effectiveActiveSide(settings)
         val (ballCenterX, ballCenterY) = FloatBallLayout.ballCenterPx(
@@ -2828,7 +2828,7 @@ object FloatBallOverlay {
         val metrics = view.resources.displayMetrics
         val density = metrics.density
         val bounds = FloatBallScreenMetrics.bounds(view.context, windowManager)
-        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 72f) * density).roundToInt()
+        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 96f) * density).roundToInt()
         val marginPx = (EDGE_MARGIN_DP * density).roundToInt()
         val screenWidth = bounds.width
         val screenHeight = bounds.height
@@ -3405,7 +3405,7 @@ object FloatBallOverlay {
         val density = metrics.density
         val bounds = dragScreenBounds ?: FloatBallScreenMetrics.bounds(view.context, windowManager)
             .also { dragScreenBounds = it }
-        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 72f) * density).roundToInt()
+        val ballSizePx = (settings.floatBallSizeDp.coerceIn(36f, 96f) * density).roundToInt()
         val marginPx = (EDGE_MARGIN_DP * density).roundToInt()
         val screenWidth = bounds.width
         val screenHeight = bounds.height

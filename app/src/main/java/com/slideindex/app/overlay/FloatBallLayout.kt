@@ -66,7 +66,7 @@ internal object FloatBallLayout {
         coercePositionYFraction(settings.floatBallPositionYFraction) * screenHeight
 
     fun ballSizePx(settings: AppSettings, density: Float): Int =
-        (settings.floatBallSizeDp.coerceIn(36f, 72f) * density).roundToInt()
+        (settings.floatBallSizeDp.coerceIn(36f, 96f) * density).roundToInt()
 
     fun marginPx(density: Float): Int = (EDGE_MARGIN_DP * density).roundToInt()
 

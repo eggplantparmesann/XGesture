@@ -491,7 +491,7 @@ class ExtensionSettingsViewModel @Inject constructor(
 
     fun setFloatBallSizeDp(sizeDp: Float) = launchOptimisticSettingsWrite(
         optimisticUpdate = { settings ->
-            settings.copy(floatBall = settings.floatBall.copy(floatBallSizeDp = sizeDp.coerceIn(36f, 72f)))
+            settings.copy(floatBall = settings.floatBall.copy(floatBallSizeDp = sizeDp.coerceIn(36f, 96f)))
         },
         block = { settingsRepository.setFloatBallSizeDp(sizeDp) },
     )

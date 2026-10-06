@@ -37,7 +37,7 @@ internal class FloatBallDragVisualView(context: Context) : FrameLayout(context) 
     fun show(settings: AppSettings, composeSnapshot: Bitmap?, activeSide: FloatBallSide) {
         releaseOwnedBitmap()
         val density = resources.displayMetrics.density
-        val sizePx = (settings.floatBallSizeDp.coerceIn(36f, 72f) * density).roundToInt().coerceAtLeast(1)
+        val sizePx = (settings.floatBallSizeDp.coerceIn(36f, 96f) * density).roundToInt().coerceAtLeast(1)
         val bitmap = composeSnapshot ?: FloatBallDragVisualRenderer.render(context, settings)
         ownedBitmap = if (composeSnapshot == null) bitmap else null
         ballImage.setImageBitmap(bitmap)

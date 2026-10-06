@@ -25,7 +25,7 @@ internal object FloatBallEdgePickReplay {
         marginPx: Int
     ) {
         session.reset()
-        val ballSizePx = settings.floatBallSizeDp.coerceIn(36f, 72f) * density
+        val ballSizePx = settings.floatBallSizeDp.coerceIn(36f, 96f) * density
         val ballSizeInt = ballSizePx.roundToInt()
         val visibleFraction = FloatBallLayout.coerceVisibleFraction(settings.floatBallVisibleFraction)
         val dockLeft = FloatBallLayout.dockedBallLeftPx(

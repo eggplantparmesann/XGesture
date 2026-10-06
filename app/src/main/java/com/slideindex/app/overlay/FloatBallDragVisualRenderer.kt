@@ -47,7 +47,7 @@ internal object FloatBallDragVisualRenderer {
 
     fun render(context: Context, settings: AppSettings): Bitmap {
         val density = context.resources.displayMetrics.density
-        val sizePx = (settings.floatBallSizeDp.coerceIn(36f, 72f) * density).roundToInt().coerceAtLeast(1)
+        val sizePx = (settings.floatBallSizeDp.coerceIn(36f, 96f) * density).roundToInt().coerceAtLeast(1)
         val bitmap = createBitmap(sizePx, sizePx)
         val canvas = Canvas(bitmap)
         val alpha = settings.floatBallOpacity.coerceIn(0f, 1f)

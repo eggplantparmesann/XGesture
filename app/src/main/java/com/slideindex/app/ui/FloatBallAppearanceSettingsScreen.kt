@@ -117,8 +117,8 @@ fun FloatBallAppearanceSettingsScreen(
                         SettingsSliderRow(
                             title = stringResource(R.string.float_ball_size),
                             value = settings.floatBallSizeDp,
-                            valueRange = 36f..72f,
-                            steps = 8,
+                            valueRange = 36f..96f,
+                            steps = 59,
                             enabled = true,
                             label = stringResource(
                                 R.string.float_ball_size_value,

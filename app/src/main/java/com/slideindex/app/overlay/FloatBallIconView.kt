@@ -86,7 +86,7 @@ internal class FloatBallIconView(context: Context) : FrameLayout(context) {
         styleGeneration: Int
     ) {
         val density = resources.displayMetrics.density
-        val sizePx = (settings.floatBallSizeDp.coerceIn(36f, 72f) * density).roundToInt().coerceAtLeast(1)
+        val sizePx = (settings.floatBallSizeDp.coerceIn(36f, 96f) * density).roundToInt().coerceAtLeast(1)
         val opacity = settings.floatBallOpacity.coerceIn(0f, 1f)
         currentOpacityValue = opacity
         alpha = opacity
