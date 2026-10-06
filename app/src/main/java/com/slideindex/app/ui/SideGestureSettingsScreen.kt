@@ -38,7 +38,6 @@ import com.slideindex.app.settings.slotAction
 import com.slideindex.app.settings.defaultTriggerModeFor
 import com.slideindex.app.settings.slotTriggerMode
 import com.slideindex.app.settings.gestureConfigSide
-import com.slideindex.app.settings.oppositeGesturesSyncedForHandle
 import com.slideindex.app.settings.primaryTriggerHandle
 import com.slideindex.app.settings.triggerCollectionEntries
 import com.slideindex.app.settings.triggerHandle
@@ -50,6 +49,7 @@ import com.slideindex.app.ui.miuix.MiuixTabSettingsCard
 import top.yukonga.miuix.kmp.basic.BasicComponentDefaults
 import top.yukonga.miuix.kmp.basic.SmallTitle
 import com.slideindex.app.ui.miuix.groupedCardItems
+import com.slideindex.app.ui.settings.components.MiuixNavigationRow
 import com.slideindex.app.ui.settings.components.SettingNavigationRow
 import com.slideindex.app.ui.settings.components.SettingSwitchRow
 import com.slideindex.app.ui.settings.components.SettingsCardScope
@@ -94,12 +94,6 @@ fun SideGestureSettingsScreen(
         PanelSide.TOP -> stringResource(R.string.side_gestures_top_title)
     }
     val title = if (pairCount > 1) "$baseTitle · $pairIndex" else baseTitle
-    val gesturesSynced = settings.oppositeGesturesSyncedForHandle(handleId)
-    val subtitle = if (gesturesSynced && side.isHorizontalEdge) {
-        stringResource(R.string.side_gestures_shared_with_opposite)
-    } else {
-        stringResource(R.string.side_gestures_desc)
-    }
 
     TriggerHandlePreviewLifecycle(
         enabled = serviceEnabled,
@@ -117,6 +111,7 @@ fun SideGestureSettingsScreen(
         settings.triggerHandle(PanelSide.LEFT, handleId) != null &&
         settings.triggerHandle(PanelSide.RIGHT, handleId) != null
 
+    val triggerModeSectionTitle = stringResource(R.string.side_gestures_trigger_mode_section)
     val behaviorSectionTitle = stringResource(R.string.side_gestures_behavior_section)
     val swipeDirectionsSectionTitle = stringResource(R.string.side_gestures_swipe_directions_section)
     val pressTapSectionTitle = stringResource(R.string.side_gestures_press_tap)
@@ -140,71 +135,9 @@ fun SideGestureSettingsScreen(
 
     SettingsLazyScreenScaffold(
         title = title,
-        subtitle = subtitle,
         onBack = onBack,
         modifier = Modifier.fillMaxSize(),
     ) {
-        settingsLazySmallTitle(
-            key = "section-behavior",
-            title = behaviorSectionTitle,
-        )
-        groupedCardItems(
-            keyPrefix = "side-gesture-behavior",
-            items = buildList {
-                add(
-                    settingsCardScopeItem("trigger-design") {
-                        SettingNavigationRow(
-                            icon = { label -> Icon(Icons.Outlined.Brush, contentDescription = label) },
-                            title = stringResource(R.string.trigger_design_title),
-                            subtitle = triggerDesignSummary(selectedHandle.design),
-                            onClick = onOpenDesignSettings,
-                        )
-                    },
-                )
-                add(
-                    settingsCardScopeItem("trigger-appearance") {
-                        SettingNavigationRow(
-                            icon = { label -> Icon(Icons.Outlined.Animation, contentDescription = label) },
-                            title = stringResource(R.string.trigger_appearance_title),
-                            subtitle = triggerAppearanceSummary(settings, side, handleId),
-                            onClick = onOpenAppearanceSettings,
-                        )
-                    },
-                )
-                add(
-                    settingsCardScopeItem("default-trigger-mode") {
-                        SettingNavigationRow(
-                            icon = { label ->
-                                Icon(Icons.AutoMirrored.Outlined.ArrowForward, contentDescription = label)
-                            },
-                            title = stringResource(R.string.default_trigger_mode),
-                            subtitle = triggerModeLabel(settings.defaultTriggerModeFor(slotSide), includeDefault = false),
-                            onClick = onOpenDefaultModePick,
-                        )
-                    },
-                )
-                if (showAlignGesturesSwitch) {
-                    add(
-                        settingsCardScopeItem("align-opposite-gestures") {
-                            SettingSwitchRow(
-                                title = stringResource(R.string.align_opposite_gestures),
-                                subtitle = stringResource(R.string.align_opposite_gestures_desc),
-                                checked = selectedHandle.alignOppositeGestures,
-                                enabled = serviceEnabled,
-                                onCheckedChange = { checked ->
-                                    if (checked) {
-                                        showMirrorDirectionDialog = true
-                                    } else {
-                                        onAlignOppositeGesturesChange(false, null)
-                                    }
-                                },
-                            )
-                        },
-                    )
-                }
-            },
-        )
-
         settingsLazySmallTitle(
             key = "section-swipe-directions",
             title = swipeDirectionsSectionTitle,
@@ -339,6 +272,77 @@ fun SideGestureSettingsScreen(
             title = pressTapSectionTitle,
         )
         groupedCardItems("side-gesture-press-tap", pressTapItems)
+
+        // 触发模式与「布局与行为」都不属于槽位本身：前者是设一次就不动的全局缺省，
+        // 后者全是跳转子页的入口，一并放在槽位之后，让首屏直接给出槽位动作列表。
+        settingsLazySmallTitle(
+            key = "section-trigger-mode",
+            title = triggerModeSectionTitle,
+        )
+        groupedCardItems(
+            keyPrefix = "side-gesture-trigger-mode",
+            items = buildList {
+                add(
+                    settingsCardScopeItem("default-trigger-mode") {
+                        // 与同卡的开关行一样不带 M3 图标（纯 Miuix 箭头行）。
+                        MiuixNavigationRow(
+                            title = stringResource(R.string.default_trigger_mode),
+                            summary = triggerModeLabel(settings.defaultTriggerModeFor(slotSide), includeDefault = false),
+                            onClick = onOpenDefaultModePick,
+                        )
+                    },
+                )
+                if (showAlignGesturesSwitch) {
+                    add(
+                        settingsCardScopeItem("align-opposite-gestures") {
+                            SettingSwitchRow(
+                                title = stringResource(R.string.align_opposite_gestures),
+                                subtitle = stringResource(R.string.align_opposite_gestures_desc),
+                                checked = selectedHandle.alignOppositeGestures,
+                                enabled = serviceEnabled,
+                                onCheckedChange = { checked ->
+                                    if (checked) {
+                                        showMirrorDirectionDialog = true
+                                    } else {
+                                        onAlignOppositeGesturesChange(false, null)
+                                    }
+                                },
+                            )
+                        },
+                    )
+                }
+            },
+        )
+
+        settingsLazySmallTitle(
+            key = "section-behavior",
+            title = behaviorSectionTitle,
+        )
+        groupedCardItems(
+            keyPrefix = "side-gesture-behavior",
+            items = buildList {
+                add(
+                    settingsCardScopeItem("trigger-design") {
+                        SettingNavigationRow(
+                            icon = { label -> Icon(Icons.Outlined.Brush, contentDescription = label) },
+                            title = stringResource(R.string.trigger_design_title),
+                            subtitle = triggerDesignSummary(selectedHandle.design),
+                            onClick = onOpenDesignSettings,
+                        )
+                    },
+                )
+                add(
+                    settingsCardScopeItem("trigger-appearance") {
+                        SettingNavigationRow(
+                            icon = { label -> Icon(Icons.Outlined.Animation, contentDescription = label) },
+                            title = stringResource(R.string.trigger_appearance_title),
+                            subtitle = triggerAppearanceSummary(settings, side, handleId),
+                            onClick = onOpenAppearanceSettings,
+                        )
+                    },
+                )
+            },
+        )
 
         item(key = "side-gesture-bottom-spacer") {
             Spacer(modifier = Modifier.height(8.dp))

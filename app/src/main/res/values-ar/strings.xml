@@ -353,7 +353,6 @@
     <string name="align_opposite_gestures_mirror_message">عند التفعيل، سيتشارك الجانبان نفس مجموعة الإيماءات. يرجى اختيار الجانب الذي سيتم اعتماده:</string>
     <string name="align_opposite_gestures_use_this_side">استخدام الجانب الحالي (%1$s)</string>
     <string name="align_opposite_gestures_use_opposite_side">استخدام الجانب المقابل (%1$s)</string>
-    <string name="side_gestures_shared_with_opposite">تتشارك هذه الصفحة في تهيئة الإيماءات مع مجموعة مقابض اللمس المقابلة</string>
     <string name="trigger_handles_add">إضافة مقبض لمس</string>
     <string name="trigger_handles_restore_opposite">استكمال مقابض اللمس المقابلة</string>
     <string name="trigger_collection_title">مجموعة مقابض اللمس</string>

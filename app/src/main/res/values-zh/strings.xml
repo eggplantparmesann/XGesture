@@ -353,7 +353,6 @@
     <string name="align_opposite_gestures_mirror_message">开启后左右将共用同一套手势。请选择以哪一侧为准：</string>
     <string name="align_opposite_gestures_use_this_side">使用当前侧（%1$s）</string>
     <string name="align_opposite_gestures_use_opposite_side">使用对侧（%1$s）</string>
-    <string name="side_gestures_shared_with_opposite">与对侧同组触钮共用此页手势配置</string>
     <string name="trigger_handles_add">添加触钮</string>
     <string name="trigger_handles_restore_opposite">补齐对侧触钮</string>
     <string name="trigger_collection_title">触钮集合</string>

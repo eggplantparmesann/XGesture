@@ -1862,7 +1862,6 @@
     <string name="align_opposite_gestures_mirror_message">Left and right will share the same gestures. Choose which side to use as the source:</string>
     <string name="align_opposite_gestures_use_this_side">Use current side (%1$s)</string>
     <string name="align_opposite_gestures_use_opposite_side">Use opposite side (%1$s)</string>
-    <string name="side_gestures_shared_with_opposite">Gesture slots are shared with the opposite handle in this group</string>
     <string name="trigger_handles_add">Add handle</string>
     <string name="trigger_handles_restore_opposite">Restore opposite handle</string>
     <string name="trigger_collection_title">Handle sets</string>

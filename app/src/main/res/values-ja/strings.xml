@@ -353,7 +353,6 @@
     <string name="align_opposite_gestures_mirror_message">左右で同じジェスチャーを共有します。ソースとする側を選択してください：</string>
     <string name="align_opposite_gestures_use_this_side">現在の側を使用（%1$s）</string>
     <string name="align_opposite_gestures_use_opposite_side">反対側を使用（%1$s）</string>
-    <string name="side_gestures_shared_with_opposite">このグループではジェスチャースロットが反対側のハンドルと共有されています</string>
     <string name="trigger_handles_add">ハンドルを追加</string>
     <string name="trigger_handles_restore_opposite">反対側のハンドルを復元</string>
     <string name="trigger_collection_title">ハンドルセット</string>
