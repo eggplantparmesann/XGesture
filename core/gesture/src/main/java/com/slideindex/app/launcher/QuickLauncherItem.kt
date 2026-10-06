@@ -164,15 +164,19 @@ object QuickLauncherItemCodec {
     /**
      * 动作正文编码。除「启动应用」外与 `action.payload` 一致；
      * 「启动应用」追加启动形态后缀（见 [LAUNCH_WINDOW_MODE_SEP]），旧数据无后缀按跟随全局解析。
+     *
+     * 自带动作类型字段的编码器（如 [com.slideindex.app.gesture.GestureRuleCodec]）应直接复用本函数，
+     * 不要另写一份正文编码，否则「启动应用」的启动形态会在该存储路径上静默丢失。
      */
-    private fun encodeActionBody(action: GestureAction): String {
+    fun encodeActionBody(action: GestureAction): String {
         if (action !is GestureAction.LaunchApp) return action.payload
         val mode = action.windowMode
         if (mode == LaunchWindowMode.FOLLOW_GLOBAL) return action.payload
         return "${action.payload}$LAUNCH_WINDOW_MODE_SEP${mode.id}"
     }
 
-    private fun decodeActionBody(type: GestureActionType, body: String): GestureAction? {
+    /** [encodeActionBody] 的逆操作；无后缀或后缀畸形时按 [LaunchWindowMode.FOLLOW_GLOBAL] 解析。 */
+    fun decodeActionBody(type: GestureActionType, body: String): GestureAction? {
         if (type != GestureActionType.LAUNCH_APP) return GestureAction.from(type, body)
         val modeIndex = body.lastIndexOf(LAUNCH_WINDOW_MODE_SEP)
         if (modeIndex <= 0) return GestureAction.from(type, body)

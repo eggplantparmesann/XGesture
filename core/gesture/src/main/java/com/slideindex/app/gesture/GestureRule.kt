@@ -1,5 +1,6 @@
 package com.slideindex.app.gesture
 
+import com.slideindex.app.launcher.QuickLauncherItemCodec
 import com.slideindex.app.overlay.PanelSide
 
 data class GestureRule(
@@ -53,7 +54,7 @@ object GestureRuleCodec {
             rule.handleId,
             rule.trigger.id.toString(),
             rule.action.type.id.toString(),
-            rule.action.payload,
+            QuickLauncherItemCodec.encodeActionBody(rule.action),
             rule.priority.toString(),
             if (rule.enabled) "1" else "0",
             rule.triggerMode.id.toString(),
@@ -80,7 +81,7 @@ object GestureRuleCodec {
             id = parts[0],
             side = side,
             trigger = trigger,
-            action = GestureAction.from(actionType, parts[5]),
+            action = QuickLauncherItemCodec.decodeActionBody(actionType, parts[5]) ?: GestureAction.None,
             priority = parts[6].toIntOrNull() ?: 0,
             enabled = parts[7] == "1",
             triggerMode = triggerMode,
@@ -101,7 +102,7 @@ object GestureRuleCodec {
             id = parts[0],
             side = side,
             trigger = trigger,
-            action = GestureAction.from(actionType, parts[4]),
+            action = QuickLauncherItemCodec.decodeActionBody(actionType, parts[4]) ?: GestureAction.None,
             priority = parts[5].toIntOrNull() ?: 0,
             enabled = parts[6] == "1",
             triggerMode = triggerMode,
