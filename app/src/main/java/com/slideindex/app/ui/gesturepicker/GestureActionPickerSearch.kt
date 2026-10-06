@@ -6,7 +6,6 @@ import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
 import com.slideindex.app.R
 import com.slideindex.app.gesture.GestureAction
 import com.slideindex.app.gesture.GestureActionType
@@ -607,9 +606,7 @@ fun gestureActionPermissionHintText(context: Context, action: GestureAction): St
             context.getString(PrivilegeUiStrings.shellActionPermissionRes())
         }
         GestureActionType.FLASHLIGHT -> {
-            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) ==
-                PackageManager.PERMISSION_GRANTED
-            ) {
+            if (PermissionHelper.hasCameraPermission(context)) {
                 return null
             }
             context.getString(R.string.gesture_action_flashlight_permission)
@@ -707,11 +704,8 @@ fun requestPermissionForAdjustAction(context: Context, action: GestureAction) {
         ->
             PermissionHelper.requestWriteSettingsAccess(context)
         GestureAction.Flashlight -> {
-            val intent = android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = android.net.Uri.fromParts("package", context.packageName, null)
-                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            runCatching { context.startActivity(intent) }
+            // 已授权（含「仅在使用时允许」）时绝不跳转；仅缺失时请求，而不是把用户丢到应用信息页。
+            com.slideindex.app.overlay.searchpanel.CameraPermissionTrampolineActivity.ensureGranted(context)
         }
         GestureAction.QuickToolsOverlay -> {
             if (!PermissionHelper.isAccessibilityServiceEnabledForOverlays(context)) {

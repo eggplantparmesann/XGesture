@@ -19,6 +19,13 @@ import com.slideindex.app.service.SlideIndexAccessibilityService
 object PermissionHelper {
     fun canDrawOverlays(context: Context): Boolean = Settings.canDrawOverlays(context)
 
+    /** True while camera access is granted, including the "only while in use" grant. */
+    fun hasCameraPermission(context: Context): Boolean =
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA,
+        ) == PackageManager.PERMISSION_GRANTED
+
     fun overlaySettingsIntent(context: Context): Intent =
         Intent(
             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
