@@ -19,6 +19,7 @@ class SettingsRepositoryResultTest {
         val result = repository.setServiceEnabled(true)
 
         assertTrue(result.isSuccess)
-        assertTrue(repository.readSnapshot().serviceEnabled)
+        // readSnapshot() 是异步 flow 维护的缓存，写完立刻读有竞态；这里直接读持久化结果。
+        assertTrue(repository.readFreshSnapshot().serviceEnabled)
     }
 }

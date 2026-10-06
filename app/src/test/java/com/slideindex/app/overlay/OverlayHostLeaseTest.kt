@@ -52,7 +52,8 @@ class OverlayHostLeaseTest {
     }
 
     @Test
-    fun `expired heartbeat triggers teardown even when owner check says alive`() {
+    fun `alive owner is never torn down without heartbeat`() {
+        // 单进程改造后租约不再靠「心跳过期」判定（renew 已是空实现），只要宿主实例还在就不得拆卸。
         var torndown = false
         OverlayHostLease.register(
             key = "edge",
@@ -62,7 +63,7 @@ class OverlayHostLeaseTest {
 
         idleFor(9_000L)
 
-        assertTrue("心跳停了说明服务实例已经不在，必须兜底拆卸", torndown)
+        assertFalse("宿主实例仍在本进程时不得兜底拆卸", torndown)
     }
 
     @Test
