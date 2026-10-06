@@ -25,7 +25,16 @@ internal class EdgeGestureLayoutCoordinator(
     private val settingsProvider: () -> AppSettings,
     private val previewModeProvider: () -> Boolean,
     private val viewSizeProvider: () -> Pair<Int, Int>,
-    private val onSessionEnd: () -> Unit
+    private val onSessionEnd: () -> Unit,
+    /**
+     * 权威屏幕尺寸，由 [SideOverlayController] 提供（与触摸捕获窗用的是同一份）。
+     *
+     * 绘制与命中必须共用同一把尺子：浮层 view 的 context 是 `createWindowContext()` 造出来的
+     * WindowContext，它的 `currentWindowMetrics` 在部分 ROM（实测 Flyme）上给出的是窗口/最小应用
+     * 边界而不是真实屏幕，会让绘制按错误的纵向基准算触钮的位置与长度——表现就是「看得见的触钮」
+     * 和「划得到的触钮」不在同一个地方。
+     */
+    private val screenSizeProvider: () -> Pair<Int, Int>? = { null },
 ) {
     var overlayTouchLayout: OverlayTouchLayout = OverlayTouchLayout.FullScreen
         private set
@@ -48,19 +57,35 @@ internal class EdgeGestureLayoutCoordinator(
     fun syncZoneLayout() = syncZoneLayout(settingsProvider())
 
     fun syncZoneLayout(settings: AppSettings) {
-        val metrics = OverlayScreenMetrics.snapshot(context)
+        val (widthPx, heightPx) = resolveScreenSizePx()
         zoneLayout.update(
             settings = settings,
-            viewWidth = metrics.widthPx,
-            viewHeight = metrics.heightPx,
+            viewWidth = widthPx,
+            viewHeight = heightPx,
             density = resources.displayMetrics.density,
             sessionActive = gestureSession.isActive(),
             previewMode = previewModeProvider(),
-            layoutHeight = metrics.heightPx,
+            layoutHeight = heightPx,
             windowOffsetY = 0f,
-            screenWidthPx = metrics.widthPx,
-            screenHeightPx = metrics.heightPx
+            screenWidthPx = widthPx,
+            screenHeightPx = heightPx
         )
+    }
+
+    /**
+     * 屏幕尺寸优先级：controller 的权威值 → 本 view 的 `displayMetrics`（真实屏幕，不受 WindowContext
+     * 影响）→ 最后才退回窗口尺寸快照。
+     */
+    private fun resolveScreenSizePx(): Pair<Int, Int> {
+        screenSizeProvider()?.let { size ->
+            if (size.first > 0 && size.second > 0) return size
+        }
+        val displayMetrics = resources.displayMetrics
+        if (displayMetrics.widthPixels > 0 && displayMetrics.heightPixels > 0) {
+            return displayMetrics.widthPixels to displayMetrics.heightPixels
+        }
+        val snapshot = OverlayScreenMetrics.snapshot(context)
+        return snapshot.widthPx to snapshot.heightPx
     }
 
     fun activeTriggerZoneRect(): android.graphics.RectF =

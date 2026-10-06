@@ -42,6 +42,8 @@ class EdgeGestureOverlayView(
     context: Context,
     private val side: PanelSide,
     private val appRepository: AppRepository,
+    /** 权威屏幕尺寸（与触摸捕获窗同一来源）；见 [EdgeGestureLayoutCoordinator.screenSizeProvider]。 */
+    private val screenSizeProvider: () -> Pair<Int, Int>? = { null },
     private val onSessionStartCallback: () -> Unit,
     private val onSessionEndCallback: () -> Unit,
     private val onGestureTrackingStartCallback: () -> Unit = {},
@@ -162,7 +164,8 @@ class EdgeGestureOverlayView(
         settingsProvider = { settings },
         previewModeProvider = { previewMode },
         viewSizeProvider = { width to height },
-        onSessionEnd = onSessionEndCallback
+        onSessionEnd = onSessionEndCallback,
+        screenSizeProvider = screenSizeProvider,
     )
 
     private val sessionCoordinator = EdgeGestureSessionCoordinator(

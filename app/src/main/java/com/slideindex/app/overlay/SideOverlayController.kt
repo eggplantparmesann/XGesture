@@ -65,6 +65,16 @@ class SideOverlayController(
         metrics: ScreenMetricsSnapshot = OverlayScreenMetrics.snapshot(context)
     ): AppSettings = source.withRuntimeLandscapeSettings(metrics.isLandscape)
 
+    /**
+     * 绘制用的权威屏幕尺寸：与触摸捕获窗同一个来源（服务上下文的真实屏幕，而不是浮层 WindowContext
+     * 的窗口边界），保证「看得见的触钮」和「划得到的触钮」用的是同一把尺子。
+     */
+    internal fun authoritativeScreenSizePx(): Pair<Int, Int> {
+        if (screenWidthPx > 0 && screenHeightPx > 0) return screenWidthPx to screenHeightPx
+        val metrics = OverlayScreenMetrics.snapshot(context)
+        return metrics.widthPx to metrics.heightPx
+    }
+
     internal fun shouldShowRuntimeVisuals(): Boolean = !runtimeVisualsSuppressed && !previewMode
 
     internal fun syncRuntimeVisuals() {
@@ -366,6 +376,7 @@ class SideOverlayController(
             onOverlayPresentationResume = { resumePresentationIfNeeded() },
             onShellPanelAuxiliaryPrepare = { suspendEdgeOverlay() },
             onShellPanelAuxiliaryDismiss = { resumeEdgeOverlay() },
+            screenSizeProvider = { authoritativeScreenSizePx() },
             overlayBrightness = null
         ).also { view ->
             view.onPresentationTouchRequirementChanged = {
