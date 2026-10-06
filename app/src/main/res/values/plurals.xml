@@ -140,6 +140,14 @@
         <item quantity="one">Unfroze %d app</item>
         <item quantity="other">Unfroze %d apps</item>
     </plurals>
+    <plurals name="freezer_pause_all_done">
+        <item quantity="one">Paused %d app</item>
+        <item quantity="other">Paused %d apps</item>
+    </plurals>
+    <plurals name="freezer_unpause_all_done">
+        <item quantity="one">Resumed %d app</item>
+        <item quantity="other">Resumed %d apps</item>
+    </plurals>
     <plurals name="freezer_import_frozen_done">
         <item quantity="one">Imported %d app</item>
         <item quantity="other">Imported %d apps</item>

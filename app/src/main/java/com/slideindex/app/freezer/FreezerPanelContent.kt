@@ -79,6 +79,8 @@ fun FreezerPanelContent(
     val scope = rememberCoroutineScope()
     val screenTitle = title ?: stringResource(R.string.extension_freezer_title)
     val unfreezeAllLabel = stringResource(R.string.freezer_batch_unfreeze_all)
+    val pauseAllLabel = stringResource(R.string.freezer_pause_all)
+    val unpauseAllLabel = stringResource(R.string.freezer_unpause_all)
     val importFrozenLabel = stringResource(R.string.freezer_import_frozen_apps)
 
     LaunchedEffect(settings.freezerAppPackages) {
@@ -142,6 +144,26 @@ fun FreezerPanelContent(
                 onClick = { importFrozenApps() }
             ),
             DropdownItem(
+                text = pauseAllLabel,
+                onClick = {
+                    scope.launch {
+                        if (FreezerOperations.pauseAll(context, settings.freezerAppPackages) > 0) {
+                            freezeStateRevision++
+                        }
+                    }
+                }
+            ),
+            DropdownItem(
+                text = unpauseAllLabel,
+                onClick = {
+                    scope.launch {
+                        if (FreezerOperations.unpauseAll(context, settings.freezerAppPackages) > 0) {
+                            freezeStateRevision++
+                        }
+                    }
+                }
+            ),
+            DropdownItem(
                 text = unfreezeAllLabel,
                 onClick = {
                     scope.launch {
@@ -194,6 +216,28 @@ fun FreezerPanelContent(
                             onClick = {
                                 overflowMenuExpanded = false
                                 importFrozenApps()
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(pauseAllLabel) },
+                            onClick = {
+                                overflowMenuExpanded = false
+                                scope.launch {
+                                    if (FreezerOperations.pauseAll(context, settings.freezerAppPackages) > 0) {
+                                        freezeStateRevision++
+                                    }
+                                }
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(unpauseAllLabel) },
+                            onClick = {
+                                overflowMenuExpanded = false
+                                scope.launch {
+                                    if (FreezerOperations.unpauseAll(context, settings.freezerAppPackages) > 0) {
+                                        freezeStateRevision++
+                                    }
+                                }
                             },
                         )
                         DropdownMenuItem(

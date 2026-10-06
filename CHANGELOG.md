@@ -4,7 +4,13 @@ All notable changes to XGesture are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **冰箱「暂停」**：应用暂停后保持安装、桌面图标仍在但变灰，点击弹系统「应用已暂停」对话框（可选「取消暂停」自救）；与「冻结」互斥 —— 冻结让图标从桌面消失，暂停只挂起启动。入口：冰箱网格长按菜单「暂停/取消暂停」、面板「⋮」的「全部暂停/全部取消暂停」、管理页新增「已暂停」筛选与状态后缀、搜索面板应用长按快捷条第 5 项；点击冰箱里的已暂停应用会自动取消暂停后启动
+- 冰箱「导入已冻结应用」改为「导入已冻结/已暂停应用」，扫描同时覆盖已挂起（suspended）的桌面应用
+
 ### Changed
+- 冰箱「重新冻结」只处理使用中的成员，已暂停的成员保持暂停；批量「全部解冻」不再影响已暂停的成员
+- 暂停与冻结都会拦截「动了就回不来」的包（本应用自身、system、SystemUI、当前桌面），避免误操作
 - **圆环启动器命名统一**：内部代码、包名、Kotlin 符号里的 `app_switcher` / `AppSwitcher` 全部改为 `ring_launcher` / `RingLauncher`，与界面上的「圆环启动器 / Ring launcher」一致；动作枚举保持 `APP_RING_LAUNCHER(56)` 的整数 id 不变，手势规则不受影响
 - **存量配置一次性搬迁**：升级后首次启动把旧 `fv_app_switcher_*` 偏好键的值搬到 `fv_ring_launcher_*`（新键已有值时不覆盖），随后删除旧键；导入旧设置备份时同样会自愈
 - **字符串资源键改名**：`values/`、`values-zh/`、`values-ja/`、`values-ar/` 四个语言文件里的 `app_switcher_*` / `fv_app_switcher_*` 键改为 `ring_launcher_*` / `fv_ring_launcher_*`，译文内容未改；Weblate 上的旧条目会显示为「已删除」，需要按新键名重新关联（或直接用仓库里的译文覆盖）
@@ -12,6 +18,7 @@ All notable changes to XGesture are documented in this file.
 - 通知过滤规则的屏幕状态改为「不限 / 亮屏时 / 熄屏时」三选一，充电状态三项全部不勾选表示不限制
 
 ### Fixed
+- 修复触钮设置页预览时触钮位置偏上、长度变短：绘制改用与触摸捕获窗**同一份屏幕尺寸**（浮层 view 的 WindowContext 在部分 ROM 上给出的是窗口边界而非真实屏幕高度），不再出现「看得见的触钮」和「划得到的触钮」不在同一处
 - 修复通知过滤规则只选一项手机状态时，重新进入编辑页后充电状态三项被自动勾选
 
 ## [1.35.0] - 2026-10-05

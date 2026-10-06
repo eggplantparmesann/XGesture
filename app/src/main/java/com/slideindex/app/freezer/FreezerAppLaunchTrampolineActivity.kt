@@ -29,7 +29,7 @@ class FreezerAppLaunchTrampolineActivity : ComponentActivity() {
                         .firstOrNull { it.packageName == packageName }
             }
             if (app != null) {
-                FreezerOperations.launchAndUnfreeze(
+                FreezerOperations.launchAndRestore(
                     this@FreezerAppLaunchTrampolineActivity,
                     deps.appRepository,
                     settings,

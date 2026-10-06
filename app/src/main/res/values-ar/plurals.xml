@@ -280,6 +280,22 @@
         <item quantity="many">تم إلغاء تجميد %d تطبيقات</item>
         <item quantity="other">تم إلغاء تجميد %d تطبيقات</item>
     </plurals>
+    <plurals name="freezer_pause_all_done">
+        <item quantity="zero">تم إيقاف %d تطبيقات مؤقتاً</item>
+        <item quantity="one">تم إيقاف %d تطبيق مؤقتاً</item>
+        <item quantity="two">تم إيقاف %d تطبيق مؤقتاً</item>
+        <item quantity="few">تم إيقاف %d تطبيقات مؤقتاً</item>
+        <item quantity="many">تم إيقاف %d تطبيقات مؤقتاً</item>
+        <item quantity="other">تم إيقاف %d تطبيقات مؤقتاً</item>
+    </plurals>
+    <plurals name="freezer_unpause_all_done">
+        <item quantity="zero">تم إلغاء الإيقاف المؤقت عن %d تطبيقات</item>
+        <item quantity="one">تم إلغاء الإيقاف المؤقت عن %d تطبيق</item>
+        <item quantity="two">تم إلغاء الإيقاف المؤقت عن %d تطبيق</item>
+        <item quantity="few">تم إلغاء الإيقاف المؤقت عن %d تطبيقات</item>
+        <item quantity="many">تم إلغاء الإيقاف المؤقت عن %d تطبيقات</item>
+        <item quantity="other">تم إلغاء الإيقاف المؤقت عن %d تطبيقات</item>
+    </plurals>
     <plurals name="freezer_import_frozen_done">
         <item quantity="zero">تم استيراد %d تطبيقات</item>
         <item quantity="one">تم استيراد %d تطبيق</item>

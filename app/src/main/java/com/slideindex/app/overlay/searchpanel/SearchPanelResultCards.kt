@@ -385,7 +385,7 @@ private fun SearchPanelAppIconStrip(
         ) {
             apps.forEach { app ->
                 val context = LocalContext.current
-                val frozen = FreezerOperations.isFrozen(context, app.packageName)
+                val appState = FreezerOperations.stateOf(context, app.packageName)
                 SearchPanelAppQuickActionTarget(
                     packageName = app.packageName,
                     enabled = true,
@@ -403,7 +403,7 @@ private fun SearchPanelAppIconStrip(
                             contentDescription = app.label,
                             size = AppIconCandidateSize,
                             corner = AppIconCandidateCorner,
-                            frozen = frozen,
+                            dimmed = !appState.isActive,
                         )
                         Text(
                             text = app.label,
@@ -412,10 +412,10 @@ private fun SearchPanelAppIconStrip(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             textAlign = TextAlign.Center,
-                            color = if (frozen) {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                            } else {
+                            color = if (appState.isActive) {
                                 MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                             },
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -455,14 +455,14 @@ private fun SearchPanelAppListCards(
     ) {
         displayApps.forEachIndexed { index, app ->
             val context = LocalContext.current
-            val frozen = FreezerOperations.isFrozen(context, app.packageName)
+            val appState = FreezerOperations.stateOf(context, app.packageName)
             SearchPanelResultCard(
                 title = app.label,
                 subtitle = null,
-                titleColor = if (frozen) {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                } else {
+                titleColor = if (appState.isActive) {
                     null
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 },
                 leading = {
                     SearchPanelAppQuickActionTarget(
@@ -476,7 +476,7 @@ private fun SearchPanelAppListCards(
                             contentDescription = app.label,
                             size = LeadingSlotSize,
                             corner = RoundedCornerShape(8.dp),
-                            frozen = frozen,
+                            dimmed = !appState.isActive,
                         )
                     }
                 },
@@ -500,7 +500,7 @@ private fun SearchPanelAppIcon(
     contentDescription: String,
     size: Dp,
     corner: RoundedCornerShape,
-    frozen: Boolean = false,
+    dimmed: Boolean = false,
 ) {
     val context = LocalContext.current
     var iconBitmap by remember(packageName) {
@@ -511,7 +511,7 @@ private fun SearchPanelAppIcon(
             iconBitmap = PickerAppIconBitmap.load(context, packageName)
         }
     }
-    val grayscale = if (frozen) {
+    val grayscale = if (dimmed) {
         ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
     } else {
         null
@@ -537,7 +537,7 @@ private fun SearchPanelAppIcon(
                     corner,
                 )
                 .padding(8.dp)
-                .then(if (frozen) Modifier.alpha(0.38f) else Modifier),
+                .then(if (dimmed) Modifier.alpha(0.38f) else Modifier),
             tint = MaterialTheme.colorScheme.primary,
         )
     }

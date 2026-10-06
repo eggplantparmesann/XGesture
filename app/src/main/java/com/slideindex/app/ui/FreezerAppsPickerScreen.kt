@@ -49,6 +49,7 @@ import kotlinx.coroutines.withContext
 private enum class FreezerPickerFilter {
     ALL,
     FROZEN,
+    PAUSED,
     ACTIVE,
 }
 
@@ -72,6 +73,7 @@ fun FreezerAppsPickerScreen(
     var privilegedAccessGranted by remember { mutableStateOf<Boolean?>(null) }
     val scope = rememberCoroutineScope()
     val frozenLabel = stringResource(R.string.freezer_status_frozen)
+    val pausedLabel = stringResource(R.string.freezer_status_paused)
     val activeLabel = stringResource(R.string.freezer_status_active)
 
     fun reloadApps() {
@@ -107,18 +109,22 @@ fun FreezerAppsPickerScreen(
     }
 
     val frozenTabCount = remember(searchFilteredApps) {
-        searchFilteredApps.count { FreezerOperations.isFrozen(context, it.packageName) }
+        searchFilteredApps.count { FreezerOperations.stateOf(context, it.packageName).isFrozen }
+    }
+    val pausedTabCount = remember(searchFilteredApps) {
+        searchFilteredApps.count { FreezerOperations.stateOf(context, it.packageName).isPaused }
     }
     val allTabCount = searchFilteredApps.size
-    val activeTabCount = allTabCount - frozenTabCount
+    val activeTabCount = allTabCount - frozenTabCount - pausedTabCount
 
     val displayedApps = remember(searchFilteredApps, settings.freezerAppPackages, listFilter) {
         searchFilteredApps
             .filter { app ->
                 when (listFilter) {
                     FreezerPickerFilter.ALL -> true
-                    FreezerPickerFilter.FROZEN -> FreezerOperations.isFrozen(context, app.packageName)
-                    FreezerPickerFilter.ACTIVE -> !FreezerOperations.isFrozen(context, app.packageName)
+                    FreezerPickerFilter.FROZEN -> FreezerOperations.stateOf(context, app.packageName).isFrozen
+                    FreezerPickerFilter.PAUSED -> FreezerOperations.stateOf(context, app.packageName).isPaused
+                    FreezerPickerFilter.ACTIVE -> FreezerOperations.stateOf(context, app.packageName).isActive
                 }
             }
             .sortedWith(
@@ -130,12 +136,14 @@ fun FreezerAppsPickerScreen(
     val filterTabs = listOf(
         stringResource(R.string.freezer_tab_all_count, allTabCount),
         stringResource(R.string.freezer_tab_frozen_count, frozenTabCount),
+        stringResource(R.string.freezer_tab_paused_count, pausedTabCount),
         stringResource(R.string.freezer_tab_active_count, activeTabCount)
     )
     val selectedFilterTabIndex = when (listFilter) {
         FreezerPickerFilter.ALL -> 0
         FreezerPickerFilter.FROZEN -> 1
-        FreezerPickerFilter.ACTIVE -> 2
+        FreezerPickerFilter.PAUSED -> 2
+        FreezerPickerFilter.ACTIVE -> 3
     }
 
     SettingsLazyScreenScaffoldWithExpandableSearch(
@@ -165,6 +173,9 @@ fun FreezerAppsPickerScreen(
         }
         item(key = "freezer-picker-launcher-hint") {
             MiuixHintText(stringResource(R.string.freezer_legacy_icon_cleanup))
+        }
+        item(key = "freezer-picker-pause-hint") {
+            MiuixHintText(stringResource(R.string.freezer_pause_semantics_hint))
         }
         groupedCardItems(
             keyPrefix = "freezer-picker-options",
@@ -239,6 +250,7 @@ fun FreezerAppsPickerScreen(
                     listFilter = when (index) {
                         0 -> FreezerPickerFilter.ALL
                         1 -> FreezerPickerFilter.FROZEN
+                        2 -> FreezerPickerFilter.PAUSED
                         else -> FreezerPickerFilter.ACTIVE
                     }
                 },
@@ -271,11 +283,12 @@ fun FreezerAppsPickerScreen(
                 items(displayedApps.size, key = { displayedApps[it].packageName }) { index ->
                     val app = displayedApps[index]
                     val inList = app.packageName in settings.freezerAppPackages
-                    val frozen = FreezerOperations.isFrozen(context, app.packageName)
+                    val state = FreezerOperations.stateOf(context, app.packageName)
                     val statusSuffix = when {
-                        inList && frozen -> " · $frozenLabel"
-                        inList -> " · $activeLabel"
-                        else -> ""
+                        !inList -> ""
+                        state.isFrozen -> " · $frozenLabel"
+                        state.isPaused -> " · $pausedLabel"
+                        else -> " · $activeLabel"
                     }
                     AppPackageListRow(
                         entry = AppPackageEntry.Installed(app),
@@ -289,7 +302,7 @@ fun FreezerAppsPickerScreen(
                         },
                         missingIcon = Icons.Default.TouchApp,
                         subtitle = app.packageName + statusSuffix,
-                        enabled = !inList || !frozen,
+                        enabled = !inList || state.isActive,
                         onAction = {
                             scope.launch {
                                 if (inList) {

@@ -17,7 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AcUnit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LockOpen
+import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.PictureInPictureAlt
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.slideindex.app.R
+import com.slideindex.app.freezer.FreezerAppState
 import com.slideindex.app.freezer.FreezerOperations
 import com.slideindex.app.settings.AppSettings
 import com.slideindex.app.util.HapticHelper
@@ -59,6 +62,7 @@ enum class SearchPanelAppQuickAction {
     FREE_WINDOW,
     SHARE,
     FREEZE,
+    PAUSE,
     DETAILS,
 }
 
@@ -114,7 +118,7 @@ internal fun SearchPanelAppQuickActionTarget(
         return
     }
     val context = LocalContext.current
-    val appFrozen = FreezerOperations.isFrozen(context, packageName)
+    val appState = FreezerOperations.stateOf(context, packageName)
     val view = LocalView.current
     val density = LocalDensity.current
     val yCancelThresholdPx = with(density) { 56.dp.toPx() }
@@ -232,7 +236,7 @@ internal fun SearchPanelAppQuickActionTarget(
                     SearchPanelAppQuickActionStrip(
                         mode = stripMode,
                         hoveredSlotIndex = hoveredSlotIndex,
-                        appFrozen = appFrozen,
+                        appState = appState,
                     )
                 }
             }
@@ -244,7 +248,7 @@ internal fun SearchPanelAppQuickActionTarget(
 private fun SearchPanelAppQuickActionStrip(
     mode: SearchPanelAppQuickActionStripMode,
     hoveredSlotIndex: Int,
-    appFrozen: Boolean,
+    appState: FreezerAppState,
 ) {
     val stripBackground = Color(0xFF2C2C2E).copy(alpha = 0.94f)
     Row(
@@ -260,7 +264,7 @@ private fun SearchPanelAppQuickActionStrip(
             SearchPanelAppQuickActionSlot(
                 action = actionForSlot(mode, slotIndex),
                 highlighted = slotIndex == hoveredSlotIndex,
-                appFrozen = appFrozen,
+                appState = appState,
             )
         }
     }
@@ -270,15 +274,20 @@ private fun SearchPanelAppQuickActionStrip(
 private fun SearchPanelAppQuickActionSlot(
     action: SearchPanelAppQuickAction,
     highlighted: Boolean,
-    appFrozen: Boolean,
+    appState: FreezerAppState,
 ) {
     val icon = when (action) {
         SearchPanelAppQuickAction.FREE_WINDOW -> Icons.Outlined.PictureInPictureAlt
         SearchPanelAppQuickAction.SHARE -> Icons.Outlined.Share
-        SearchPanelAppQuickAction.FREEZE -> if (appFrozen) {
+        SearchPanelAppQuickAction.FREEZE -> if (appState.isFrozen) {
             Icons.Outlined.LockOpen
         } else {
             Icons.Outlined.AcUnit
+        }
+        SearchPanelAppQuickAction.PAUSE -> if (appState.isPaused) {
+            Icons.Outlined.PlayArrow
+        } else {
+            Icons.Outlined.Pause
         }
         SearchPanelAppQuickAction.DETAILS -> Icons.Outlined.Info
     }
@@ -287,10 +296,15 @@ private fun SearchPanelAppQuickActionSlot(
             stringResource(R.string.search_panel_app_quick_action_free_window)
         SearchPanelAppQuickAction.SHARE ->
             stringResource(R.string.search_panel_app_quick_action_share)
-        SearchPanelAppQuickAction.FREEZE -> if (appFrozen) {
+        SearchPanelAppQuickAction.FREEZE -> if (appState.isFrozen) {
             stringResource(R.string.freezer_action_unfreeze)
         } else {
             stringResource(R.string.freezer_action_freeze)
+        }
+        SearchPanelAppQuickAction.PAUSE -> if (appState.isPaused) {
+            stringResource(R.string.freezer_action_unpause)
+        } else {
+            stringResource(R.string.freezer_action_pause)
         }
         SearchPanelAppQuickAction.DETAILS ->
             stringResource(R.string.search_panel_app_quick_action_details)

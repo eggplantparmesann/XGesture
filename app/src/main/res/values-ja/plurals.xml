@@ -105,6 +105,12 @@
     <plurals name="freezer_unfreeze_all_done">
         <item quantity="other">%d 個のアプリのフリーズを解除しました</item>
     </plurals>
+    <plurals name="freezer_pause_all_done">
+        <item quantity="other">%d 個のアプリを一時停止しました</item>
+    </plurals>
+    <plurals name="freezer_unpause_all_done">
+        <item quantity="other">%d 個のアプリの一時停止を解除しました</item>
+    </plurals>
     <plurals name="freezer_import_frozen_done">
         <item quantity="other">%d 件のアプリをインポートしました</item>
     </plurals>

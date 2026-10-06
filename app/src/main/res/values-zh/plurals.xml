@@ -108,6 +108,12 @@
     <plurals name="freezer_unfreeze_all_done">
         <item quantity="other">已解冻 %d 个应用</item>
     </plurals>
+    <plurals name="freezer_pause_all_done">
+        <item quantity="other">已暂停 %d 个应用</item>
+    </plurals>
+    <plurals name="freezer_unpause_all_done">
+        <item quantity="other">已取消暂停 %d 个应用</item>
+    </plurals>
     <plurals name="freezer_import_frozen_done">
         <item quantity="other">已导入 %d 个应用</item>
     </plurals>
