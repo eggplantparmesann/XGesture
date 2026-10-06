@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -33,6 +34,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.slideindex.app.R
 import com.slideindex.app.data.AppInfo
+import com.slideindex.app.settings.FreezerWorkMode
 import com.slideindex.app.settings.SettingsRepository
 import com.slideindex.app.ui.compose.rememberAppRepository
 import com.slideindex.app.ui.miuix.MiuixExpandableSearchBottomContent
@@ -82,6 +84,25 @@ fun FreezerPanelContent(
     val pauseAllLabel = stringResource(R.string.freezer_pause_all)
     val unpauseAllLabel = stringResource(R.string.freezer_unpause_all)
     val importFrozenLabel = stringResource(R.string.freezer_import_frozen_apps)
+    val switchWorkModeLabel = stringResource(
+        if (settings.freezerWorkMode.isPause) {
+            R.string.freezer_work_mode_switch_to_freeze
+        } else {
+            R.string.freezer_work_mode_switch_to_pause
+        }
+    )
+    val switchWorkMode = {
+        scope.launch {
+            settingsRepository.setFreezerWorkMode(
+                if (settings.freezerWorkMode.isPause) {
+                    FreezerWorkMode.FREEZE.id
+                } else {
+                    FreezerWorkMode.PAUSE.id
+                }
+            )
+        }
+        Unit
+    }
 
     LaunchedEffect(settings.freezerAppPackages) {
         if (settings.freezerAppPackages.isEmpty()) {
@@ -142,6 +163,10 @@ fun FreezerPanelContent(
             DropdownItem(
                 text = importFrozenLabel,
                 onClick = { importFrozenApps() }
+            ),
+            DropdownItem(
+                text = switchWorkModeLabel,
+                onClick = { switchWorkMode() }
             ),
             DropdownItem(
                 text = pauseAllLabel,
@@ -219,6 +244,13 @@ fun FreezerPanelContent(
                             },
                         )
                         DropdownMenuItem(
+                            text = { Text(switchWorkModeLabel) },
+                            onClick = {
+                                overflowMenuExpanded = false
+                                switchWorkMode()
+                            },
+                        )
+                        DropdownMenuItem(
                             text = { Text(pauseAllLabel) },
                             onClick = {
                                 overflowMenuExpanded = false
@@ -273,16 +305,24 @@ fun FreezerPanelContent(
             )
         },
         floatingActionButton = {
+            val pauseMode = settings.freezerWorkMode.isPause
             MiuixSettingsFab(
                 onClick = {
                     scope.launch {
-                        if (FreezerOperations.freezeAll(context, settings.freezerAppPackages) > 0) {
+                        val changed = if (pauseMode) {
+                            FreezerOperations.pauseAll(context, settings.freezerAppPackages)
+                        } else {
+                            FreezerOperations.freezeAll(context, settings.freezerAppPackages)
+                        }
+                        if (changed > 0) {
                             freezeStateRevision++
                         }
                     }
                 },
-                icon = Icons.Default.AcUnit,
-                contentDescription = stringResource(R.string.freezer_action_freeze)
+                icon = if (pauseMode) Icons.Default.Pause else Icons.Default.AcUnit,
+                contentDescription = stringResource(
+                    if (pauseMode) R.string.freezer_action_pause else R.string.freezer_action_freeze
+                )
             )
         }
     ) {

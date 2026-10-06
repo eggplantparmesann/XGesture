@@ -94,6 +94,8 @@ data class LauncherSettings(
     val freezerAppPackages: Set<String> = emptySet(),
     val freezerBootstrapExcludedPackages: Set<String> = emptySet(),
     val freezerShowInLauncher: Boolean = false,
+    /** 冰箱工作模式：面板底部按钮默认执行冻结还是暂停，见 [FreezerWorkMode]。 */
+    val freezerWorkModeId: Int = FreezerWorkMode.DEFAULT.id,
     val expandPanelSlotActions: List<com.slideindex.app.gesture.GestureAction?> = List(8) { null },
     /** “切换上一应用”动作忽略的包名黑名单。 */
     val previousAppExcludedPackages: Set<String> = emptySet(),

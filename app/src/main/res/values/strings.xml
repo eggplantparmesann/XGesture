@@ -1796,6 +1796,10 @@
     <string name="freezer_pause_semantics_hint">Pause keeps the app installed: the launcher icon stays but turns grey and cannot be opened. Freeze hides the icon and fully disables the app.</string>
     <string name="freezer_pause_dialog_message">%1$s paused this app. Tap Resume to use it again.</string>
     <string name="freezer_protected_package">This app cannot be paused or frozen</string>
+    <string name="freezer_work_mode_title_format">Work mode: %1$s</string>
+    <string name="freezer_work_mode_pause_desc">When on, the button at the bottom pauses all apps; when off it freezes them.</string>
+    <string name="freezer_work_mode_switch_to_pause">Switch to pause mode</string>
+    <string name="freezer_work_mode_switch_to_freeze">Switch to freeze mode</string>
     <string name="freezer_remove_from_list">Remove from list</string>
     <string name="freezer_unfreeze_and_remove">Unfreeze and remove</string>
     <string name="freezer_remove_while_frozen">This app is still frozen. Unfreeze it first, or choose Unfreeze and remove.</string>

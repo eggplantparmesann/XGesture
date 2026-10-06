@@ -1055,6 +1055,10 @@
     <string name="freezer_pause_semantics_hint">一時停止はアプリを残したまま起動だけを止めます（ランチャーのアイコンは灰色で残ります）。凍結はアイコンごと消えて完全に無効化されます。</string>
     <string name="freezer_pause_dialog_message">%1$s がこのアプリを一時停止しました。「一時停止を解除」で再開できます。</string>
     <string name="freezer_protected_package">このアプリは一時停止・凍結できません</string>
+    <string name="freezer_work_mode_title_format">動作モード：%1$s</string>
+    <string name="freezer_work_mode_pause_desc">オンのとき下部ボタンは「すべて一時停止」、オフのときは「すべて凍結」を実行します</string>
+    <string name="freezer_work_mode_switch_to_pause">一時停止モードに切り替え</string>
+    <string name="freezer_work_mode_switch_to_freeze">凍結モードに切り替え</string>
     <string name="freezer_remove_from_list">リストから削除</string>
     <string name="freezer_unfreeze_and_remove">解除して削除</string>
     <string name="freezer_remove_while_frozen">このアプリはまだ凍結中です。先に解除するか、「解除して削除」を選択してください。</string>

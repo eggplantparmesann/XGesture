@@ -30,6 +30,7 @@ import com.slideindex.app.data.AppInfo
 import com.slideindex.app.freezer.FreezerLauncherHelper
 import com.slideindex.app.freezer.FreezerListOperations
 import com.slideindex.app.freezer.FreezerOperations
+import com.slideindex.app.settings.FreezerWorkMode
 import com.slideindex.app.settings.PrivilegeMode
 import com.slideindex.app.settings.SettingsRepository
 import com.slideindex.app.ui.compose.rememberAppRepository
@@ -209,6 +210,27 @@ fun FreezerAppsPickerScreen(
                         checked = showSystemApps,
                         enabled = true,
                         onCheckedChange = { showSystemApps = it }
+                    )
+                },
+                settingsCardScopeItem("work-mode") {
+                    val pauseMode = settings.freezerWorkMode.isPause
+                    SettingSwitchRow(
+                        title = stringResource(
+                            R.string.freezer_work_mode_title_format,
+                            stringResource(
+                                if (pauseMode) R.string.freezer_action_pause else R.string.freezer_action_freeze
+                            )
+                        ),
+                        subtitle = stringResource(R.string.freezer_work_mode_pause_desc),
+                        checked = pauseMode,
+                        enabled = true,
+                        onCheckedChange = { pause ->
+                            scope.launch {
+                                settingsRepository.setFreezerWorkMode(
+                                    if (pause) FreezerWorkMode.PAUSE.id else FreezerWorkMode.FREEZE.id
+                                )
+                            }
+                        }
                     )
                 },
                 settingsCardScopeItem("import-frozen") {

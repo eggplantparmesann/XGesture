@@ -1064,6 +1064,10 @@
     <string name="freezer_pause_semantics_hint">暂停只是挂起应用：桌面图标仍在但变灰、点不开；冻结会让图标从桌面消失并彻底停用。</string>
     <string name="freezer_pause_dialog_message">已被 %1$s 暂停。点「取消暂停」即可继续使用。</string>
     <string name="freezer_protected_package">该应用不支持暂停或冻结</string>
+    <string name="freezer_work_mode_title_format">工作模式：%1$s</string>
+    <string name="freezer_work_mode_pause_desc">开启后底部按钮执行「全部暂停」，关闭则执行「全部冻结」</string>
+    <string name="freezer_work_mode_switch_to_pause">切换到暂停模式</string>
+    <string name="freezer_work_mode_switch_to_freeze">切换到冻结模式</string>
     <string name="freezer_remove_from_list">从列表移除</string>
     <string name="freezer_unfreeze_and_remove">解冻并移除</string>
     <string name="freezer_remove_while_frozen">该应用仍处于冻结状态，请先解冻或选择「解冻并移除」</string>

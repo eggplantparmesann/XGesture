@@ -264,6 +264,17 @@ class SettingsMutatorsTest {
         assertTrue(afterAdd.freezerAppPackages.contains("com.example.app"))
         assertFalse(afterAdd.freezerBootstrapExcludedPackages.contains("com.example.app"))
     }
+
+    @Test
+    fun setFreezerWorkMode_persistsPauseAndFreeze() = runBlocking {
+        repository.setFreezerWorkMode(FreezerWorkMode.PAUSE.id)
+        val paused = awaitSettings { it.freezerWorkMode.isPause }
+        assertEquals(FreezerWorkMode.PAUSE, paused.freezerWorkMode)
+
+        repository.setFreezerWorkMode(FreezerWorkMode.FREEZE.id)
+        val frozen = awaitSettings { !it.freezerWorkMode.isPause }
+        assertEquals(FreezerWorkMode.FREEZE, frozen.freezerWorkMode)
+    }
 }
 
 private val testSettingsLock = Any()

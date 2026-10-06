@@ -238,6 +238,8 @@ internal object SettingsSnapshotReader {
             freezerBootstrapExcludedPackages =
                 prefs[SettingsPreferenceKeys.FREEZER_BOOTSTRAP_EXCLUDED_PACKAGES] ?: emptySet(),
             freezerShowInLauncher = prefs[SettingsPreferenceKeys.FREEZER_SHOW_IN_LAUNCHER] ?: false,
+            freezerWorkModeId = prefs[SettingsPreferenceKeys.FREEZER_WORK_MODE]
+                ?: FreezerWorkMode.DEFAULT.id,
             expandPanelSlotActions = readExpandPanelSlotActions(prefs),
             previousAppExcludedPackages =
                 prefs[SettingsPreferenceKeys.PREVIOUS_APP_EXCLUDED_PACKAGES] ?: emptySet(),

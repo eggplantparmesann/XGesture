@@ -502,6 +502,10 @@ class EdgeSettingsMutator @Inject constructor(
         it[SettingsPreferenceKeys.FREEZER_SHOW_IN_LAUNCHER] = enabled
     }
 
+    suspend fun setFreezerWorkMode(modeId: Int) = editor.edit {
+        it[SettingsPreferenceKeys.FREEZER_WORK_MODE] = modeId
+    }
+
     suspend fun setExpandPanelSlotAction(index: Int, action: com.slideindex.app.gesture.GestureAction?) = editor.edit {
         val current = readExpandPanelSlotActions(it).toMutableList()
         if (index !in current.indices) return@edit

@@ -265,6 +265,7 @@ class SettingsRepository @Inject constructor(
     suspend fun addFreezerApp(packageName: String) = edge.addFreezerApp(packageName)
     suspend fun removeFreezerApp(packageName: String) = edge.removeFreezerApp(packageName)
     suspend fun setFreezerShowInLauncher(enabled: Boolean) = edge.setFreezerShowInLauncher(enabled)
+    suspend fun setFreezerWorkMode(modeId: Int) = edge.setFreezerWorkMode(modeId)
     suspend fun setFreezerAppPackages(packages: Set<String>) = edge.setFreezerAppPackages(packages)
     suspend fun setExpandPanelSlotAction(index: Int, action: com.slideindex.app.gesture.GestureAction?) =
         edge.setExpandPanelSlotAction(index, action)

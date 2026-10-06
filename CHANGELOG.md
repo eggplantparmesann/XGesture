@@ -2,6 +2,11 @@
 
 All notable changes to XGesture are documented in this file.
 
+## [Unreleased]
+
+### Added
+- 冰箱新增「工作模式」：选择暂停后，面板底部按钮执行「全部暂停」，选择冻结则执行「全部冻结」；模式只决定默认动作，不改变列表中已有应用的状态
+
 ## [1.36.0] - 2026-10-06
 
 ### Added

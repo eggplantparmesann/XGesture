@@ -1038,6 +1038,10 @@
     <string name="freezer_pause_semantics_hint">الإيقاف المؤقت يُبقي التطبيق مثبتاً: تبقى أيقونته في الشاشة الرئيسية لكنها رمادية ولا يمكن فتحها. أما التجميد فيُخفي الأيقونة ويعطّل التطبيق تماماً.</string>
     <string name="freezer_pause_dialog_message">تم إيقاف هذا التطبيق مؤقتاً بواسطة %1$s. اضغط «إلغاء الإيقاف المؤقت» للمتابعة.</string>
     <string name="freezer_protected_package">لا يمكن إيقاف هذا التطبيق مؤقتاً أو تجميده</string>
+    <string name="freezer_work_mode_title_format">وضع العمل: %1$s</string>
+    <string name="freezer_work_mode_pause_desc">عند التفعيل ينفّذ الزر السفلي «إيقاف الكل مؤقتاً»، وإلا ينفّذ «تجميد الكل»</string>
+    <string name="freezer_work_mode_switch_to_pause">التبديل إلى وضع الإيقاف المؤقت</string>
+    <string name="freezer_work_mode_switch_to_freeze">التبديل إلى وضع التجميد</string>
     <string name="freezer_remove_from_list">إزالة من القائمة</string>
     <string name="freezer_unfreeze_and_remove">إلغاء التجميد والإزالة</string>
     <string name="freezer_remove_while_frozen">لا يزال هذا التطبيق في حالة تجميد، يرجى إلغاء التجميد أولاً أو اختيار «إلغاء التجميد والإزالة»</string>
