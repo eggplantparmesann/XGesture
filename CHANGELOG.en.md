@@ -12,6 +12,38 @@ Release pages are published with the English notes first, then the Chinese ones.
 notes follow the system language: `notesEn` is shown to non-Chinese locales and `notes` to
 Chinese ones, each falling back to the other when a version is missing.
 
+## [1.36.0] - 2026-10-06
+
+### Added
+- New "volume up" and "volume down" gesture actions
+- New floating-ball "inward then down" and "inward then up" two-stage gestures; the gesture settings page is grouped by direction
+- New freezer "Pause": the app stays installed and its launcher icon stays in place but turns grey, and tapping it shows a system dialog with a one-tap resume; the freezer list, batch actions, manager filter and search-panel quick actions can all pause and resume
+- New inverted condition for the notification advanced-match JSON, with stricter JSON validation
+
+### Changed
+- The floating ball size limit is raised from 72dp to 96dp, with 1dp steps
+- The first stage of the floating-ball two-stage gestures uses the short-swipe threshold
+- The trigger gesture settings page is split into sections, with the slot list first
+- Ring launcher settings and strings use the "ring launcher" naming; existing configuration migrates automatically on upgrade and gesture bindings are unaffected
+- The ring launcher enters edit mode only when no slot is pinned and no app can fill in; otherwise it fills with recent apps
+- The notification rule screen state becomes a three-way choice (any / screen on / screen off), and leaving all three charging states unchecked means no restriction
+- "Floating window for the current app" first tries to move the window in place on Meizu devices and only relaunches when that fails
+- In-app update notes follow the system language (Chinese or English)
+- Freezer "Re-freeze" only affects apps in use and keeps paused apps paused; "Unfreeze all" no longer touches paused apps
+- The freezer import also covers frozen and paused launcher apps
+- Freezer pause and freeze both skip this app itself, system, SystemUI and the current launcher
+
+### Fixed
+- Fixed the trigger being drawn higher and shorter than its touchable area in the trigger settings preview
+- Fixed a gesture slot losing its launch mode after saving, which still launched fullscreen when the floating window was selected
+- Fixed ring launcher slots being cleared after editing
+- Fixed charging states being re-checked when reopening a notification rule that had only one phone state selected
+- Fixed the app-condition dropdown label and value being misaligned in notification rules
+- Fixed the notification-access entry not opening this app's detail page
+- Fixed occasional crashes when clipboard monitoring starts
+- Fixed the flashlight action still opening the app info page when the permission was already granted
+- Fixed four mojibake strings in the English UI
+
 ## [1.35.0] - 2026-10-05
 
 ### Added
