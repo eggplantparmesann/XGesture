@@ -65,6 +65,7 @@ docs/floatwidget-search-panel-reverse.md
 
 # --- 发版本地临时文件 ---
 release-apk/
+release-apk-diag/
 release-notes-*.md
 
 # --- 构建时复制进 APK 的引擎 zip（勿提交） ---
