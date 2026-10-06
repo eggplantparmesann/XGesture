@@ -27,6 +27,7 @@ import com.slideindex.app.service.OverlayServiceLifecycle
 import com.slideindex.app.util.HiddenApiBootstrap
 import com.slideindex.app.util.AppProcess
 import com.slideindex.app.util.AppLocaleApplier
+import com.slideindex.app.util.ForegroundNotificationChannels
 import com.slideindex.app.util.PredictiveBackHelper
 import com.slideindex.app.util.ServiceEnabledStore
 import com.slideindex.app.settings.AppUiLanguage
@@ -90,6 +91,11 @@ class SlideIndexApp : Application(), androidx.work.Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        // 渠道必须先于任何 startForeground 存在：AMS 在 ServiceRecord.postNotification() 里
+        // 查不到渠道就直接 killMisbehavingService()（Bad notification for startForeground），
+        // 而这个判定发生在 AMS 的 handler 线程，服务侧 try/catch 抓不住。
+        // 这里在进程最早期、任何 Service 被拉起之前幂等预建一遍。
+        ForegroundNotificationChannels.preCreatePersistentChannels(this)
         // 抢在首帧之前把常驻服务前台化：覆盖安装后 AMS 会立刻重启 OverlayService 并要求
         // 5 秒内 startForeground()，而这段时间主线程正被首帧/图标装载占着，排在后面就会撞超时。
         // 详见 OverlayServiceLifecycle.warmStartEarly。

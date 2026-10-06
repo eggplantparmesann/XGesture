@@ -1,7 +1,6 @@
 package com.slideindex.app.service
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
@@ -11,23 +10,27 @@ import com.slideindex.app.MainActivity
 import com.slideindex.app.R
 import com.slideindex.app.nativeengine.NativeEnginePackDownloadPhase
 import com.slideindex.app.nativeengine.NativeEnginePackDownloadState
+import com.slideindex.app.util.ForegroundNotificationChannels
 import kotlin.math.roundToInt
 
 object NativeEnginePackDownloadNotifications {
     private const val CHANNEL_ID = "native_engine_pack_download"
     const val NOTIFICATION_ID = 3002
 
-    private fun ensureChannel(context: Context) {
-        val manager = context.getSystemService(NotificationManager::class.java) ?: return
-        if (manager.getNotificationChannel(CHANNEL_ID) != null) return
-        manager.createNotificationChannel(
-            NotificationChannel(
-                CHANNEL_ID,
-                context.getString(R.string.native_engine_download_channel),
-                NotificationManager.IMPORTANCE_LOW
-            )
+    /**
+     * 幂等建渠道并回查确认存在。
+     *
+     * 不再"已存在就跳过"：渠道被删掉时要重建，被关掉时要能被调用方感知。
+     * [NativeEnginePackDownloadService.startForeground] 之前必须先过这一关。
+     */
+    fun ensureChannel(context: Context): ForegroundNotificationChannels.Result =
+        ForegroundNotificationChannels.ensureUsable(
+            context = context,
+            id = CHANNEL_ID,
+            name = context.getString(R.string.native_engine_download_channel),
+            importance = NotificationManager.IMPORTANCE_LOW,
+            tag = "NativeEnginePackDownload",
         )
-    }
 
     fun buildDownloadNotification(
         context: Context,

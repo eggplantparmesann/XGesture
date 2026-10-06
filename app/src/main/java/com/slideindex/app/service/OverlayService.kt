@@ -2,13 +2,13 @@ package com.slideindex.app.service
 
 import com.slideindex.app.di.AppDependencies
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +16,7 @@ import com.slideindex.app.MainActivity
 import com.slideindex.app.R
 import com.slideindex.app.shake.FaceDownGestureHost
 import com.slideindex.app.shake.ShakeGestureHost
+import com.slideindex.app.util.ForegroundNotificationChannels
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
@@ -34,7 +35,7 @@ class OverlayService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
+        // 渠道由 [promoteToForeground] 内部先建好再 startForeground，这里不再单独建。
         promoteToForeground()
         GestureToggleTileWarmup.requestListening(this, "overlayService")
         shakeGestureHost.start(lifecycleScope)
@@ -80,7 +81,10 @@ class OverlayService : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         // startForegroundService() requires startForeground() on every delivery, not only in onCreate().
-        promoteToForeground()
+        if (!promoteToForeground()) {
+            // 渠道被用户关闭时只降级、不自杀：常驻能力靠无障碍服务兜底，自杀反而会让用户更难恢复。
+            Log.w(TAG, "本次唤醒未能进入前台，服务继续以非前台状态运行")
+        }
         // 每一次被"唤醒"都回一帧状态：主进程看门狗靠这帧判断 :overlay 是否活着。
         com.slideindex.app.overlay.OverlayStatePort.publish(this, "serviceCommand")
         when (intent?.action) {
@@ -97,28 +101,40 @@ class OverlayService : LifecycleService() {
         super.onDestroy()
     }
 
-    private fun promoteToForeground() {
-        val notification = buildNotification()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(
-                NOTIFICATION_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-            )
-        } else {
-            startForeground(NOTIFICATION_ID, notification)
+    private fun promoteToForeground(): Boolean {
+        // 硬前提：先建渠道并回查确认它存在，再 startForeground。
+        // 渠道取不到时 AMS 会在 ServiceRecord.postNotification() 里判为非法通知并
+        // killMisbehavingService()，进程被系统强杀（日志：Bad notification for startForeground）。
+        // 那个判定在 AMS 的 handler 线程异步执行，所以外面套 try/catch 是无效的。
+        if (!ensureNotificationChannel().canPromote) {
+            Log.e(TAG, "通知渠道不可用，跳过前台化，避免被系统判定为非法前台服务通知")
+            return false
         }
+        val notification = buildNotification()
+        return runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, notification)
+            }
+        }.onFailure { error ->
+            Log.e(TAG, "startForeground failed", error)
+        }.isSuccess
     }
 
-    private fun createNotificationChannel() {
-        val manager = getSystemService(NotificationManager::class.java)
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            getString(R.string.app_name),
-            NotificationManager.IMPORTANCE_LOW
+    /** 幂等建渠道并回查：返回 [ForegroundNotificationChannels.Result]。 */
+    private fun ensureNotificationChannel(): ForegroundNotificationChannels.Result =
+        ForegroundNotificationChannels.ensureUsable(
+            context = this,
+            id = CHANNEL_ID,
+            name = getString(R.string.app_name),
+            importance = NotificationManager.IMPORTANCE_LOW,
+            tag = TAG,
         )
-        manager.createNotificationChannel(channel)
-    }
 
     private fun buildNotification(): Notification {
         val intent = PendingIntent.getActivity(
@@ -137,6 +153,8 @@ class OverlayService : LifecycleService() {
     }
 
     companion object {
+        private const val TAG = "OverlayService"
+
         const val ACTION_RELOAD_APPS = "com.slideindex.app.RELOAD_APPS"
 
         @Volatile

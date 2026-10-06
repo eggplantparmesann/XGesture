@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
@@ -183,6 +184,12 @@ class OcrModelDownloadService : Service() {
     }
 
     private fun startForegroundCompat(state: OcrModelDownloadState?) {
+        // 渠道先建好并确认存在，再 startForeground：渠道取不到时系统会判为非法前台服务
+        // 通知并在 AMS 侧异步杀进程（Bad notification for startForeground）。
+        if (!OcrModelDownloadNotifications.ensureChannel(this).canPromote) {
+            Log.e(TAG, "下载通知渠道不可用，跳过后台下载前台化")
+            return
+        }
         val notification = OcrModelDownloadNotifications.buildDownloadNotification(this, state)
         ServiceCompat.startForeground(
             this,
@@ -197,6 +204,7 @@ class OcrModelDownloadService : Service() {
     }
 
     companion object {
+        private const val TAG = "OcrModelDownloadSvc"
         private const val EXTRA_MODEL_ID = "extra_model_id"
         private const val EXTRA_WIFI_ONLY = "extra_wifi_only"
         private const val NOTIFY_STEP = 2

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import com.slideindex.app.download.DownloadProgressRelay
@@ -124,6 +125,12 @@ class NativeEnginePackDownloadService : Service() {
     }
 
     private fun startForegroundCompat(state: NativeEnginePackDownloadState?) {
+        // 渠道先建好并确认存在，再 startForeground：渠道取不到时系统会判为非法前台服务
+        // 通知并在 AMS 侧异步杀进程（Bad notification for startForeground）。
+        if (!NativeEnginePackDownloadNotifications.ensureChannel(this).canPromote) {
+            Log.e(TAG, "下载通知渠道不可用，跳过后台下载前台化")
+            return
+        }
         val notification = NativeEnginePackDownloadNotifications.buildDownloadNotification(this, state)
         ServiceCompat.startForeground(
             this,
@@ -138,6 +145,7 @@ class NativeEnginePackDownloadService : Service() {
     }
 
     companion object {
+        private const val TAG = "NativeEngineDlSvc"
         private const val EXTRA_PACK_ID = "extra_pack_id"
         private const val EXTRA_WIFI_ONLY = "extra_wifi_only"
 

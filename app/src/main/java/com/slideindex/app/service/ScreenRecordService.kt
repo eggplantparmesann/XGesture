@@ -2,7 +2,6 @@ package com.slideindex.app.service
 
 import android.app.Activity
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.annotation.SuppressLint
@@ -25,6 +24,7 @@ import android.util.Log
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import com.slideindex.app.R
+import com.slideindex.app.util.ForegroundNotificationChannels
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,6 +48,12 @@ class ScreenRecordService : Service() {
                 val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, Activity.RESULT_CANCELED)
                 val data = readResultData(intent)
                 if (resultCode == Activity.RESULT_OK && data != null) {
+                    // 渠道先落地再 startForeground：渠道缺失会被系统判为非法前台服务通知并杀进程。
+                    if (!ensureChannel().canPromote) {
+                        Log.e(TAG, "录屏通知渠道不可用，放弃前台化")
+                        stopSelf()
+                        return START_NOT_STICKY
+                    }
                     startForeground(NOTIFICATION_ID, buildNotification(recording = true))
                     startRecording(resultCode, data)
                 } else {
@@ -211,15 +217,14 @@ class ScreenRecordService : Service() {
             .build()
     }
 
-    private fun ensureChannel() {
-        val manager = getSystemService(NotificationManager::class.java) ?: return
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            getString(R.string.screen_record_channel_name),
-            NotificationManager.IMPORTANCE_LOW
+    private fun ensureChannel(): ForegroundNotificationChannels.Result =
+        ForegroundNotificationChannels.ensureUsable(
+            context = this,
+            id = CHANNEL_ID,
+            name = getString(R.string.screen_record_channel_name),
+            importance = NotificationManager.IMPORTANCE_LOW,
+            tag = TAG,
         )
-        manager.createNotificationChannel(channel)
-    }
 
     private fun readResultData(intent: Intent): Intent? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

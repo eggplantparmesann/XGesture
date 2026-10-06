@@ -2,7 +2,6 @@ package com.slideindex.app.update
 
 import android.Manifest
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -14,6 +13,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.slideindex.app.MainActivity
 import com.slideindex.app.R
+import com.slideindex.app.util.ForegroundNotificationChannels
 
 object UpdateNotifications {
     private const val CHANNEL_UPDATE = "app_update"
@@ -23,33 +23,35 @@ object UpdateNotifications {
     const val NOTIFICATION_ID_DOWNLOAD = 7102
 
     fun ensureChannels(context: Context) {
-        val nm = context.getSystemService(NotificationManager::class.java) ?: return
-        ensureUpdateChannel(context, nm)
-        if (nm.getNotificationChannel(CHANNEL_DOWNLOAD) == null) {
-            nm.createNotificationChannel(
-                NotificationChannel(
-                    CHANNEL_DOWNLOAD,
-                    context.getString(R.string.update_channel_download),
-                    NotificationManager.IMPORTANCE_LOW,
-                ),
-            )
-        }
-    }
-
-    private fun ensureUpdateChannel(context: Context, nm: NotificationManager) {
-        val existing = nm.getNotificationChannel(CHANNEL_UPDATE)
-        if (existing?.importance == NotificationManager.IMPORTANCE_DEFAULT) return
-        if (existing != null) {
-            nm.deleteNotificationChannel(CHANNEL_UPDATE)
-        }
-        nm.createNotificationChannel(
-            NotificationChannel(
-                CHANNEL_UPDATE,
-                context.getString(R.string.update_channel_update),
-                NotificationManager.IMPORTANCE_DEFAULT,
-            ),
+        // 只做幂等 upsert，不再 delete + recreate：删除会导致渠道出现"短暂不存在"的窗口，
+        // 若此刻前台服务正要 startForeground 就会被系统判为非法通知而杀进程。
+        // 已存在的渠道重要性由系统按用户设置保留，createNotificationChannel 不会覆盖用户选择。
+        ForegroundNotificationChannels.create(
+            context = context,
+            id = CHANNEL_UPDATE,
+            name = context.getString(R.string.update_channel_update),
+            importance = NotificationManager.IMPORTANCE_DEFAULT,
+        )
+        ForegroundNotificationChannels.create(
+            context = context,
+            id = CHANNEL_DOWNLOAD,
+            name = context.getString(R.string.update_channel_download),
+            importance = NotificationManager.IMPORTANCE_LOW,
         )
     }
+
+    /**
+     * 下载前台服务专用：建渠道并确认它可用。
+     * [com.slideindex.app.update.DownloadService.startForeground] 之前必须先过这一关。
+     */
+    fun ensureDownloadChannel(context: Context): ForegroundNotificationChannels.Result =
+        ForegroundNotificationChannels.ensureUsable(
+            context = context,
+            id = CHANNEL_DOWNLOAD,
+            name = context.getString(R.string.update_channel_download),
+            importance = NotificationManager.IMPORTANCE_LOW,
+            tag = "UpdateDownload",
+        )
 
     private fun contentIntent(context: Context, showUpdate: Boolean): PendingIntent {
         val intent = Intent(context, MainActivity::class.java).apply {

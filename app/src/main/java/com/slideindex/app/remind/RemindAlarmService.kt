@@ -5,7 +5,6 @@ package com.slideindex.app.remind
  * Licensed under GPL-3.0. Modified for com.slideindex.app.
  */
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
@@ -24,6 +23,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.VibrationEffect
 import android.os.VibratorManager
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
@@ -31,6 +31,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import com.slideindex.app.R
+import com.slideindex.app.util.ForegroundNotificationChannels
 
 class RemindAlarmService : Service() {
     private var ringtone: Ringtone? = null
@@ -53,11 +54,24 @@ class RemindAlarmService : Service() {
 
     private fun startAlarm(minutes: Int) {
         if (stopped) return
-        val channelId = "gesture_remind_ring"
-        val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        nm.createNotificationChannel(
-            NotificationChannel(channelId, getString(R.string.gesture_remind_channel_name), NotificationManager.IMPORTANCE_LOW)
+        val channelId = CHANNEL_ID
+        // 先建渠道并确认存在，再 startForeground：渠道缺失会让系统把这条通知判为非法，
+        // 进而在 AMS 侧异步 killMisbehavingService()（Bad notification for startForeground）。
+        val channel = ForegroundNotificationChannels.ensureUsable(
+            context = this,
+            id = channelId,
+            name = getString(R.string.gesture_remind_channel_name),
+            importance = NotificationManager.IMPORTANCE_LOW,
+            tag = TAG,
         )
+        if (!channel.canPromote) {
+            Log.e(TAG, "提醒通知渠道不可用，跳过前台化，仅显示浮层")
+            showOverlay(minutes)
+            playAlarmSound()
+            vibrate()
+            mainHandler.postDelayed(autoStopRunnable, 5 * 60_000L)
+            return
+        }
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle(getString(R.string.gesture_remind_notify_title))
             .setContentText(getString(R.string.gesture_remind_notify_body, minutes))
@@ -65,7 +79,8 @@ class RemindAlarmService : Service() {
             .setOngoing(true)
             .setSilent(true)
             .build()
-        startForeground(NOTIFY_ID_BASE + minutes, notification)
+        runCatching { startForeground(NOTIFY_ID_BASE + minutes, notification) }
+            .onFailure { error -> Log.e(TAG, "startForeground failed", error) }
         androidx.core.content.ContextCompat.registerReceiver(
             this,
             screenOffReceiver,
@@ -163,6 +178,8 @@ class RemindAlarmService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
+        private const val TAG = "RemindAlarmService"
+        private const val CHANNEL_ID = "gesture_remind_ring"
         const val NOTIFY_ID_BASE = 5000
     }
 }
